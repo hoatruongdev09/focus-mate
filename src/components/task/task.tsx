@@ -1,6 +1,6 @@
 function Task() {
     return (
-        <div className="bg-gray-700 h-16 rounded-md flex justify-between items-center px-5">
+        <div className="bg-gray-700 h-16 rounded-md flex justify-between items-center px-5 shrink-0">
             <div className="flex gap-5">
                 <input type="checkbox" className="h-7 w-7 rounded-full" />
                 <p className="font-bold text-xl text-gray-200">Traffic light</p>

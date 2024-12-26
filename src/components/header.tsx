@@ -19,7 +19,7 @@ function Header() {
         setScrolled(offset > 50);
     }
     return (
-        <header className={twJoin("fixed top-0 left-0 right-0 shadow-md transition duration-300", scrolled ? 'bg-slate-800' : '')}>
+        <header className={twJoin("fixed top-0 left-0 right-0 shadow-md transition duration-300 z-10", scrolled ? 'bg-slate-800' : '')}>
             <Wrapper>
                 <div className="w-full h-16 flex justify-between items-center">
                     <div className="flex h-full items-end gap-1">
