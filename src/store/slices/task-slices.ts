@@ -1,22 +1,24 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export enum TaskPriority {
-    Low, Medium, High
+    Low = 0, Medium = 1, High = 2
 }
 
 export interface TaskItem {
     id: number
     title: string
+    category: string
     description: string
-    priority: number
+    priority: TaskPriority
     estimate: number
-    createDate: number
+    createdAt: number
 }
 
 export interface CreateTaskData {
     title: string
     description: string
-    priority: number
+    priority: TaskPriority
+    category: string
     estimate: number
 }
 
@@ -36,7 +38,7 @@ export const taskSlice = createSlice({
             const newTask: TaskItem = {
                 id: Date.now(),
                 ...action.payload,
-                createDate: Date.now()
+                createdAt: Date.now()
             }
             state.tasks.push(newTask)
         },
@@ -44,19 +46,12 @@ export const taskSlice = createSlice({
             state.tasks.splice(state.tasks.findIndex(t => t.id === action.payload), 1)
         },
         updateTask: (state, action: PayloadAction<TaskItem>) => {
+            console.log(action.payload)
             state.tasks.splice(state.tasks.findIndex(t => t.id === action.payload.id), 1)
             state.tasks = [...state.tasks, action.payload]
         }
     }
 })
-
-export const getTaskPriority = (task: TaskItem): TaskPriority => {
-    switch (task.priority) {
-        case 1: return TaskPriority.Medium
-        case 2: return TaskPriority.High
-        default: return TaskPriority.Low
-    }
-}
 
 export const { addTask, deleteTask, updateTask } = taskSlice.actions
 

@@ -8,7 +8,7 @@ function App() {
     <main>
       <Header />
       <Workspace />
-      <Introduction />
+      {/* <Introduction /> */}
     </main>
   )
 }

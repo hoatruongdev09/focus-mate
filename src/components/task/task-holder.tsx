@@ -1,48 +1,52 @@
 import { useDispatch, useSelector } from "react-redux";
 import Task from "./task";
 import { RootState } from "../../store/store";
-import TaskCreatingModal from "./task-creating-modal";
-import { useState } from "react";
-import TaskViewModal from "./task-view-modal";
 import { TaskItem } from "../../store/slices/task-slices";
 import { setSelectingTask } from "../../store/slices/task-view-slice";
+import { useRef, useState } from "react";
 
-function TaskHolder() {
+function TaskHolder({ category, openCreateTask }: { category: string, openCreateTask: (category: string) => void }) {
     const dispatch = useDispatch()
     const tasks = useSelector((state: RootState) => state.tasks.tasks)
-    const [isShowCreateTask, setIsShowCreateTask] = useState<boolean>(false)
+    const [scrolled, setScrolled] = useState(false)
+
+    const filteredTasks = tasks.filter(t => t.category === category)
 
     const onItemSelect = (item: TaskItem) => {
         dispatch(setSelectingTask(item))
     }
 
+
+    function onScrollTrigger(event: React.UIEvent<HTMLDivElement>): void {
+        const offset = event.currentTarget.scrollTop;
+        setScrolled(offset > 50);
+    }
+
     return (
         <>
-            <div className="flex flex-col w-full h-full gap-2 lg:w-[55%] overflow-y-scroll no-scrollbar">
-                <div className="w-full px-5 h-14 bg-gray-700 flex justify-between items-center rounded-md shrink-0">
-                    <div className="flex gap-2 items-center">
-                        <p className="font-bold text-xl text-gray-200">Tasks</p>
-                        <p className="font-bold text-l text-gray-200">10/20</p>
+            <div className="flex flex-col w-full sm:w-80 shrink-0 relative bg-gray-600 rounded-sm">
+                <div className={`px-3 flex flex-row justify-between items-center shrink-0 absolute top-0 left-0 right-0 z-[31] ${scrolled ? "bg-white" : ""}`}>
+                    <div className="flex gap-2 items-center h-12">
+                        <p className="text-white bg-pink-700 px-2 rounded-sm">{category}</p>
+                        <p className="text-pink-700">{filteredTasks.length}</p>
                     </div>
                     <button
-                        className="bg-blue-500 font-bold text-gray-200 px-5 py-1 rounded-md"
-                        onClick={() => setIsShowCreateTask(true)}
+                        className="bg-blue-500 font-bold text-gray-200 px-5 py-1 rounded-md h-full text-center"
+                        onClick={() => openCreateTask(category)}
                     >Add</button>
                 </div>
-                <div className="w-full h-full flex flex-col gap-2">
+                <div
+                    className="flex flex-col gap-2 items-stretch overflow-y-scroll no-scrollbar absolute left-0 top-0 right-0 bottom-0 px-2 pt-12 pb-2"
+                    onScroll={(e) => onScrollTrigger(e)}
+                >
                     {
-                        [...tasks].sort((a, b) => b.createDate - a.createDate).map(t => (
+                        filteredTasks.sort((a, b) => b.createdAt - a.createdAt).map(t => (
                             <Task onSelect={item => onItemSelect(item)} key={t.id} data={t} />
                         ))
                     }
 
                 </div>
             </div>
-            <TaskCreatingModal
-                isOpen={isShowCreateTask}
-                setIsOpen={setIsShowCreateTask}
-            />
-            <TaskViewModal />
         </>
     );
 }

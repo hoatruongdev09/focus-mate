@@ -1,23 +1,26 @@
-import { getTaskPriority, TaskItem } from "../../store/slices/task-slices";
+import { TaskItem, TaskPriority } from "../../store/slices/task-slices";
 
 function Task({ data, onSelect }: { data: TaskItem, onSelect: (item: TaskItem) => void }) {
 
-    const { title, estimate } = data
+    const { title, priority } = data
+
+    const formatPriority = (p: TaskPriority) => {
+        if (p == TaskPriority.Low) {
+            return "Low"
+        } else if (p == TaskPriority.Medium) {
+            return "Medium"
+        } else if (p == TaskPriority.High) {
+            return "High"
+        }
+    }
 
     return (
         <div
-            className="bg-gray-700 h-16 rounded-md flex justify-between items-center px-5 shrink-0"
+            className="bg-gray-700 h-12 rounded-xl flex justify-between items-center px-4 py-2 shrink-0"
             onClick={e => onSelect(data)}
         >
-            <div className="flex gap-5">
-                <input type="checkbox" className="h-7 w-7 rounded-full" />
-                <p className="font-bold text-xl text-gray-200">{title}</p>
-                <p className="bg-red-500 px-3 py-1 rounded-full font-bold text-gray-200">{getTaskPriority(data).toString()}</p>
-            </div>
-            <div className="flex gap-2 items-center">
-                <p className="bg-green-500 px-3 py-1 font-bold text-gray-200">{estimate}</p>
-                <button className="bg-red-500 px-5 py-1 font-bold text-gray-200">Finish</button>
-            </div>
+            <p className="font-bold text-gray-200">{title}</p>
+            <p className="bg-red-500 text-gray-200 px-2 rounded-full text-sm">{formatPriority(priority)}</p>
         </div>
     );
 }

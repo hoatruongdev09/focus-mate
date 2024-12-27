@@ -1,10 +1,10 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import { deleteTask, TaskItem, updateTask } from "../../store/slices/task-slices";
+import { TaskItem, updateTask } from "../../store/slices/task-slices";
 import Modal from "../modal";
-import TaskView from "./task-view";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { clear } from "../../store/slices/task-view-slice";
+import UpdateTaskView from "./update-task-view";
 
 export interface TaskViewProps {
     taskItem?: TaskItem | null
@@ -21,22 +21,12 @@ function TaskViewModal() {
     }, [selectingTask])
 
     const onCancel = () => {
-        dispatch(clear())
-    }
-
-    const onSave = () => {
         if (currentTask != null) {
             dispatch(updateTask(currentTask))
         }
-        onCancel()
+        dispatch(clear())
     }
 
-    const onDelete = () => {
-        if (currentTask != null) {
-            dispatch(deleteTask(currentTask.id))
-        }
-        onCancel()
-    }
 
     const onFormDataChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (currentTask == null) { return }
@@ -52,8 +42,9 @@ function TaskViewModal() {
             [e.target.name]: e.target.value
         })
     }
-    const onFormPriorityChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const onFormOptionChange = (e: ChangeEvent<HTMLSelectElement>) => {
         if (currentTask == null) { return }
+        console.log(`${e.target.name} ${e.target.value}`)
         setCurrentTask({
             ...currentTask,
             [e.target.name]: e.target.value
@@ -62,20 +53,17 @@ function TaskViewModal() {
 
     return (
         <Modal isOpen={currentTask != null} onCancel={onCancel}>
-            <div id="taskView" className="z-40 flex flex-col justify-stretch flex-1 p-5 bg-white fixed top-2 right-2 left-2 bottom-2 md:left-auto md:right-0 md:top-0 md:bottom-0 md:w-2/5">
+            <div
+                id="taskView"
+                className="z-40 flex flex-col justify-stretch flex-1 p-5 bg-white fixed top-2 right-2 left-2 bottom-2 md:left-auto md:right-0 md:top-0 md:bottom-0 md:w-3/5"
+            >
                 {
-                    currentTask && <TaskView
-                        formState={currentTask}
+                    currentTask && <UpdateTaskView
+                        taskState={currentTask}
                         onFormDataChange={onFormDataChange}
                         onFormTextAreaChange={onFormTextAreaChange}
-                        onFormPriorityChange={onFormPriorityChange}
+                        onFormOptionChange={onFormOptionChange}
                     />}
-
-                <div className="flex flex-row-reverse gap-2">
-                    <button className="bg-green-500 w-24 px-3 py-1" onClick={(e => onSave())}>Save</button>
-                    <button className="bg-red-500  w-24 px-3 py-1" onClick={e => onDelete()}>Delete</button>
-                    <button className="bg-red-500  w-24 px-3 py-1" onClick={e => onCancel()}>Cancel</button>
-                </div>
             </div>
         </Modal>
     );

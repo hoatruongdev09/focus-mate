@@ -1,11 +1,11 @@
 import { ChangeEvent, useState } from "react";
 import { addTask, CreateTaskData } from "../../store/slices/task-slices";
 import { useDispatch } from "react-redux";
-import TaskView from "./task-view";
+import CreateTaskView from "./create-task-view";
 
 
-function TaskCreatingModal({ isOpen, setIsOpen }:
-    { isOpen: boolean, setIsOpen: (isOpen: boolean) => void }) {
+function TaskCreatingModal({ category, isOpen, setIsOpen }:
+    { category: string, isOpen: boolean, setIsOpen: (isOpen: boolean) => void }) {
 
     const dispatch = useDispatch()
 
@@ -13,7 +13,8 @@ function TaskCreatingModal({ isOpen, setIsOpen }:
         title: "",
         description: "",
         estimate: 1,
-        priority: 0
+        priority: 0,
+        category: ""
     })
 
     const onFormDataChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -36,7 +37,11 @@ function TaskCreatingModal({ isOpen, setIsOpen }:
     }
 
     const onCreateTask = () => {
-        dispatch(addTask(formState))
+        const createTaskData = {
+            ...formState,
+            category
+        }
+        dispatch(addTask(createTaskData))
         onCancel()
     }
 
@@ -45,19 +50,20 @@ function TaskCreatingModal({ isOpen, setIsOpen }:
             title: "",
             description: "",
             estimate: 1,
-            priority: 0
+            priority: 0,
+            category: ""
         })
         setIsOpen(false)
     }
 
     return (
-        <div className={`fixed left-0 top-0 right-0 bottom-0 bg-slate-900 bg-opacity-35 z-20 ${isOpen ? "block" : "hidden"}`}>
+        <div className={`fixed left-0 top-0 right-0 bottom-0 bg-slate-900 bg-opacity-35 z-50 ${isOpen ? "block" : "hidden"}`}>
             <button
                 className="fixed left-0 top-0 right-0 bottom-0 z-30 cursor-default "
                 onClick={e => onCancel()}
             ></button>
             <div className="z-40 flex flex-col justify-stretch flex-1 p-5 bg-white fixed top-2 right-2 left-2 bottom-2 md:left-auto md:right-0 md:top-0 md:bottom-0 md:w-2/5">
-                <TaskView
+                <CreateTaskView
                     formState={formState}
                     onFormDataChange={onFormDataChange}
                     onFormTextAreaChange={onFormTextAreaChange}

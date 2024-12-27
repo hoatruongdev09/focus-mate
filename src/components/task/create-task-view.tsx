@@ -1,14 +1,14 @@
 import { ChangeEvent } from "react";
-import { CreateTaskData } from "../../store/slices/task-slices";
+import { CreateTaskData, TaskPriority } from "../../store/slices/task-slices";
 
-export interface TaskViewProps {
+export interface CreateTaskViewProps {
     formState: CreateTaskData | null
     onFormDataChange: (e: ChangeEvent<HTMLInputElement>) => void,
     onFormTextAreaChange: (e: ChangeEvent<HTMLTextAreaElement>) => void,
     onFormPriorityChange: (e: ChangeEvent<HTMLSelectElement>) => void
 }
 
-function TaskView({ formState, onFormDataChange, onFormTextAreaChange, onFormPriorityChange }: TaskViewProps) {
+function CreateTaskView({ formState, onFormDataChange, onFormTextAreaChange, onFormPriorityChange }: CreateTaskViewProps) {
     return (
         <div className="flex flex-col gap-2 flex-1">
             <input
@@ -40,13 +40,13 @@ function TaskView({ formState, onFormDataChange, onFormTextAreaChange, onFormPri
                     onChange={e => onFormPriorityChange(e)}
                     className="flex-1 bg-transparent outline-none"
                 >
-                    <option value={0}>Low</option>
-                    <option value={1}>Medium</option>
-                    <option value={2}>High</option>
+                    <option value={TaskPriority.Low}>Low</option>
+                    <option value={TaskPriority.Medium}>Medium</option>
+                    <option value={TaskPriority.High}>High</option>
                 </select>
             </div>
         </div>
     );
 }
 
-export default TaskView;
+export default CreateTaskView;
