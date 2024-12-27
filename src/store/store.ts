@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { clockSlice } from "./slices/clock-slices";
 import { taskSlice } from "./slices/task-slices";
+import { taskViewSlice } from "./slices/task-view-slice";
 
 export const store = configureStore({
     reducer: {
         clock: clockSlice.reducer,
-        tasks: taskSlice.reducer
+        tasks: taskSlice.reducer,
+        taskView: taskViewSlice.reducer
     }
 })
 

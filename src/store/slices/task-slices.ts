@@ -41,7 +41,11 @@ export const taskSlice = createSlice({
             state.tasks.push(newTask)
         },
         deleteTask: (state, action: PayloadAction<number>) => {
-            state.tasks.splice(state.tasks.findIndex(t => t.id === action.payload), 1);
+            state.tasks.splice(state.tasks.findIndex(t => t.id === action.payload), 1)
+        },
+        updateTask: (state, action: PayloadAction<TaskItem>) => {
+            state.tasks.splice(state.tasks.findIndex(t => t.id === action.payload.id), 1)
+            state.tasks = [...state.tasks, action.payload]
         }
     }
 })
@@ -54,6 +58,6 @@ export const getTaskPriority = (task: TaskItem): TaskPriority => {
     }
 }
 
-export const { addTask, deleteTask } = taskSlice.actions
+export const { addTask, deleteTask, updateTask } = taskSlice.actions
 
 export default taskSlice.reducer

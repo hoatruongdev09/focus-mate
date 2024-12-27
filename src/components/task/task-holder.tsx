@@ -1,20 +1,19 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Task from "./task";
 import { RootState } from "../../store/store";
 import TaskCreatingModal from "./task-creating-modal";
 import { useState } from "react";
 import TaskViewModal from "./task-view-modal";
 import { TaskItem } from "../../store/slices/task-slices";
+import { setSelectingTask } from "../../store/slices/task-view-slice";
 
 function TaskHolder() {
+    const dispatch = useDispatch()
     const tasks = useSelector((state: RootState) => state.tasks.tasks)
     const [isShowCreateTask, setIsShowCreateTask] = useState<boolean>(false)
 
-
-    const [selectingTaskItem, setSelectingTaskItem] = useState<TaskItem | null>(null)
-
     const onItemSelect = (item: TaskItem) => {
-        setSelectingTaskItem(item)
+        dispatch(setSelectingTask(item))
     }
 
     return (
@@ -43,10 +42,7 @@ function TaskHolder() {
                 isOpen={isShowCreateTask}
                 setIsOpen={setIsShowCreateTask}
             />
-            <TaskViewModal
-                taskItem={selectingTaskItem}
-                setCurrentTaskItem={setSelectingTaskItem}
-            />
+            <TaskViewModal />
         </>
     );
 }
