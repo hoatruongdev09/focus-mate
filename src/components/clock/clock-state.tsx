@@ -25,7 +25,7 @@ function ClockState() {
     }
 
     return (
-        <div className="w-full flex gap-2 mt-4">
+        <div className="w-full flex gap-2 mt-4 justify-start sm:justify-between">
             <ClockButton name="Focus"
                 className={clockMode == ClockMode.Focus ? "bg-gray-200 text-gray-950" : ""}
                 onClick={() => setClockMode(ClockMode.Focus)}

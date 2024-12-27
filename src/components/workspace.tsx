@@ -25,7 +25,7 @@ function Workspace() {
             <div className="bg-slate-900">
                 <div className="min-h-screen mx-5">
                     <div className="flex flex-row min-h-screen items-center justify-center max-w-7xl mx-auto relative">
-                        <div className="absolute left-0 top-24 right-0 bottom-5 flex flex-col gap-3">
+                        <div className="absolute left-0 top-24 right-0 bottom-8 flex flex-col gap-3">
                             <ClockHolder />
                             <div className="flex flex-row gap-2 overflow-x-scroll flex-1 no-scrollbar">
                                 <TaskHolder category="todo" openCreateTask={onOpenCreateTask} />
