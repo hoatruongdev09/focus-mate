@@ -7,7 +7,7 @@ export enum TaskPriority {
 export interface TaskItem {
     id: number
     title: string
-    category: string
+    column_id: number
     description: string
     priority: TaskPriority
     estimate: number
@@ -18,7 +18,7 @@ export interface CreateTaskData {
     title: string
     description: string
     priority: TaskPriority
-    category: string
+    column_id: number
     estimate: number
 }
 
@@ -46,9 +46,12 @@ export const taskSlice = createSlice({
             state.tasks.splice(state.tasks.findIndex(t => t.id === action.payload), 1)
         },
         updateTask: (state, action: PayloadAction<TaskItem>) => {
-            console.log(action.payload)
             state.tasks.splice(state.tasks.findIndex(t => t.id === action.payload.id), 1)
-            state.tasks = [...state.tasks, action.payload]
+            state.tasks = [...state.tasks, {
+                ...action.payload,
+                column_id: +action.payload.column_id
+            }]
+            console.log(state.tasks)
         }
     }
 })

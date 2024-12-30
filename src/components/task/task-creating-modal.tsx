@@ -3,10 +3,11 @@ import { addTask, CreateTaskData } from "../../store/slices/task-slices";
 import { useDispatch } from "react-redux";
 import CreateTaskView from "./create-task-view";
 import Modal from "../modal";
+import { ColumnData } from "../../store/slices/column-slice";
 
 
-function TaskCreatingModal({ category, isOpen, setIsOpen }:
-    { category: string, isOpen: boolean, setIsOpen: (isOpen: boolean) => void }) {
+function TaskCreatingModal({ column, isOpen, setIsOpen }:
+    { column: ColumnData | null, isOpen: boolean, setIsOpen: (isOpen: boolean) => void }) {
 
     const dispatch = useDispatch()
 
@@ -15,7 +16,7 @@ function TaskCreatingModal({ category, isOpen, setIsOpen }:
         description: "",
         estimate: 1,
         priority: 0,
-        category: ""
+        column_id: -1
     })
 
     const onFormDataChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -38,9 +39,12 @@ function TaskCreatingModal({ category, isOpen, setIsOpen }:
     }
 
     const onCreateTask = () => {
-        const createTaskData = {
+        if (column == null) {
+            return
+        }
+        const createTaskData: CreateTaskData = {
             ...formState,
-            category
+            column_id: column.id
         }
         dispatch(addTask(createTaskData))
         onCancel()
@@ -52,7 +56,7 @@ function TaskCreatingModal({ category, isOpen, setIsOpen }:
             description: "",
             estimate: 1,
             priority: 0,
-            category: ""
+            column_id: -1
         })
         setIsOpen(false)
     }

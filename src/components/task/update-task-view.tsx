@@ -1,8 +1,10 @@
 import { ChangeEvent } from "react";
 import { TaskItem, TaskPriority } from "../../store/slices/task-slices";
+import { ColumnData } from "../../store/slices/column-slice";
 
 interface UpdateTaskViewProps {
     taskState: TaskItem
+    columns: ColumnData[]
     onFormDataChange: (e: ChangeEvent<HTMLInputElement>) => void,
     onFormTextAreaChange: (e: ChangeEvent<HTMLTextAreaElement>) => void,
     onFormOptionChange: (e: ChangeEvent<HTMLSelectElement>) => void
@@ -12,6 +14,7 @@ interface UpdateTaskViewProps {
 
 function UpdateTaskView({
     taskState,
+    columns,
     onFormDataChange,
     onFormTextAreaChange,
     onFormOptionChange }: UpdateTaskViewProps) {
@@ -47,14 +50,16 @@ function UpdateTaskView({
             <div className="flex">
                 <p className="w-32">Status: </p>
                 <select
-                    name="category"
-                    value={taskState.category}
+                    name="column_id"
+                    value={columns.find(c => c.id === taskState.column_id)?.name}
                     onChange={(e) => onFormOptionChange(e)}
                     className="flex-1"
                 >
-                    <option value={"todo"}>To do</option>
-                    <option value={"doing"}>Doing</option>
-                    <option value={"done"}>Done</option>
+                    {
+                        [...columns].sort((a, b) => a.order_by - b.order_by).map(c => (
+                            <option key={`column-${c.id}`} value={c.id}>{c.name}</option>
+                        ))
+                    }
                 </select>
             </div>
             <div className="flex">
