@@ -15,8 +15,6 @@ function ColumnHolder() {
 
     const columns = useContext(ColumnContext)
 
-
-
     const onOpenCreateTask = (column: ColumnData): void => {
         dispatch(setSelectingColumn(column))
     }

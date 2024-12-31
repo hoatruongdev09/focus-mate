@@ -7,10 +7,14 @@ import { ColumnData, TaskItem } from "../../types/board-type";
 import { useGetTasksQuery } from "../../services/tasks";
 
 function Column({ column, openCreateTask }: { column: ColumnData, openCreateTask: (category: ColumnData) => void }) {
+
     const dispatch = useDispatch()
-    const { data, isLoading, isError, error } = useGetTasksQuery(column.id)
+    const { data, isLoading } = useGetTasksQuery(column.id)
+
     const [scrolled, setScrolled] = useState(false)
     const [isHoverTitle, setIsHoverTitle] = useState<boolean>(false)
+
+
 
     const onItemSelect = (item: TaskItem) => {
         dispatch(setSelectingTask(item))
@@ -34,8 +38,6 @@ function Column({ column, openCreateTask }: { column: ColumnData, openCreateTask
 
     if (isLoading) {
         return (<>LOADING COLUMN</>)
-    } else if (isError) {
-        return (<>{error.toString()}</>)
     }
 
     return (

@@ -13,23 +13,27 @@ export interface CreateTaskData {
 export const taskApi = createApi({
     reducerPath: "taskApi",
     baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000/board' }),
+    tagTypes: ['Task'],
     endpoints: (builder) => ({
         getTasks: builder.query<TaskItem[], number>({
-            query: (columnId) => `/groups/${columnId}/tasks`
+            query: (columnId) => `/groups/${columnId}/tasks`,
+            providesTags: ['Task']
         }),
         addTask: builder.mutation<TaskItem, { columnId: number, data: CreateTaskData }>({
             query: (param) => ({
                 url: `/groups/${param.columnId}/task`,
                 method: 'POST',
                 body: param.data
-            })
+            }),
+            invalidatesTags: ['Task']
         }),
         updateTask: builder.mutation<TaskItem, { taskId: number, data: UpdateTaskData }>({
             query: (param) => ({
                 url: `/tasks/${param.taskId}`,
                 method: 'PUT',
                 body: param.data
-            })
+            }),
+            invalidatesTags: ['Task']
         })
     })
 })

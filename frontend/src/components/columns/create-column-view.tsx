@@ -1,9 +1,12 @@
 import { ChangeEvent, useState } from "react";
 import { CreateColumnData, useAddColumnMutation } from "../../services/columns";
+import { useDispatch } from "react-redux";
+import { setShowAddingColumn } from "../../store/slices/column-slice";
 
 
 
 function CreateColumnView() {
+    const dispatch = useDispatch()
     const [addColumn] = useAddColumnMutation()
 
     const [formState, setFormState] = useState<CreateColumnData>({
@@ -25,9 +28,10 @@ function CreateColumnView() {
     }
 
     const onSubmit = async () => {
-        // TODO: implement add column rtk query
         await addColumn(formState)
+        dispatch(setShowAddingColumn(false))
         setFormState({ name: "", description: "" })
+
     }
 
 
