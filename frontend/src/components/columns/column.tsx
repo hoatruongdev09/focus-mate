@@ -1,20 +1,20 @@
 import { useDispatch } from "react-redux";
-import Task from "./task";
-import { TaskItem } from "../../store/slices/task-slices";
+import Task from "../task/task";
 import { setSelectingTask } from "../../store/slices/task-view-slice";
 import { useState } from "react";
-import { ColumnData, setEditingColumn } from "../../store/slices/column-slice";
+import { setEditingColumn } from "../../store/slices/column-slice";
+import { ColumnData, TaskItem } from "../../types/board-type";
+import { useGetTasksQuery } from "../../services/tasks";
 
-function TaskHolder({ column, tasks, openCreateTask }: { column: ColumnData, tasks: TaskItem[], openCreateTask: (category: ColumnData) => void }) {
+function Column({ column, openCreateTask }: { column: ColumnData, openCreateTask: (category: ColumnData) => void }) {
     const dispatch = useDispatch()
-
+    const { data, isLoading, isError, error } = useGetTasksQuery(column.id)
     const [scrolled, setScrolled] = useState(false)
     const [isHoverTitle, setIsHoverTitle] = useState<boolean>(false)
 
     const onItemSelect = (item: TaskItem) => {
         dispatch(setSelectingTask(item))
     }
-
 
     function onScrollTrigger(event: React.UIEvent<HTMLDivElement>): void {
         const offset = event.currentTarget.scrollTop;
@@ -32,6 +32,12 @@ function TaskHolder({ column, tasks, openCreateTask }: { column: ColumnData, tas
         dispatch(setEditingColumn(column))
     }
 
+    if (isLoading) {
+        return (<>LOADING COLUMN</>)
+    } else if (isError) {
+        return (<>{error.toString()}</>)
+    }
+
     return (
 
         <>
@@ -46,7 +52,7 @@ function TaskHolder({ column, tasks, openCreateTask }: { column: ColumnData, tas
                 >
                     <div className="flex flex-1 gap-2 items-center h-11">
                         <p className="text-white bg-pink-700 px-2 rounded-sm">{column.name}</p>
-                        <p className="text-pink-700">{tasks.length}</p>
+                        <p className="text-pink-700">{data?.length ?? 0}</p>
                     </div>
                     <div className={`flex gap-1 transition-opacity duration-300 ${isHoverTitle ? "opacity-100" : "opacity-0"}`}>
                         <button
@@ -64,7 +70,7 @@ function TaskHolder({ column, tasks, openCreateTask }: { column: ColumnData, tas
                     onScroll={(e) => onScrollTrigger(e)}
                 >
                     {
-                        tasks.map(t => (
+                        data && data.map(t => (
                             <Task key={`task-${t.id}`} onSelect={item => onItemSelect(item)} data={t} />
                         ))
                     }
@@ -75,4 +81,4 @@ function TaskHolder({ column, tasks, openCreateTask }: { column: ColumnData, tas
     );
 }
 
-export default TaskHolder;
+export default Column;

@@ -1,4 +1,5 @@
-import { TaskItem, TaskPriority } from "../../store/slices/task-slices";
+import { TaskItem, TaskPriority } from "../../types/board-type"
+
 
 function Task({ data, onSelect }: { data: TaskItem, onSelect: (item: TaskItem) => void }) {
 
@@ -17,7 +18,7 @@ function Task({ data, onSelect }: { data: TaskItem, onSelect: (item: TaskItem) =
     return (
         <div
             className="bg-gray-700 h-12 rounded-xl flex justify-between items-center px-4 py-2 shrink-0"
-            onClick={e => onSelect(data)}
+            onClick={() => onSelect(data)}
         >
             <p className="font-bold text-gray-200">{title}</p>
             <p className="bg-red-500 text-gray-200 px-2 rounded-full text-sm">{formatPriority(priority)}</p>

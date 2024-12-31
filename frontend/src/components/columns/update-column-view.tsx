@@ -1,5 +1,5 @@
 import { ChangeEvent } from "react";
-import { ColumnData } from "../../store/slices/column-slice";
+import { ColumnData } from "../../types/board-type";
 
 function UpdateColumnView({ column, onFormDataChange, onFormTextAreaChange }: {
     column: ColumnData,

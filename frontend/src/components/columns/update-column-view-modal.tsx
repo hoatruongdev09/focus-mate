@@ -1,22 +1,23 @@
 import { useDispatch, useSelector } from "react-redux";
-import { ColumnData, updateColumn } from "../../store/slices/column-slice";
 import Modal from "../modal";
 import { RootState } from "../../store/store";
 import { clearEditingColumn, setEditingColumn } from '../../store/slices/column-slice'
 import UpdateColumnView from "./update-column-view";
 import { ChangeEvent } from "react";
-export interface ColumnUpdateViewProps {
-    column?: ColumnData | null,
-    setCurrentColumnItem: (item: ColumnData | null) => void
-}
+import { useUpdateColumnMutation } from "../../services/columns";
+
 
 function UpdateColumnViewModal() {
+
     const dispatch = useDispatch()
     const editingColumn = useSelector((state: RootState) => state.columns.editingColumn)
+    const [updateColumn] = useUpdateColumnMutation()
+    const onCancel = async () => {
 
-    const onCancel = () => {
         if (editingColumn != null) {
-            dispatch(updateColumn(editingColumn))
+            // dispatch(updateColumn(editingColumn))
+            // TODO: implement RK query
+            await updateColumn(editingColumn)
         }
         dispatch(clearEditingColumn())
     }

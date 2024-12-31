@@ -1,15 +1,36 @@
 import { ChangeEvent } from "react";
-import { CreateTaskData, TaskPriority } from "../../store/slices/task-slices";
+import { TaskPriority } from "../../types/board-type";
+import { RootState } from "../../store/store";
+import { setCreatingTask } from "../../store/slices/task-view-slice";
+import { useDispatch, useSelector } from "react-redux";
 
 export interface CreateTaskViewProps {
-    formState: CreateTaskData | null
-    onFormDataChange: (e: ChangeEvent<HTMLInputElement>) => void,
-    onFormTextAreaChange: (e: ChangeEvent<HTMLTextAreaElement>) => void,
-    onFormPriorityChange: (e: ChangeEvent<HTMLSelectElement>) => void,
     onSubmit: () => void
 }
 
-function CreateTaskView({ formState, onFormDataChange, onFormTextAreaChange, onFormPriorityChange, onSubmit }: CreateTaskViewProps) {
+function CreateTaskView({ onSubmit }: CreateTaskViewProps) {
+    const dispatch = useDispatch()
+    const creatingTaskData = useSelector((state: RootState) => state.taskView.creatingTask)
+
+    const onFormDataChange = (e: ChangeEvent<HTMLInputElement>) => {
+        dispatch(setCreatingTask({
+            ...creatingTaskData,
+            [e.target.name]: e.target.value
+        }))
+    }
+    const onFormTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+        dispatch(setCreatingTask({
+            ...creatingTaskData,
+            [e.target.name]: e.target.value
+        }))
+    }
+    const onFormPriorityChange = (e: ChangeEvent<HTMLSelectElement>) => {
+        dispatch(setCreatingTask({
+            ...creatingTaskData,
+            [e.target.name]: e.target.value
+        }))
+    }
+
     return (
         <div className="flex flex-1 p-5">
             <div className="flex flex-col gap-2 flex-1 ">
@@ -17,7 +38,7 @@ function CreateTaskView({ formState, onFormDataChange, onFormTextAreaChange, onF
                     name="title"
                     type="text"
                     placeholder="New task"
-                    value={formState?.title}
+                    value={creatingTaskData.title}
                     className="text-5xl bg-transparent outline-none font-bold text-gray-800"
                     onChange={(e) => onFormDataChange(e)}
                 />
@@ -25,7 +46,7 @@ function CreateTaskView({ formState, onFormDataChange, onFormTextAreaChange, onF
                     <p className="w-32">Priority</p>
                     <select
                         name="priority"
-                        value={formState?.priority}
+                        value={creatingTaskData.priority}
                         onChange={e => onFormPriorityChange(e)}
                         className="bg-transparent outline-none flex-1"
                     >
@@ -39,7 +60,7 @@ function CreateTaskView({ formState, onFormDataChange, onFormTextAreaChange, onF
                     <input
                         name="estimate"
                         type="number"
-                        value={formState?.estimate}
+                        value={creatingTaskData.estimate}
                         onChange={(e) => onFormDataChange(e)}
                         className="bg-transparent outline-none flex-1"
                     />
@@ -47,7 +68,7 @@ function CreateTaskView({ formState, onFormDataChange, onFormTextAreaChange, onF
                 <textarea
                     name="description"
                     placeholder="Add more detail"
-                    value={formState?.description}
+                    value={creatingTaskData.description}
                     onChange={e => onFormTextAreaChange(e)}
                     className="outline-none bg-transparent text-gray-800 flex-1"
                 />
@@ -62,3 +83,4 @@ function CreateTaskView({ formState, onFormDataChange, onFormTextAreaChange, onF
 }
 
 export default CreateTaskView;
+
