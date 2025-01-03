@@ -25,8 +25,16 @@ export default class BoardService {
         const newGroup = new Group()
         newGroup.name = name
         newGroup.description = description
-        const [groups, groupCount] = await this.groupRepository.findAndCount()
-        newGroup.order_by = groupCount
+
+        const topOrder = await this.groupRepository.find({
+            select: ['order_by'],
+            order: {
+                order_by: 'DESC'
+            },
+            take: 1
+        })
+
+        newGroup.order_by = topOrder.length > 0 ? topOrder[0].order_by : 1
         return await this.groupRepository.save(newGroup)
     }
 
@@ -49,7 +57,7 @@ export default class BoardService {
         await this.taskRepository
             .createQueryBuilder()
             .softDelete()
-            .where("groupId = :id", { id: group.id })
+            .where("group_id = :id", { id: group.id })
             .execute()
         await this.groupRepository.createQueryBuilder()
             .softDelete()
@@ -62,13 +70,20 @@ export default class BoardService {
         if (group == null) {
             throw new Error("Group not found")
         }
-
+        const topOrder = await this.taskRepository
+            .createQueryBuilder()
+            .orderBy('order_by', 'DESC')
+            .select(['order_by'])
+            .take(1)
+            .execute()
+        console.log(`top order: `, topOrder)
         const newTask: Task = new Task()
         newTask.title = data.title
         newTask.description = data.description
         newTask.group = group
         newTask.priority = data.priority
         newTask.estimate = data.estimate
+        newTask.order_by = topOrder.length > 0 ? topOrder[0].order_by + 1 : 1
 
         return await this.taskRepository.save(newTask)
     }
@@ -84,6 +99,22 @@ export default class BoardService {
         })
     }
 
+    private async changeTaskColumn(task: Task, columnId: number) {
+        const group = await this.groupRepository.findOne({ where: { id: columnId } })
+        if (group == null) { throw new Error("Group not found") }
+        task.group = group
+    }
+
+    private async reorderTasks(startIndex: number, columnId: number) {
+        await this.taskRepository
+            .createQueryBuilder()
+            .update(Task)
+            .set({ order_by: () => 'order_by + 1' })
+            .where("order_by >= :start_index AND group_id = :group_id", { start_index: startIndex, group_id: columnId })
+            .useTransaction(true)
+            .execute()
+    }
+
     async updateTask(id: number, data: UpdateTaskDto) {
         const task = await this.taskRepository.findOne({
             where: { id },
@@ -91,9 +122,8 @@ export default class BoardService {
                 group: true
             }
         })
-        if (task == null) {
-            throw new Error("Task not found")
-        }
+
+        if (task == null) { throw new Error("Task not found") }
 
         task.title = data.title
         task.description = data.description
@@ -101,14 +131,11 @@ export default class BoardService {
         task.estimate = data.estimate
 
         if (task.group.id != data.column_id) {
-            const group = await this.groupRepository.findOne({ where: { id: data.column_id } })
-
-            if (group == null) {
-                throw new Error("Group not found")
-            }
-
-            task.group = group
+            await this.changeTaskColumn(task, data.column_id)
         }
+        task.order_by = data.order_by
+        await this.reorderTasks(data.order_by, data.column_id)
+
 
         return this.taskRepository.save(task)
     }

@@ -6,8 +6,9 @@ import CreateColumnViewModal from "./create-column-view-modal";
 import { ColumnData } from "../../types/board-type";
 import { ColumnContext } from "../workspace";
 import { useDispatch } from "react-redux";
-import { setSelectingColumn } from "../../store/slices/task-view-slice";
 import { setShowAddingColumn } from "../../store/slices/column-slice";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 
 function ColumnHolder() {
@@ -15,23 +16,19 @@ function ColumnHolder() {
 
     const columns = useContext(ColumnContext)
 
-    const onOpenCreateTask = (column: ColumnData): void => {
-        dispatch(setSelectingColumn(column))
-    }
 
     const showAddColumn = () => {
         dispatch(setShowAddingColumn(true))
     }
 
     return (
-        <>
+        <DndProvider backend={HTML5Backend}>
             <div className="flex flex-row gap-2 overflow-x-scroll flex-1 no-scrollbar">
                 {
                     columns.sort((a, b) => a.order_by - b.order_by).map((c) => (
                         <Column
                             key={`column-${c.id}`}
                             column={c}
-                            openCreateTask={onOpenCreateTask}
                         />
                     ))
                 }
@@ -47,7 +44,7 @@ function ColumnHolder() {
             <TaskCreatingModal />
             <UpdateColumnViewModal />
             <CreateColumnViewModal />
-        </>
+        </DndProvider>
     );
 }
 

@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 import { Group } from "./column.entity"
 
 @Entity()
@@ -8,6 +8,9 @@ export class Task {
 
     @Column()
     title: string
+
+    @Column({ default: 0 })
+    order_by: number
 
     @Column("text")
     description: string
@@ -28,5 +31,6 @@ export class Task {
     deleted_at: Date
 
     @ManyToOne(() => Group, (group) => group.tasks)
+    @JoinColumn({ name: 'group_id' })
     group: Group
 }

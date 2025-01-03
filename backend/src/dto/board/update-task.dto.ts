@@ -4,4 +4,5 @@ export default class UpdateTaskDto {
     priority: number
     estimate: number
     column_id: number
+    order_by: number
 }
