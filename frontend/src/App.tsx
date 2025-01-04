@@ -1,16 +1,25 @@
-import Header from "./components/header"
-import Introduction from "./components/intro"
-import Workspace from "./components/workspace"
+import KanbanBoard from "./components/kanban-board";
+import KanbanBoardTitle from "./components/kanban-board-title";
+import NavBar from "./components/nav-bar";
+import SideBar from "./components/side-bar";
 
 function App() {
-
   return (
-    <main>
-      <Header />
-      <Workspace />
-      {/* <Introduction /> */}
-    </main>
-  )
+    <>
+      <NavBar />
+      <div className="fixed left-0 right-0 top-0 bottom-0 p-2 pt-20 flex items-stretch gap-2">
+        <SideBar />
+        <div className="flex flex-col flex-1">
+          <KanbanBoardTitle />
+          <div className="flex-1 relative">
+            <div className="absolute left-0 right-0 top-0 bottom-0">
+              <KanbanBoard />
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }
 
-export default App
+export default App;
