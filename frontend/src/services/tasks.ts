@@ -15,6 +15,10 @@ export const taskApi = createApi({
     baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000/board' }),
     tagTypes: ['Task'],
     endpoints: (builder) => ({
+        getAllTasks: builder.query<TaskItem[], void>({
+            query: () => `/tasks`,
+            providesTags: ['Task']
+        }),
         getTasks: builder.query<TaskItem[], number>({
             query: (columnId) => `/groups/${columnId}/tasks`,
             providesTags: ['Task']
@@ -38,4 +42,8 @@ export const taskApi = createApi({
     })
 })
 
-export const { useGetTasksQuery, useAddTaskMutation, useUpdateTaskMutation } = taskApi
+export const { useGetTasksQuery,
+    useAddTaskMutation,
+    useUpdateTaskMutation,
+    useGetAllTasksQuery
+} = taskApi

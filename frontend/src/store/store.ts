@@ -5,12 +5,14 @@ import { columnSlice } from "./slices/column-slice";
 import { columnApi } from "../services/columns";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { taskApi } from "../services/tasks";
+import { boardViewSlice } from "./slices/boardViewSlice";
 
 export const store = configureStore({
     reducer: {
         clock: clockSlice.reducer,
         taskView: taskViewSlice.reducer,
         columns: columnSlice.reducer,
+        boardView: boardViewSlice.reducer,
         [columnApi.reducerPath]: columnApi.reducer,
         [taskApi.reducerPath]: taskApi.reducer
     },

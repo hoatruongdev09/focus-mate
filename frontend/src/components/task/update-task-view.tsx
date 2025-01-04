@@ -78,7 +78,7 @@ function UpdateTaskView({ task }: { task: TaskItem }) {
                     className="flex-1"
                 >
                     {
-                        columns.sort((a, b) => a.order_by - b.order_by).map(c => (
+                        columns && [...columns].sort((a, b) => a.order_by - b.order_by).map(c => (
                             <option key={`column-${c.id}`} value={c.id}>{c.name}</option>
                         ))
                     }

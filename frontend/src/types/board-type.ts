@@ -14,6 +14,7 @@ export interface TaskItem {
     title: string
     description: string
     priority: TaskPriority
+    order_by: number
     estimate: number
     created_at: Date
     updated_at: Date

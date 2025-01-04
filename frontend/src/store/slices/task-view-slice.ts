@@ -7,14 +7,16 @@ export interface TaskViewSliceData {
     selectingTask: TaskItem | null
     creatingTask: CreateTaskData
     selectingColumn: ColumnData | null
+    allTasks: TaskItem[]
 }
 
 export interface UpdateTaskData {
     title: string
     description: string
     priority: number
-    estimate: number,
+    estimate: number
     column_id: number
+    order_by: number
 }
 
 const initialState: TaskViewSliceData = {
@@ -25,7 +27,8 @@ const initialState: TaskViewSliceData = {
         description: "",
         estimate: 1,
         priority: 0,
-    }
+    },
+    allTasks: []
 }
 
 export const taskViewSlice = createSlice({
@@ -65,7 +68,7 @@ export const {
     setCreatingTask,
     clearCreatingTask,
     setSelectingColumn,
-    clearSelectingColumns
+    clearSelectingColumns,
 } = taskViewSlice.actions
 
 export default taskViewSlice.reducer

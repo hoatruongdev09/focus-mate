@@ -24,7 +24,8 @@ function TaskViewModal() {
         await updateTask({
             taskId: task.id, data: {
                 title, description, estimate, priority,
-                column_id: group.id
+                column_id: group.id,
+                order_by: task.order_by
             }
         })
         dispatch(clearSelectingTask())
