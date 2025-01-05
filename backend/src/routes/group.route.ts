@@ -1,16 +1,17 @@
 import { Router } from "express";
-import { addGroup, createTask, deleteGroup, deleteTask, fetchBoard, getGroups, getTaskInColumn, getTasks, updateGroup, updateTask } from "../controllers/board.controller";
+import * as boardController from "../controllers/board.controller";
 
 const route = Router()
-route.get('/', fetchBoard)
-route.get('/groups', getGroups)
-route.post('/groups', addGroup)
-route.put('/groups/:id', updateGroup)
-route.delete('/groups/:id', deleteGroup)
-route.post('/groups/:id/task', createTask)
-route.get('/groups/:id/tasks', getTaskInColumn)
-route.get('/tasks', getTasks)
-route.put('/tasks/:id', updateTask)
-route.delete('/tasks/:id', deleteTask)
+route.get('/', boardController.fetchBoard)
+route.get('/groups', boardController.getGroups)
+route.post('/groups', boardController.addGroup)
+route.put('/groups/reorder', boardController.reorderGroup)
+route.put('/groups/:id', boardController.updateGroup)
+route.delete('/groups/:id', boardController.deleteGroup)
+route.post('/groups/:id/task', boardController.createTask)
+route.get('/groups/:id/tasks', boardController.getTaskInColumn)
+route.get('/tasks', boardController.getTasks)
+route.put('/tasks/:id', boardController.updateTask)
+route.delete('/tasks/:id', boardController.deleteTask)
 
 export default route

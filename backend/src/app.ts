@@ -16,6 +16,7 @@ app.get('/', async (req, res) => {
 
 app.use("/board", boardRoute)
 
+
 app.listen(port, () => {
     console.log(`app running on port: ${port}`)
 });

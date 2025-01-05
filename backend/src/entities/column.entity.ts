@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, Generated, JoinTable, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Task } from "./task.entity";
 
 @Entity()
@@ -10,11 +10,13 @@ export class Group {
     @Column()
     name: string
 
-    @Column("text")
+    @Column()
     description: string
 
-    @Column()
-    order_by: number
+    @Column({
+        nullable: false
+    })
+    rank: string
 
     @CreateDateColumn()
     created_at: Date

@@ -3,6 +3,8 @@ export default class UpdateTaskDto {
     description: string
     priority: number
     estimate: number
-    column_id: number
-    order_by: number
+    group_id: number
+
+    front_id: number | null
+    behind_id: number | null
 }

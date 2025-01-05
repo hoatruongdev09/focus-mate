@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, Generated, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 import { Group } from "./column.entity"
 
 @Entity()
@@ -9,16 +9,18 @@ export class Task {
     @Column()
     title: string
 
-    @Column({ default: 0 })
-    order_by: number
+    @Column({
+        nullable: false
+    })
+    rank: string
 
-    @Column("text")
+    @Column({ default: "" })
     description: string
 
-    @Column()
+    @Column({ default: 0 })
     priority: number
 
-    @Column()
+    @Column({ default: 0 })
     estimate: number
 
     @CreateDateColumn()

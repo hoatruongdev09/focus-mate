@@ -17,24 +17,29 @@ export default class BoardService {
     }
 
     async getGroups() {
-        return this.groupRepository.find()
+        return this.groupRepository
+            .createQueryBuilder()
+            .select()
+            .orderBy("rank", "DESC")
+            .getMany()
+    }
+
+    private async getGroupTopRank() {
+        return await this.groupRepository
+            .createQueryBuilder()
+            .select()
+            .orderBy("rank", "DESC")
+            .getOne()
     }
 
     async createGroup(data: CreateGroupDto) {
         const { name, description } = data
         const newGroup = new Group()
+
+        const topRank = await this.getGroupTopRank()
         newGroup.name = name
         newGroup.description = description
-
-        const topOrder = await this.groupRepository.find({
-            select: ['order_by'],
-            order: {
-                order_by: 'DESC'
-            },
-            take: 1
-        })
-
-        newGroup.order_by = topOrder.length > 0 ? topOrder[0].order_by : 1
+        newGroup.rank = this.midString(topRank?.rank ?? "", "")
         return await this.groupRepository.save(newGroup)
     }
 
@@ -47,6 +52,25 @@ export default class BoardService {
         group.name = name
         group.description = description
         return await this.groupRepository.save(group)
+    }
+
+    async reorderGroup(targetId: number, frontId: number | null, behindId: number | null) {
+        const groups = await this.groupRepository
+            .createQueryBuilder()
+            .select()
+            .where("id in (:...ids)", { ids: [targetId, frontId, behindId].filter(id => id !== null) })
+            .getMany()
+        const targetGroup: Group = groups.find(g => g.id === targetId)
+
+        if (!frontId && !behindId) {
+            return targetGroup
+        }
+
+        const frontGroup: Group | null = frontId ? groups.find(g => g.id === frontId) : null
+        const behindGroup: Group | null = behindId ? groups.find(g => g.id === behindId) : null
+
+        targetGroup.rank = this.midString(frontGroup?.rank ?? "", behindGroup?.rank ?? "")
+        return await this.groupRepository.save(targetGroup)
     }
 
     async deleteGroup(id: number) {
@@ -65,38 +89,49 @@ export default class BoardService {
             .execute()
     }
 
+    private async getTaskTopRankInColumn(columnId: number) {
+        return await this.taskRepository
+            .createQueryBuilder()
+            .where("group_id = :groupId", { groupId: columnId })
+            .orderBy("rank", "DESC")
+            .getOne()
+    }
+
+    private async getTaskTopRank() {
+        return await this.taskRepository
+            .createQueryBuilder()
+            .orderBy("rank", "DESC")
+            .getOne()
+    }
+
     async addTask(groupId: number, data: CreateTaskDto) {
+
         const group = await this.groupRepository.findOne({ where: { id: groupId } })
+
         if (group == null) {
             throw new Error("Group not found")
         }
-        const topOrder = await this.taskRepository
-            .createQueryBuilder()
-            .orderBy('order_by', 'DESC')
-            .select(['order_by'])
-            .take(1)
-            .execute()
-        console.log(`top order: `, topOrder)
+
+        const topOrder = await this.getTaskTopRank()
+
+        console.log(`top order rank: ${topOrder?.rank ?? " "}`)
+
         const newTask: Task = new Task()
         newTask.title = data.title
         newTask.description = data.description
         newTask.group = group
         newTask.priority = data.priority
         newTask.estimate = data.estimate
-        newTask.order_by = topOrder.length > 0 ? topOrder[0].order_by + 1 : 1
+        newTask.rank = this.midString(topOrder?.rank ?? "", "")
 
         return await this.taskRepository.save(newTask)
     }
 
     async getTasks() {
-        return await this.taskRepository.find({
-            relations: {
-                group: true
-            },
-            select: {
-                group: { id: true }
-            }
-        })
+        return await this.taskRepository.createQueryBuilder()
+            .select(["id", "title", "estimate", "priority", "description", "rank", "group_id"])
+            .orderBy("rank", "DESC")
+            .execute()
     }
 
     private async changeTaskColumn(task: Task, columnId: number) {
@@ -105,17 +140,11 @@ export default class BoardService {
         task.group = group
     }
 
-    private async reorderTasks(startIndex: number, columnId: number) {
-        await this.taskRepository
-            .createQueryBuilder()
-            .update(Task)
-            .set({ order_by: () => 'order_by + 1' })
-            .where("order_by >= :start_index AND group_id = :group_id", { start_index: startIndex, group_id: columnId })
-            .useTransaction(true)
-            .execute()
-    }
 
     async updateTask(id: number, data: UpdateTaskDto) {
+
+        console.log(`${id} front:(${data.front_id}) behind:(${data.behind_id})`)
+
         const task = await this.taskRepository.findOne({
             where: { id },
             relations: {
@@ -130,13 +159,37 @@ export default class BoardService {
         task.priority = data.priority
         task.estimate = data.estimate
 
-        if (task.group.id != data.column_id) {
-            await this.changeTaskColumn(task, data.column_id)
+        console.log(`${task.group.id}  ${data.group_id}`)
+
+        const isChangeGroup = task.group.id != data.group_id
+        if (isChangeGroup) {
+            await this.changeTaskColumn(task, data.group_id)
         }
-        task.order_by = data.order_by
-        await this.reorderTasks(data.order_by, data.column_id)
 
+        const { front_id, behind_id } = data
+        if (!front_id && !behind_id) {
+            if (isChangeGroup) {
+                // user click change group only or an empty column 
+                // -> need to find the top task in that column and place task
+                const topRank = await this.getTaskTopRankInColumn(data.group_id)
+                if (topRank) {
+                    task.rank = this.midString(topRank?.rank ?? "", "")
+                }
+            }
 
+        } else {
+            // user drag into column 
+            // -> do like reorder column
+            const tasks = await this.taskRepository
+                .createQueryBuilder()
+                .select()
+                .where("id in (:...ids)", { ids: [front_id, behind_id].filter(id => id !== null) })
+                .getMany()
+            const frontTask = front_id ? tasks.find(t => t.id === front_id) : null
+            const behindTask = behind_id ? tasks.find(t => t.id === behind_id) : null
+            console.log(`front task ${frontTask?.rank} behind task ${behindTask?.rank}`)
+            task.rank = this.midString(frontTask?.rank ?? "", behindTask?.rank ?? "")
+        }
         return this.taskRepository.save(task)
     }
 
@@ -163,5 +216,32 @@ export default class BoardService {
             }
         })
         return tasks
+    }
+
+    private midString(prev: string, next: string) {
+        var p, n, pos, str;
+        for (pos = 0; p == n; pos++) {               // find leftmost non-matching character
+            p = pos < prev.length ? prev.charCodeAt(pos) : 96;
+            n = pos < next.length ? next.charCodeAt(pos) : 123;
+        }
+        str = prev.slice(0, pos - 1);                // copy identical part of string
+        if (p == 96) {                               // prev string equals beginning of next
+            while (n == 97) {                        // next character is 'a'
+                n = pos < next.length ? next.charCodeAt(pos++) : 123;  // get char from next
+                str += 'a';                          // insert an 'a' to match the 'a'
+            }
+            if (n == 98) {                           // next character is 'b'
+                str += 'a';                          // insert an 'a' to match the 'b'
+                n = 123;                             // set to end of alphabet
+            }
+        }
+        else if (p + 1 == n) {                       // found consecutive characters
+            str += String.fromCharCode(p);           // insert character from prev
+            n = 123;                                 // set to end of alphabet
+            while ((p = pos < prev.length ? prev.charCodeAt(pos++) : 96) == 122) {  // p='z'
+                str += 'z';                          // insert 'z' to match 'z'
+            }
+        }
+        return str + String.fromCharCode(Math.ceil((p + n) / 2)); // append middle character
     }
 }

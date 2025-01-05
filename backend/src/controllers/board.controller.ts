@@ -74,7 +74,6 @@ export const updateTask = async (req: Request, res: Response) => {
     try {
         const { id } = req.params
         const data: UpdateTaskDto = req.body
-        console.log(`update task: `, data)
         const updatedTask = await boardService.updateTask(+id, data)
         res.status(200).json(updatedTask)
     } catch (e) {
@@ -107,6 +106,22 @@ export const getTaskInColumn = async (req: Request, res: Response) => {
         const tasks = await boardService.getTasksInColumn(+id)
         res.status(200).json(tasks)
     } catch (error) {
+        res.status(500).json(error)
+    }
+}
+
+export const reorderGroup = async (req: Request, res: Response) => {
+    try {
+        const { targetId, frontId, behindId }:
+            {
+                targetId: number
+                frontId: number | null
+                behindId: number | null
+            } = req.body
+        const task = await boardService.reorderGroup(targetId, frontId, behindId)
+        res.status(200).json(task)
+    } catch (error) {
+        console.log(error)
         res.status(500).json(error)
     }
 }
