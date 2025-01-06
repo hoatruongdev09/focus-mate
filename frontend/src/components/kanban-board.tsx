@@ -10,10 +10,9 @@ import {
     PointerSensor,
     useSensor,
     useSensors,
-    closestCorners,
     closestCenter
 } from "@dnd-kit/core";
-import { arrayMove, horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
+import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import TaskCard from "./task-card";
 import { AddGroupData, AddTaskData, Group, Task } from "../types/board-type";
@@ -22,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppRootState } from "../store/store";
 import { setColumns, setDraggingColumn, setDraggingTask, setTasks } from "../store/slices/board-slice";
 import { DraggingItem } from "../types/draging-item";
+import Modal from "./modal";
 
 function KanbanBoard() {
 
@@ -236,7 +236,24 @@ function KanbanBoard() {
                         document.body)
                 }
             </DndContext>
-
+            <Modal isShow={true} onBgClick={() => { }}>
+                <div className="absolute left-7 right-7 lg:relative lg:w-[768px] lg:mx-auto h-full overflow-y-scroll py-12">
+                    {/* <div className="flex justify-center items-center"> */}
+                    <div className="w-full min-h-[830px] bg-white rounded-md flex flex-col gap-2 p-5">
+                        <div className="h-[100px] bg-slate-500"></div>
+                        <div className="h-[100px] bg-slate-500"></div>
+                        <div className="h-[100px] bg-slate-500"></div>
+                        <div className="h-[100px] bg-slate-500"></div>
+                        <div className="h-[100px] bg-slate-500"></div>
+                        <div className="h-[100px] bg-slate-500"></div>
+                        <div className="h-[100px] bg-slate-500"></div>
+                        <div className="h-[100px] bg-slate-500"></div>
+                        <div className="h-[100px] bg-slate-500"></div>
+                        <div className="h-[100px] bg-slate-500"></div>
+                    </div>
+                    {/* </div> */}
+                </div>
+            </Modal>
         </div>
     );
 }

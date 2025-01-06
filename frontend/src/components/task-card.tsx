@@ -33,27 +33,27 @@ function TaskCard(props: Props) {
             style={style}
             {...attributes}
             {...listeners}
-            className={`border bg-mainBackgroundColor p-2 min-h-[50px] ${(isDragging ? "bg-rose-200" : "")}
-                rounded-md hover:border-rose-500 cursor-grab relative`}
+            className={`border bg-mainBackgroundColor p-2 ${(isDragging ? "bg-rose-200" : "")}
+                rounded-md hover:border-rose-500 hover:cursor-pointer relative`}
             onMouseEnter={() => setMouseIsOver(true)}
             onMouseLeave={() => setMouseIsOver(false)}
         >
-            {
-                mouseIsOver
-                && <button
-                    onClick={() => deleteTask(task.id)}
-                    className="stroke-black opacity-60 hover:opacity-100 absolute right-2">
-                    <TrashIcon />
-                </button>
-            }
 
-            <div className={`flex flex-col w-full h-full ${(isDragging ? "opacity-0" : "opacity-100")} transition-opacity duration-600`}>
-                <p className="overflow-x-clip whitespace-pre-wrap align-middle flex-shrink-0">
+
+            <div className={`flex w-full ${(isDragging ? "opacity-0" : "opacity-100")} justify-stretch transition-opacity duration-600`}>
+                <p className="overflow-x-clip whitespace-pre-wrap align-middle flex-1">
                     {task.title}
                 </p>
-                <p className="overflow-y-hidden whitespace-pre-wrap align-middle flex-grow-1">
-                    {task.description}
-                </p>
+                <div className="w-5">
+                    {
+                        mouseIsOver
+                        && <button
+                            onClick={() => deleteTask(task.id)}
+                            className="stroke-black w-5 opacity-60 hover:opacity-100">
+                            <TrashIcon className="size-5" />
+                        </button>
+                    }
+                </div>
             </div>
 
 

@@ -22,7 +22,7 @@ export type Task = {
     id: number
     title: string
     rank: string
-    description: number
+    description: string
     priority: number
     estimate: number
     group_id: number
@@ -31,7 +31,7 @@ export type Task = {
 export type UpdateTaskData = {
     id: number
     title: string
-    description: number
+    description: string | null
     priority: number
     estimate: number
     group_id: number

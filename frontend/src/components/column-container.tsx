@@ -65,7 +65,7 @@ function ColumnContainer(props: Props) {
                     hover:bg-columnBackgroundColor rounded px-1 py-2"
                     onClick={() => deleteColumn(column.id)}
                 >
-                    <TrashIcon />
+                    <TrashIcon className="size-5" />
 
                 </button>
             </div>

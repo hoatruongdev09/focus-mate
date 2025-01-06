@@ -14,7 +14,7 @@ export class Task {
     })
     rank: string
 
-    @Column({ default: "" })
+    @Column({ default: "", nullable: true })
     description: string
 
     @Column({ default: 0 })
