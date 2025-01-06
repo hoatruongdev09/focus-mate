@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { AddGroupData, AddTaskData, Group, Task, UpdateTaskData } from "../../types/board-type";
+import { AddGroupData, AddTaskData, Group, Task, UpdateGroupData, UpdateTaskData } from "../../types/board-type";
 
 export const boardApi = createApi({
     reducerPath: 'boardApi',
@@ -51,6 +51,14 @@ export const boardApi = createApi({
                 body: data
             }),
             invalidatesTags: ['tasks']
+        }),
+        updateColumn: builder.mutation<Group, UpdateGroupData>({
+            query: data => ({
+                url: `/groups/${data.id}`,
+                method: 'PUT',
+                body: data
+            }),
+            invalidatesTags: ['columns']
         })
     })
 })
@@ -61,5 +69,6 @@ export const { useGetTasksQuery,
     useAddTasksMutation,
     useDeleteColumnMutation,
     useDeleteTaskMutation,
-    useUpdateTaskMutation
+    useUpdateTaskMutation,
+    useUpdateColumnMutation
 } = boardApi

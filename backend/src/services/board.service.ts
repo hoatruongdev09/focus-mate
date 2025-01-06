@@ -51,6 +51,19 @@ export default class BoardService {
         }
         group.name = name
         group.description = description
+
+        const { front_id, behind_id } = data
+        if (front_id || behind_id) {
+            const groups = await this.groupRepository
+                .createQueryBuilder()
+                .select()
+                .where("id in (:...ids)", { ids: [front_id, behind_id].filter(id => id !== null) })
+                .getMany()
+            const frontGroupRank = front_id ? groups.find(g => g.id == front_id).rank : null
+            const behindGroupRank = behind_id ? groups.find(g => g.id == behind_id).rank : null
+            group.rank = this.midString(frontGroupRank ?? "", behindGroupRank ?? "")
+        }
+
         return await this.groupRepository.save(group)
     }
 
@@ -114,7 +127,6 @@ export default class BoardService {
 
         const topOrder = await this.getTaskTopRank()
 
-        console.log(`top order rank: ${topOrder?.rank ?? " "}`)
 
         const newTask: Task = new Task()
         newTask.title = data.title
@@ -143,7 +155,6 @@ export default class BoardService {
 
     async updateTask(id: number, data: UpdateTaskDto) {
 
-        console.log(`${id} front:(${data.front_id}) behind:(${data.behind_id})`)
 
         const task = await this.taskRepository.findOne({
             where: { id },
@@ -159,7 +170,6 @@ export default class BoardService {
         task.priority = data.priority
         task.estimate = data.estimate
 
-        console.log(`${task.group.id}  ${data.group_id}`)
 
         const isChangeGroup = task.group.id != data.group_id
         if (isChangeGroup) {
@@ -187,7 +197,6 @@ export default class BoardService {
                 .getMany()
             const frontTask = front_id ? tasks.find(t => t.id === front_id) : null
             const behindTask = behind_id ? tasks.find(t => t.id === behind_id) : null
-            console.log(`front task ${frontTask?.rank} behind task ${behindTask?.rank}`)
             task.rank = this.midString(frontTask?.rank ?? "", behindTask?.rank ?? "")
         }
         return this.taskRepository.save(task)

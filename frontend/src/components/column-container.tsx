@@ -1,4 +1,4 @@
-import { SortableContext, useSortable } from "@dnd-kit/sortable";
+import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import TrashIcon from "../Icon/trash-icon";
 import { CSS } from "@dnd-kit/utilities";
 import PlusIcon from "../Icon/plus-icon";
@@ -27,7 +27,7 @@ function ColumnContainer(props: Props) {
 
     const style = {
         transition,
-        transform: CSS.Transform.toString(transform),
+        transform: CSS.Translate.toString(transform),
     }
     const taskIds = useMemo(() => tasks.map(task => `${DraggingItem.TASK}_${task.id}`), [tasks])
 
@@ -36,8 +36,8 @@ function ColumnContainer(props: Props) {
             <div
                 ref={setNodeRef}
                 style={style}
-                className="bg-columnBackgroundColor opacity-60 border border-rose-500 w-[350px] 
-                        min-h-[500px] h-full rounded-md flex flex-col">
+                className="opacity-0 w-[350px] 
+                        min-h-[500px] h-full">
 
             </div>
         )
@@ -56,9 +56,9 @@ function ColumnContainer(props: Props) {
                     bg-mainBackgroundColor text-md
                     cursor-grab rounded-md rounded-b-none px-3 py-1
                     border-columnBackgroundColor border-4 flex items-center justify-between">
-                <div className="flex gap-2 items-center">
-                    <p className="bg-columnBackgroundColor px-2 py-1 text-sm rounded-full">0</p>
-                    <p>{column.name}</p>
+                <div className="flex gap-2 items-center justify-center">
+                    <p className="bg-columnBackgroundColor px-2 py-1 rounded-full">{tasks.length}</p>
+                    <p className="py-1">{column.name}</p>
                 </div>
                 <button className="
                     stroke-gray-500 hover:stroke-white 

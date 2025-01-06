@@ -15,7 +15,7 @@ function App() {
 
   useEffect(() => {
     if (columns?.length) {
-      dispatch(setColumns(columns))
+      dispatch(setColumns([...columns].reverse()))
     }
     if (tasks?.length) {
       dispatch(setTasks(tasks))

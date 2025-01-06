@@ -39,3 +39,12 @@ export type UpdateTaskData = {
     front_id: number | null
     behind_id: number | null
 }
+
+export type UpdateGroupData = {
+    id: number
+    name: string
+    description: string
+
+    front_id: number | null
+    behind_id: number | null
+}

@@ -1,12 +1,16 @@
+import { config } from "dotenv";
 import { DataSource, DataSourceOptions } from "typeorm";
+
+config()
+
 
 export const dataSourceOptions: DataSourceOptions = {
     type: "postgres",
-    host: "localhost",
-    database: "focus-mate",
-    port: 5432,
-    username: "postgres",
-    password: "123456",
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    port: +process.env.DB_PORT,
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
     synchronize: true,
     entities: ['dist/**/*.entity{.ts,.js}'],
     migrations: ['dist/db/migrations/*{.ts,.js}'],

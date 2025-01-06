@@ -1,12 +1,23 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import PlusIcon from "../Icon/plus-icon";
 import ColumnContainer from "./column-container";
-import { DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
-import { arrayMove, SortableContext } from "@dnd-kit/sortable";
+import {
+    DndContext,
+    DragEndEvent,
+    DragOverEvent,
+    DragOverlay,
+    DragStartEvent,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    closestCorners,
+    closestCenter
+} from "@dnd-kit/core";
+import { arrayMove, horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import TaskCard from "./task-card";
 import { AddGroupData, AddTaskData, Group, Task } from "../types/board-type";
-import { useAddColumnsMutation, useAddTasksMutation, useDeleteColumnMutation, useDeleteTaskMutation, useUpdateTaskMutation } from "../store/services/board-service";
+import { useAddColumnsMutation, useAddTasksMutation, useDeleteColumnMutation, useDeleteTaskMutation, useUpdateColumnMutation, useUpdateTaskMutation } from "../store/services/board-service";
 import { useDispatch, useSelector } from "react-redux";
 import { AppRootState } from "../store/store";
 import { setColumns, setDraggingColumn, setDraggingTask, setTasks } from "../store/slices/board-slice";
@@ -21,6 +32,7 @@ function KanbanBoard() {
     const [deleteAColumn] = useDeleteColumnMutation()
     const [deleteATask] = useDeleteTaskMutation()
     const [updateTask] = useUpdateTaskMutation()
+    const [updateColumn] = useUpdateColumnMutation()
 
     const { columns, tasks, draggingColumn, draggingTask } = useSelector((state: AppRootState) => state.boardView)
 
@@ -70,15 +82,27 @@ function KanbanBoard() {
                 break
         }
     }
+
+    const doReorderColumn = async (column: Group, frontId: number | null, behindId: number | null) => {
+        if (!frontId && !behindId) { return }
+        if (column == null) { return }
+        await updateColumn({
+            ...column,
+            front_id: frontId,
+            behind_id: behindId
+        })
+    }
+
     const doReorderTask = async (task: Task, frontTaskId: number | null, behindTaskId: number | null) => {
         if (!frontTaskId && !behindTaskId) { return }
         if (task == null) { return }
         await updateTask({
             ...task,
-            behind_id: frontTaskId,
-            front_id: behindTaskId
+            front_id: frontTaskId,
+            behind_id: behindTaskId
         })
     }
+
     const onDragEnd = (event: DragEndEvent) => {
         dispatch(setDraggingColumn(null))
         dispatch(setDraggingTask(null))
@@ -90,28 +114,31 @@ function KanbanBoard() {
                 const overColumnId = over.id
                 if (activeColumnId === overColumnId) { break }
 
-                const activeColumnIndex = columns.findIndex(c => `${DraggingItem.COLUMN}_${c.id}` === activeColumnId)
-                const overColumnIndex = columns.findIndex(c => `${DraggingItem.COLUMN}_${c.id}` === overColumnId)
+                let activeColumnIndex = columns.findIndex(c => `${DraggingItem.COLUMN}_${c.id}` === activeColumnId)
+                if (activeColumnIndex == -1) { break }
+                let overColumnIndex = columns.findIndex(c => `${DraggingItem.COLUMN}_${c.id}` === overColumnId)
                 const resultColumns = arrayMove(columns, activeColumnIndex, overColumnIndex)
+
+                activeColumnIndex = resultColumns.findIndex(c => `${DraggingItem.COLUMN}_${c.id}` === activeColumnId)
+                const frontColumnIndex = activeColumnIndex - 1
+                const behindColumnIndex = activeColumnIndex + 1
+
+                const frontColumnId: number | null = frontColumnIndex < 0 ? null : resultColumns[frontColumnIndex].id
+                const behindColumnId: number | null = behindColumnIndex >= columns.length ? null : resultColumns[behindColumnIndex].id
+
                 dispatch(setColumns(resultColumns))
+                doReorderColumn(resultColumns[activeColumnIndex], frontColumnId, behindColumnId)
                 break
             case DraggingItem.TASK:
                 const activeTaskId = active.id
                 const activeTaskIndex = tasks.findIndex(t => `${DraggingItem.TASK}_${t.id}` === activeTaskId)
                 if (activeTaskIndex == -1) { break }
-                const frontIndex = activeTaskIndex - 1;
-                const behindIndex = activeTaskIndex + 1;
+                const frontTaskIndex = activeTaskIndex - 1
+                const behindTaskIndex = activeTaskIndex + 1
 
-                const front_id: number | null = frontIndex < 0 ? null : tasks[frontIndex].id
-                const behind_id: number | null = behindIndex >= tasks.length ? null : tasks[behindIndex].id
-                doReorderTask(tasks[activeTaskIndex], front_id, behind_id)
-                console.log("drag end on task")
-                // if (!over) { break }
-                // const overTaskId = over.id
-                // if (activeTaskId === overTaskId) { break }
-                // const overTaskIndex = tasks.findIndex(t => `${DraggingItem.TASK}_${t.id}` === overTaskId)
-                // const resultTasks = arrayMove(tasks, activeTaskIndex, overTaskIndex)
-                // dispatch(setTasks(resultTasks))
+                const frontTaskId: number | null = frontTaskIndex < 0 ? null : tasks[frontTaskIndex].id
+                const behindTaskId: number | null = behindTaskIndex >= tasks.length ? null : tasks[behindTaskIndex].id
+                doReorderTask(tasks[activeTaskIndex], behindTaskId, frontTaskId)
                 break;
         }
     }
@@ -130,7 +157,7 @@ function KanbanBoard() {
         const isOverTask = over.data.current?.type === DraggingItem.TASK
 
         if (isActiveTask && isOverTask) {
-
+            console.log(`is over task: ${activeId} ${overId}`)
             const activeTaskIndex = tasks.findIndex(t => `${DraggingItem.TASK}_${t.id}` === activeId)
             const overTaskIndex = tasks.findIndex(t => `${DraggingItem.TASK}_${t.id}` === overId)
             dispatch(setTasks(arrayMove(tasks, activeTaskIndex, overTaskIndex)))
@@ -152,7 +179,7 @@ function KanbanBoard() {
         }
     }
     const columnsId = useMemo(() => columns.map(col => `${DraggingItem.COLUMN}_${col.id}`), [columns])
-    // console.log(`tasks: `, tasks.map(t => t.id))
+
     return (
         <div className="pt-2 flex flex-col h-full w-full overflow-x-auto">
             <DndContext
@@ -160,6 +187,7 @@ function KanbanBoard() {
                 onDragStart={onDragStart}
                 onDragEnd={onDragEnd}
                 onDragOver={onDragOver}
+                collisionDetection={closestCenter}
             >
                 <div className="flex gap-2 h-full">
                     <div className="flex gap-2 h-full justify-start items-stretch">
@@ -185,25 +213,27 @@ function KanbanBoard() {
 
                 </div>
                 {
-                    createPortal(<DragOverlay>
-                        {
-                            draggingColumn &&
-                            <ColumnContainer
-                                column={draggingColumn}
-                                deleteColumn={deleteColumn}
-                                createTask={createNewTask}
-                                tasks={tasks.filter(t => t.group_id === draggingColumn.id)}
-                                deleteTask={deleteTask}
-                            />
-                        }
-                        {
-                            draggingTask &&
-                            <TaskCard
-                                task={draggingTask}
-                                deleteTask={deleteTask}
-                            />
-                        }
-                    </DragOverlay>, document.body)
+                    createPortal(
+                        <DragOverlay>
+                            {
+                                draggingColumn &&
+                                <ColumnContainer
+                                    column={draggingColumn}
+                                    deleteColumn={deleteColumn}
+                                    createTask={createNewTask}
+                                    tasks={tasks.filter(t => t.group_id === draggingColumn.id)}
+                                    deleteTask={deleteTask}
+                                />
+                            }
+                            {
+                                draggingTask &&
+                                <TaskCard
+                                    task={draggingTask}
+                                    deleteTask={deleteTask}
+                                />
+                            }
+                        </DragOverlay>,
+                        document.body)
                 }
             </DndContext>
 

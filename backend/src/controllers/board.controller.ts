@@ -81,6 +81,7 @@ export const updateTask = async (req: Request, res: Response) => {
         res.status(500).json(e)
     }
 }
+
 export const deleteTask = async (req: Request, res: Response) => {
     try {
         const { id } = req.params
