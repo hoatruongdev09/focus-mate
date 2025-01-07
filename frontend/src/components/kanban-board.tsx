@@ -22,6 +22,7 @@ import { AppRootState } from "../store/store";
 import { setColumns, setDraggingColumn, setDraggingTask, setTasks } from "../store/slices/board-slice";
 import { DraggingItem } from "../types/draging-item";
 import Modal from "./modal";
+import XIcon from "../Icon/x-icon";
 
 function KanbanBoard() {
 
@@ -237,21 +238,110 @@ function KanbanBoard() {
                 }
             </DndContext>
             <Modal isShow={true} onBgClick={() => { }}>
-                <div className="absolute left-7 right-7 lg:relative lg:w-[768px] lg:mx-auto h-full overflow-y-scroll py-12">
-                    {/* <div className="flex justify-center items-center"> */}
-                    <div className="w-full min-h-[830px] bg-white rounded-md flex flex-col gap-2 p-5">
-                        <div className="h-[100px] bg-slate-500"></div>
-                        <div className="h-[100px] bg-slate-500"></div>
-                        <div className="h-[100px] bg-slate-500"></div>
-                        <div className="h-[100px] bg-slate-500"></div>
-                        <div className="h-[100px] bg-slate-500"></div>
-                        <div className="h-[100px] bg-slate-500"></div>
-                        <div className="h-[100px] bg-slate-500"></div>
-                        <div className="h-[100px] bg-slate-500"></div>
-                        <div className="h-[100px] bg-slate-500"></div>
-                        <div className="h-[100px] bg-slate-500"></div>
+                <div className="absolute left-7 right-7 lg:relative lg:w-[768px] lg:mx-auto h-full overflow-y-scroll py-12 ">
+                    <div className="w-full min-h-[830px] bg-gray-50 rounded-md flex gap-5 p-4 relative">
+                        <button className="p-1 m-1 hover:bg-slate-300 bg-opacity-25 rounded absolute right-3 top-3">
+                            <XIcon className="size-6" viewBox="0 0 24 24" />
+                        </button>
+                        <div className="flex flex-col flex-1 gap-2">
+                            <div className="flex gap-2 h-36">
+                                <div className="h-10 w-10 bg-orange-400"></div>
+                                <div className="flex flex-col">
+                                    <p className="font-semibold text-xl">task name</p>
+                                    <div className="h-8 flex items-center gap-1">
+                                        <p className="">in list</p>
+                                        <div className="bg-slate-300 bg-opacity-25 px-1 py-0.5 text-xs flex gap-1 items-center justify-center">
+                                            <p className="font-bold">TEST</p>
+                                            <button><XIcon className="size-4" viewBox="0 0 24 24" /></button>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col flex-1 justify-center gap-1">
+                                        <p className="font-semibold text-sm text-gray-500">Notification</p>
+                                        <button className="flex items-center gap-1 bg-slate-300 bg-opacity-25 py-1 justify-center rounded">
+                                            <XIcon className="size-4" viewBox="0 0 24 24" />
+                                            <p className="text-md">Watched</p>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-2">
+                                <div className="h-10 w-10 bg-orange-400"></div>
+                                <div className="flex flex-col flex-1 gap-1">
+                                    <p className="font-semibold text-lg">Description</p>
+                                    <textarea className="bg-slate-300 bg-opacity-25 min-h-16 max-h-72 rounded p-2" placeholder="Add a more detailed description...">
+
+                                    </textarea>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col pt-2 gap-2">
+                                <div className="flex gap-2 justify-between items-center">
+                                    <div className="flex flex-1 gap-2 items-center">
+                                        <div className="h-10 w-10 bg-orange-400"></div>
+                                        <p className="font-semibold text-lg">Activity</p>
+                                    </div>
+                                    <button className="bg-slate-300 bg-opacity-25 py-1 px-2 rounded">
+                                        <p className="">Hide detail</p>
+                                    </button>
+                                </div>
+
+                                <div className="flex gap-2 items-center">
+                                    <div className="h-10 w-10 bg-orange-400 rounded-full"></div>
+                                    <input className="bg-slate-300 shadow-md bg-opacity-25 rounded p-2 flex-1"
+                                        placeholder="Add a more detailed description..."
+                                    >
+
+                                    </input>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div className="w-44 flex flex-col pt-24 justify-between">
+                            <div className="flex flex-col gap-1">
+                                <div className="flex flex-col gap-2">
+                                    <button className="flex items-center gap-2 bg-slate-300 bg-opacity-25 px-2 py-1 rounded">
+                                        <XIcon className="size-4" viewBox="0 0 24 24" />
+                                        <p>Join</p>
+                                    </button>
+                                    <button className="flex items-center gap-2 bg-slate-300 bg-opacity-25 px-2 py-1 rounded">
+                                        <XIcon className="size-4" viewBox="0 0 24 24" />
+                                        <p>Members</p>
+                                    </button>
+                                    <button className="flex items-center gap-2 bg-slate-300 bg-opacity-25 px-2 py-1 rounded">
+                                        <XIcon className="size-4" viewBox="0 0 24 24" />
+                                        <p>Labels</p>
+                                    </button>
+                                    <button className="flex items-center gap-2 bg-slate-300 bg-opacity-25 px-2 py-1 rounded">
+                                        <XIcon className="size-4" viewBox="0 0 24 24" />
+                                        <p>Cover</p>
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <p>Actions</p>
+                                <div className="flex flex-col gap-2">
+                                    <button className="flex items-center gap-2 bg-slate-300 bg-opacity-25 px-2 py-1 rounded">
+                                        <XIcon className="size-4" viewBox="0 0 24 24" />
+                                        <p>Move</p>
+                                    </button>
+                                    <button className="flex items-center gap-2 bg-slate-300 bg-opacity-25 px-2 py-1 rounded">
+                                        <XIcon className="size-4" viewBox="0 0 24 24" />
+                                        <p>Copy</p>
+                                    </button>
+                                    <button className="flex items-center gap-2 bg-slate-300 bg-opacity-25 px-2 py-1 rounded">
+                                        <XIcon className="size-4" viewBox="0 0 24 24" />
+                                        <p>Archive</p>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+
                     </div>
-                    {/* </div> */}
                 </div>
             </Modal>
         </div>
