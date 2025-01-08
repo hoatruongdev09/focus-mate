@@ -1,9 +1,11 @@
 import { useState } from "react";
-import TrashIcon from "../Icon/trash-icon";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Task } from "../types/board-type";
 import { DraggingItem } from "../types/draging-item";
+import { useDispatch } from "react-redux";
+import { setViewingTask } from "../store/slices/board-slice";
+import { PencilIcon } from "@heroicons/react/16/solid";
 
 interface Props {
     task: Task
@@ -11,6 +13,8 @@ interface Props {
 }
 
 function TaskCard(props: Props) {
+    const dispatch = useDispatch()
+
     const { task, deleteTask } = props
     const [mouseIsOver, setMouseIsOver] = useState(false)
 
@@ -35,6 +39,7 @@ function TaskCard(props: Props) {
             {...listeners}
             className={`border bg-mainBackgroundColor p-2 ${(isDragging ? "bg-rose-200" : "")}
                 rounded-md hover:border-rose-500 hover:cursor-pointer relative`}
+            onClick={() => dispatch(setViewingTask(task))}
             onMouseEnter={() => setMouseIsOver(true)}
             onMouseLeave={() => setMouseIsOver(false)}
         >
@@ -49,8 +54,8 @@ function TaskCard(props: Props) {
                         mouseIsOver
                         && <button
                             onClick={() => deleteTask(task.id)}
-                            className="stroke-black w-5 opacity-60 hover:opacity-100">
-                            <TrashIcon className="size-5" />
+                            className="w-5 opacity-60 hover:opacity-100">
+                            <PencilIcon className="size-4" />
                         </button>
                     }
                 </div>

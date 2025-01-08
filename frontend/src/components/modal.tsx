@@ -9,13 +9,20 @@ interface Props {
 function Modal(prop: Props) {
     const { isShow, children, onBgClick } = prop
     if (!isShow) { return <></> }
+
+    const onClick = (e: React.MouseEvent<HTMLElement>) => {
+        if (e.currentTarget !== e.target) { return }
+        onBgClick()
+    }
     return (
-        <div
-            className="fixed top-0 left-0 right-0 bottom-0 bg-gray-950 bg-opacity-80"
-            onClick={onBgClick}
-        >
-            {children}
-        </div>
+        <>
+            <div
+                className="fixed inset-0 bg-gray-950 bg-opacity-80 z-30"
+                onClick={e => onClick(e)}
+            >
+                {children}
+            </div>
+        </>
     );
 }
 

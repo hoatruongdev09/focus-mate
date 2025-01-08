@@ -36,8 +36,8 @@ export type UpdateTaskData = {
     estimate: number
     group_id: number
 
-    front_id: number | null
-    behind_id: number | null
+    front_id?: number | null
+    behind_id?: number | null
 }
 
 export type UpdateGroupData = {
