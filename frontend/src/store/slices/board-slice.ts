@@ -44,6 +44,6 @@ export const { setColumns,
     setTasks,
     setDraggingColumn,
     setDraggingTask,
-    setViewingTask
+    setViewingTask,
 } = boardViewSlice.actions
 export default boardViewSlice.reducer

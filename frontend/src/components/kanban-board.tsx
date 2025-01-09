@@ -22,18 +22,18 @@ import { AppRootState } from "../store/store";
 import { setColumns, setDraggingColumn, setDraggingTask, setTasks, setViewingTask } from "../store/slices/board-slice";
 import { DraggingItem } from "../types/draging-item";
 import Modal from "./modal";
-import TaskView from "./task-view";
+import TaskView from "./task-view/task-view";
 
 function KanbanBoard() {
 
     const dispatch = useDispatch()
 
-    const [addColumn] = useAddColumnsMutation()
-    const [addTask] = useAddTasksMutation()
-    const [deleteAColumn] = useDeleteColumnMutation()
-    const [deleteATask] = useDeleteTaskMutation()
-    const [updateTask] = useUpdateTaskMutation()
-    const [updateColumn] = useUpdateColumnMutation()
+    const [requestAddColumn] = useAddColumnsMutation()
+    const [requestAddTask] = useAddTasksMutation()
+    const [requestDeleteAColumn] = useDeleteColumnMutation()
+    const [requestDeleteATask] = useDeleteTaskMutation()
+    const [requestUpdateTask] = useUpdateTaskMutation()
+    const [requestUpdateColumn] = useUpdateColumnMutation()
 
     const { columns, tasks, draggingColumn, draggingTask } = useSelector((state: AppRootState) => state.boardView)
     const { viewingTask } = useSelector((state: AppRootState) => state.boardView)
@@ -51,7 +51,7 @@ function KanbanBoard() {
             name: `column ${columns.length + 1}`,
             description: `new group`
         }
-        await addColumn(newColumn)
+        await requestAddColumn(newColumn)
     }
 
     const createNewTask = async (id: number) => {
@@ -62,15 +62,15 @@ function KanbanBoard() {
             estimate: 1,
             priority: 1
         }
-        await addTask(newTask)
+        await requestAddTask(newTask)
     }
 
     const deleteColumn = async (id: number) => {
-        await deleteAColumn(id)
+        await requestDeleteAColumn(id)
     }
 
     const deleteTask = async (id: number) => {
-        await deleteATask(id)
+        await requestDeleteATask(id)
     }
 
     const onDragStart = (event: DragStartEvent) => {
@@ -87,7 +87,7 @@ function KanbanBoard() {
     const doReorderColumn = async (column: Group, frontId: number | null, behindId: number | null) => {
         if (!frontId && !behindId) { return }
         if (column == null) { return }
-        await updateColumn({
+        await requestUpdateColumn({
             ...column,
             front_id: frontId,
             behind_id: behindId
@@ -97,7 +97,7 @@ function KanbanBoard() {
     const doReorderTask = async (task: Task, frontTaskId: number | null, behindTaskId: number | null) => {
         if (!frontTaskId && !behindTaskId) { return }
         if (task == null) { return }
-        await updateTask({
+        await requestUpdateTask({
             ...task,
             front_id: frontTaskId,
             behind_id: behindTaskId
@@ -158,10 +158,14 @@ function KanbanBoard() {
         const isOverTask = over.data.current?.type === DraggingItem.TASK
 
         if (isActiveTask && isOverTask) {
-            console.log(`is over task: ${activeId} ${overId}`)
             const activeTaskIndex = tasks.findIndex(t => `${DraggingItem.TASK}_${t.id}` === activeId)
             const overTaskIndex = tasks.findIndex(t => `${DraggingItem.TASK}_${t.id}` === overId)
-            dispatch(setTasks(arrayMove(tasks, activeTaskIndex, overTaskIndex)))
+            const activeTask = { ...tasks[activeTaskIndex] }
+            const overlapsTask = tasks[overTaskIndex]
+            activeTask.group_id = overlapsTask.group_id
+            const newTasks = [...tasks]
+            newTasks[activeTaskIndex] = activeTask
+            dispatch(setTasks(arrayMove(newTasks, activeTaskIndex, overTaskIndex)))
             return
         }
 
