@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import PlusIcon from "../Icon/plus-icon";
-import ColumnContainer from "./column-container";
+import ColumnContainer from "./column/column-container";
 import {
     DndContext,
     DragEndEvent,
@@ -31,7 +31,6 @@ function KanbanBoard() {
     const [requestAddColumn] = useAddColumnsMutation()
     const [requestAddTask] = useAddTasksMutation()
     const [requestDeleteAColumn] = useDeleteColumnMutation()
-    const [requestDeleteATask] = useDeleteTaskMutation()
     const [requestUpdateTask] = useUpdateTaskMutation()
     const [requestUpdateColumn] = useUpdateColumnMutation()
 
@@ -67,10 +66,6 @@ function KanbanBoard() {
 
     const deleteColumn = async (id: number) => {
         await requestDeleteAColumn(id)
-    }
-
-    const deleteTask = async (id: number) => {
-        await requestDeleteATask(id)
     }
 
     const onDragStart = (event: DragStartEvent) => {
@@ -204,7 +199,6 @@ function KanbanBoard() {
                                     deleteColumn={deleteColumn}
                                     createTask={createNewTask}
                                     tasks={tasks.filter(t => t.group_id === col.id && !t.archived)}
-                                    deleteTask={deleteTask}
                                 />
                             )}
                         </SortableContext>
@@ -227,15 +221,11 @@ function KanbanBoard() {
                                     deleteColumn={deleteColumn}
                                     createTask={createNewTask}
                                     tasks={tasks.filter(t => t.group_id === draggingColumn.id)}
-                                    deleteTask={deleteTask}
                                 />
                             }
                             {
                                 draggingTask &&
-                                <TaskCard
-                                    task={draggingTask}
-                                    deleteTask={deleteTask}
-                                />
+                                <TaskCard task={draggingTask} />
                             }
                         </DragOverlay>,
                         document.body)

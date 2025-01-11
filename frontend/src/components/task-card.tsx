@@ -9,13 +9,12 @@ import { PencilIcon } from "@heroicons/react/16/solid";
 
 interface Props {
     task: Task
-    deleteTask: (id: number) => void
 }
 
 function TaskCard(props: Props) {
     const dispatch = useDispatch()
 
-    const { task, deleteTask } = props
+    const { task } = props
     const [mouseIsOver, setMouseIsOver] = useState(false)
 
     const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
@@ -53,7 +52,6 @@ function TaskCard(props: Props) {
                     {
                         mouseIsOver
                         && <button
-                            onClick={() => deleteTask(task.id)}
                             className="w-5 opacity-60 hover:opacity-100">
                             <PencilIcon className="size-4" />
                         </button>

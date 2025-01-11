@@ -23,7 +23,7 @@ function ColumnMoveDialog(props: Props) {
     const currentTaskIndex = tasks.findIndex(t => t.id == viewingTask?.id)
     const [selectingPosition, setSelectingPosition] = useState(currentTaskIndex)
 
-    const ref = useClickOutside(hide, [hide])
+    const ref = useClickOutside(hide, [], [hide])
 
     const onChangeColumn = (e: ChangeEvent<HTMLSelectElement>) => {
         const colId: number = +e.target.value
