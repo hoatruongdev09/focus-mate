@@ -16,6 +16,15 @@ export default class BoardService {
         this.groupRepository = dataSource.getRepository(Group)
     }
 
+    async archiveOrUnarchiveTask(task_id: number) {
+        const task = await this.taskRepository.findOne({ where: { id: task_id } })
+        if (!task) {
+            throw new Error("Task not foud")
+        }
+        task.archived = !task.archived
+        return await this.taskRepository.save(task)
+    }
+
     async getGroups() {
         return this.groupRepository
             .createQueryBuilder()
@@ -102,11 +111,26 @@ export default class BoardService {
             .execute()
     }
 
+    private async getTaskLowestRankInColumn(columnId: number) {
+        return await this.taskRepository
+            .createQueryBuilder()
+            .where("group_id = :groupId", { groupId: columnId })
+            .orderBy("rank")
+            .getOne()
+    }
+
     private async getTaskTopRankInColumn(columnId: number) {
         return await this.taskRepository
             .createQueryBuilder()
             .where("group_id = :groupId", { groupId: columnId })
             .orderBy("rank", "DESC")
+            .getOne()
+    }
+
+    private async getTaskLowestRank() {
+        return await this.taskRepository
+            .createQueryBuilder()
+            .orderBy("rank")
             .getOne()
     }
 
@@ -125,8 +149,6 @@ export default class BoardService {
             throw new Error("Group not found")
         }
 
-        const topOrder = await this.getTaskTopRank()
-
 
         const newTask: Task = new Task()
         newTask.title = data.title
@@ -134,14 +156,20 @@ export default class BoardService {
         newTask.group = group
         newTask.priority = data.priority
         newTask.estimate = data.estimate
-        newTask.rank = this.midString(topOrder?.rank ?? "", "")
+        if (group) {
+            const lowestRank = await this.getTaskLowestRankInColumn(groupId)
+            newTask.rank = this.midString("", lowestRank?.rank ?? "")
+        } else {
+            const lowestRank = await this.getTaskLowestRank()
+            newTask.rank = this.midString("", lowestRank?.rank ?? "")
+        }
 
         return await this.taskRepository.save(newTask)
     }
 
     async getTasks() {
         return await this.taskRepository.createQueryBuilder()
-            .select(["id", "title", "estimate", "priority", "description", "rank", "group_id"])
+            .select(["id", "title", "estimate", "priority", "description", "rank", "group_id", "archived"])
             .orderBy("rank", "DESC")
             .execute()
     }
@@ -199,7 +227,17 @@ export default class BoardService {
             const behindTask = behind_id ? tasks.find(t => t.id === behind_id) : null
             task.rank = this.midString(frontTask?.rank ?? "", behindTask?.rank ?? "")
         }
-        return this.taskRepository.save(task)
+        const newTask = await this.taskRepository.save(task)
+        const { title, estimate, priority, description, rank, group } = newTask
+        return {
+            id,
+            title,
+            estimate,
+            priority,
+            description,
+            rank,
+            group_id: group.id
+        }
     }
 
     async deleteTask(id: number) {
@@ -254,3 +292,4 @@ export default class BoardService {
         return str + String.fromCharCode(Math.ceil((p + n) / 2)); // append middle character
     }
 }
+

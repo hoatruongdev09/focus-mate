@@ -12,5 +12,5 @@ route.get('/groups/:id/tasks', boardController.getTaskInColumn)
 route.get('/tasks', boardController.getTasks)
 route.put('/tasks/:id', boardController.updateTask)
 route.delete('/tasks/:id', boardController.deleteTask)
-
+route.post('/tasks/archive-or-unarchive/:task_id', boardController.archiveOrUnarchiveTask)
 export default route

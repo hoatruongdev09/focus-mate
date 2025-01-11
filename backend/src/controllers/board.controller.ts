@@ -126,3 +126,15 @@ export const reorderGroup = async (req: Request, res: Response) => {
         res.status(500).json(error)
     }
 }
+
+export const archiveOrUnarchiveTask = async (req: Request, res: Response) => {
+    try {
+        const { task_id } = req.params
+        console.log(`receive task urchive`)
+        const task = await boardService.archiveOrUnarchiveTask(+task_id)
+        res.status(200).json(task)
+    } catch (error) {
+        console.error(error)
+        res.status(500).json(error)
+    }
+}

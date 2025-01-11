@@ -23,6 +23,9 @@ export class Task {
     @Column({ default: 0 })
     estimate: number
 
+    @Column({ default: false })
+    archived: boolean
+
     @CreateDateColumn()
     created_at: Date
 

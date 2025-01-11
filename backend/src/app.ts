@@ -1,7 +1,7 @@
 import "reflect-metadata"
 import express from 'express';
 import cors from 'cors'
-import boardRoute from './routes/group.route'
+import boardRoute from './routes/board.route'
 
 const app = express();
 const port = process.env.PORT || 3000;
