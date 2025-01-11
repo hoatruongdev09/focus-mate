@@ -54,11 +54,11 @@ function KanbanBoard() {
         await requestAddColumn(newColumn)
     }
 
-    const createNewTask = async (id: number) => {
+    const createNewTask = async (group_id: number, title: string) => {
         const newTask: AddTaskData = {
-            group_id: id,
-            title: "test",
-            description: `Task ${tasks.length} + 1`,
+            group_id,
+            title,
+            description: ``,
             estimate: 1,
             priority: 1
         }
@@ -195,7 +195,7 @@ function KanbanBoard() {
                 collisionDetection={closestCenter}
             >
                 <div className="flex gap-2 h-full">
-                    <div className="flex gap-2 h-full justify-start items-stretch">
+                    <div className="flex gap-2 h-full justify-start items-start">
                         <SortableContext items={columnsId}>
                             {columns.map(col =>
                                 <ColumnContainer
@@ -203,13 +203,13 @@ function KanbanBoard() {
                                     column={col}
                                     deleteColumn={deleteColumn}
                                     createTask={createNewTask}
-                                    tasks={tasks.filter(t => t.group_id === col.id)}
+                                    tasks={tasks.filter(t => t.group_id === col.id && !t.archived)}
                                     deleteTask={deleteTask}
                                 />
                             )}
                         </SortableContext>
                         <button className="
-                            h-[60px] w-[350px] min-w-[350px] cursor-lg bg-white
+                            h-[60px] w-72 cursor-lg bg-white
                             border-2 p-4 hover:border-rose-500  flex gap-2 rounded-md"
                             onClick={createNewColumn}>
                             <PlusIcon /> Add column

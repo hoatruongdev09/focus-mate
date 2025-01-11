@@ -5,6 +5,7 @@ import { AppRootState } from "../../store/store";
 import { useUpdateTaskMutation } from "../../store/services/board-service";
 import { UpdateTaskData } from "../../types/board-type";
 import { setViewingTask } from "../../store/slices/board-slice";
+import useClickOutside from "../../custom-hooks/use-click-outside";
 
 interface Props {
     isActive: boolean
@@ -22,24 +23,7 @@ function ColumnMoveDialog(props: Props) {
     const currentTaskIndex = tasks.findIndex(t => t.id == viewingTask?.id)
     const [selectingPosition, setSelectingPosition] = useState(currentTaskIndex)
 
-    const onClickOutside = (e: MouseEvent) => {
-        if (ref && ref.current && !ref.current.contains(e.target as Node)) {
-            hide()
-        }
-    }
-
-
-
-    const ref = useRef<HTMLDivElement>(null)
-    useEffect(() => {
-        document.addEventListener('mousedown', onClickOutside)
-
-        return () => {
-            document.removeEventListener('mousedown', onClickOutside)
-        }
-    }, [ref])
-
-
+    const ref = useClickOutside(hide, [hide])
 
     const onChangeColumn = (e: ChangeEvent<HTMLSelectElement>) => {
         const colId: number = +e.target.value

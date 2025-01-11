@@ -59,16 +59,25 @@ export const boardApi = createApi({
                 body: data
             }),
             invalidatesTags: ['columns']
+        }),
+        archiveOrUnarchiveTask: builder.mutation<Task, number>({
+            query: data => ({
+                url: `/tasks/archive-or-unarchive/${data}`,
+                method: 'POST'
+            }),
+            invalidatesTags: ['tasks']
         })
     })
 })
 
-export const { useGetTasksQuery,
+export const {
+    useGetTasksQuery,
     useGetColumnsQuery,
     useAddColumnsMutation,
     useAddTasksMutation,
     useDeleteColumnMutation,
     useDeleteTaskMutation,
     useUpdateTaskMutation,
-    useUpdateColumnMutation
+    useUpdateColumnMutation,
+    useArchiveOrUnarchiveTaskMutation
 } = boardApi

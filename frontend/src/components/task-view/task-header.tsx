@@ -11,6 +11,7 @@ const TaskHeader = () => {
     const dispatch = useDispatch()
     const [updateTask] = useUpdateTaskMutation()
     const { viewingTask, columns } = useSelector((state: AppRootState) => state.boardView)
+
     if (!viewingTask) { return (<></>) }
     const [state, setState] = useState({
         titleHeight: 60,

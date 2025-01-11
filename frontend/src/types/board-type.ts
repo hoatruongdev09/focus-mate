@@ -26,6 +26,7 @@ export type Task = {
     priority: number
     estimate: number
     group_id: number
+    archived: boolean
 }
 
 export type UpdateTaskData = {

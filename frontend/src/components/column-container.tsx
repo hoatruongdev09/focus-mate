@@ -1,17 +1,18 @@
-import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import TrashIcon from "../Icon/trash-icon";
 import { CSS } from "@dnd-kit/utilities";
-import PlusIcon from "../Icon/plus-icon";
 import TaskCard from "./task-card";
-import { useMemo } from "react";
+import { createRef, forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import { Group, Task } from "../types/board-type";
 import { DraggingItem } from "../types/draging-item";
+import { PlusSmallIcon } from "@heroicons/react/24/solid";
+import NewTaskInput from "./new-task-input";
 
 interface Props {
     column: Group
     tasks: Task[]
     deleteColumn: (id: number) => void
-    createTask: (id: number) => void
+    createTask: (group_id: number, title: string) => void
     deleteTask: (id: number) => void
 }
 
@@ -25,6 +26,14 @@ function ColumnContainer(props: Props) {
         }
     })
 
+
+    const inputCreateTaskRef = createRef<HTMLTextAreaElement>()
+    const [taskInputState, setTaskInputState] = useState<{ value: string, visible: boolean }>({
+        value: '',
+        visible: false
+    })
+
+
     const style = {
         transition,
         transform: CSS.Translate.toString(transform),
@@ -36,18 +45,50 @@ function ColumnContainer(props: Props) {
             <div
                 ref={setNodeRef}
                 style={style}
-                className="opacity-0 w-[350px] 
-                        min-h-[500px] h-full">
+                className="opacity-0 w-[350px] max-h-full rounded-md flex flex-col">
 
             </div>
         )
+    }
+
+
+    useEffect(() => {
+        if (!taskInputState.visible || !inputCreateTaskRef) { return }
+        inputCreateTaskRef.current?.scrollIntoView({ behavior: "instant" })
+        inputCreateTaskRef.current?.focus()
+
+    }, [taskInputState.visible, inputCreateTaskRef.current, tasks])
+
+    const showTaskInput = () => {
+        if (taskInputState.visible) { return }
+        setTaskInputState({
+            ...taskInputState,
+            visible: true
+        })
+    }
+    const onTaskInputHide = async () => {
+        const { value } = taskInputState
+        setTaskInputState({
+            value: '',
+            visible: false
+        })
+        if (value) {
+            await createTask(column.id, value)
+        }
+    }
+
+    const onTaskInputChange = (str: string) => {
+        setTaskInputState({
+            ...taskInputState,
+            value: str
+        })
     }
 
     return (
         <div
             ref={setNodeRef}
             style={style}
-            className="bg-columnBackgroundColor w-[350px] min-h-[500px] h-full rounded-md flex flex-col"
+            className="bg-columnBackgroundColor w-72 max-h-full rounded-xl flex flex-col"
         >
             <div
                 {...attributes}
@@ -74,16 +115,29 @@ function ColumnContainer(props: Props) {
                     {tasks.map(t => (
                         <TaskCard key={`task-${t.id}`} task={t} deleteTask={deleteTask} />
                     ))}
+                    <div
+                        className={taskInputState.visible ? "block" : "hidden"}
+                    >
+                        <NewTaskInput
+                            outOfFocus={onTaskInputHide}
+                            visible={taskInputState.visible}
+                            value={taskInputState.value}
+                            inputRef={inputCreateTaskRef}
+                            onChange={onTaskInputChange}
+                        />
+                    </div>
                 </SortableContext>
             </div>
-            <button className="flex gap-2 items-center 
-                border-columnBackgroundColor border-2 rounded-md p-4
-                border-x-columnBackgroundColor
-                hover:bg-mainBackgroundColor
-                hover:text-rose-500
-                active:bg-black"
-                onClick={() => createTask(column.id)}
-            ><PlusIcon /> Add Task</button>
+            <div className="p-2 w-full flex">
+                <button
+                    className="flex flex-1 gap-2 items-center 
+                    rounded px-[8px] py-[6px] hover:bg-gray-100"
+                    onClick={showTaskInput}
+                >
+                    <PlusSmallIcon className="size-6" />
+                    Add a card
+                </button>
+            </div>
         </div>
     );
 }

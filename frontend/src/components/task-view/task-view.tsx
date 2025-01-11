@@ -14,7 +14,7 @@ interface Props {
 function TaskView(props: Props) {
 
     const { task, onCloseClick } = props
-
+    console.log('task: ', task)
     return (
         <div className="absolute left-7 right-7 lg:relative lg:w-[768px] lg:mx-auto h-full overflow-y-scroll py-12 z-50">
             <div className="w-full min-h-[830px] bg-gray-50 rounded-xl flex gap-5 p-4 relative">
@@ -26,14 +26,14 @@ function TaskView(props: Props) {
                 </button>
 
                 <div className="flex flex-col flex-1 gap-5">
-                    <TaskHeader task={task} />
+                    <TaskHeader />
                     <TaskDescription task={task} />
                     <TaskActivity />
                 </div>
 
                 <div className="w-44 flex flex-col pt-24 gap-3">
                     <TaskFunctions />
-                    <TaskActions />
+                    <TaskActions task={task} />
                 </div>
             </div>
         </div>
