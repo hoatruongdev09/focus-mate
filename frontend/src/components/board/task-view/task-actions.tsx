@@ -2,10 +2,10 @@ import { XMarkIcon } from "@heroicons/react/16/solid"
 import ColumnMoveDialog from "./column-move-dialog"
 import { useState } from "react"
 import ArchiveBoxXMarkIcon from "@heroicons/react/24/outline/ArchiveBoxXMarkIcon"
-import { Task } from "../../types/board-type"
-import { useArchiveOrUnarchiveTaskMutation, useDeleteTaskMutation } from "../../store/services/board-service"
+import { Task } from "../../../types/board-type"
+import { useArchiveOrUnarchiveTaskMutation, useDeleteTaskMutation } from "../../../store/services/board-service"
 import { useDispatch } from "react-redux"
-import { setViewingTask } from "../../store/slices/board-slice"
+import { setViewingTask } from "../../../store/slices/board-slice"
 import { ArrowLongLeftIcon, MinusIcon } from "@heroicons/react/24/solid"
 
 

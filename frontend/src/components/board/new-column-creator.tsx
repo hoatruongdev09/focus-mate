@@ -1,12 +1,13 @@
-import { PlusSmallIcon } from "@heroicons/react/20/solid";
 import { useRef, useState } from "react";
+import { useAddColumnsMutation } from "../../store/services/board-service";
+import { AddGroupData } from "../../types/board-type";
+import { PlusSmallIcon } from "@heroicons/react/20/solid";
 import { KeyboardEvent } from "react";
-import { Group } from "../../types/board-type";
 import { XMarkIcon } from "@heroicons/react/24/solid";
-import { useAddTasksMutation } from "../../store/services/board-service";
 
-function NewTaskCreator({ column }: { column: Group }) {
-    const [createTask] = useAddTasksMutation()
+function NewColumnCreator() {
+    const [requestAddColumn] = useAddColumnsMutation()
+
     const [inputValue, setInputValue] = useState('')
     const [showInput, setShowInput] = useState(false)
     const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -25,34 +26,29 @@ function NewTaskCreator({ column }: { column: Group }) {
             if (inputRef) {
                 inputRef.current?.blur()
             }
-
-            onCreateTask()
+            onCreateColumn()
         }
     }
 
-    const onCreateTask = async () => {
+    const onCreateColumn = async () => {
         const value = inputValue
         setInputValue("")
-        await createTask({
-            title: value,
-            group_id: column.id,
-            description: '',
-            estimate: 1,
-            priority: 1
-        })
+        const newColumn: AddGroupData = {
+            name: value,
+            description: ''
+        }
+        await requestAddColumn(newColumn)
     }
 
-    const onCancelCreateTask = () => {
+    const onCancelCreateColumn = () => {
         setInputValue("")
         setShowInput(false)
         if (inputRef) {
             inputRef.current?.blur()
         }
     }
-
-
     return (
-        <div className="w-full flex flex-col p-2">
+        <div className="w-72 bg-white rounded-xl flex flex-col px-2 py-1">
             <div className={showInput ? '' : `h-0`}>
                 <textarea
                     ref={inputRef}
@@ -68,13 +64,13 @@ function NewTaskCreator({ column }: { column: Group }) {
                     <div className="flex py-1 gap-2">
                         <button
                             className="bg-blue-600 text-white px-3 py-1 rounded"
-                            onClick={onCreateTask}
+                            onClick={onCreateColumn}
                         >
-                            Add card
+                            Add list
                         </button>
                         <button
                             className="hover:bg-gray-100 px-2 rounded"
-                            onClick={onCancelCreateTask}
+                            onClick={onCancelCreateColumn}
                         >
                             <XMarkIcon className="size-5" />
                         </button>
@@ -84,11 +80,11 @@ function NewTaskCreator({ column }: { column: Group }) {
                         onClick={showAddInput}
                     >
                         <PlusSmallIcon className="size-6" />
-                        Add a card
+                        Add a list
                     </button>
             }
         </div>
     );
 }
 
-export default NewTaskCreator;
+export default NewColumnCreator;

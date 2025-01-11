@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import KanbanBoard from "./components/kanban-board";
-import KanbanBoardTitle from "./components/kanban-board-title";
+import KanbanBoard from "./components/board/kanban-board";
+import KanbanBoardTitle from "./components/board/kanban-board-title";
 import NavBar from "./components/nav-bar";
 import SideBar from "./components/side-bar";
 import { useGetColumnsQuery, useGetTasksQuery } from "./store/services/board-service";

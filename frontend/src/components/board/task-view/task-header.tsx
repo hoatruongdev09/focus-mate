@@ -1,10 +1,10 @@
 import { CheckIcon, ChevronDownIcon, EyeIcon } from "@heroicons/react/16/solid";
 import { WindowIcon } from "@heroicons/react/24/outline";
 import { useDispatch, useSelector } from "react-redux"
-import { useUpdateTaskMutation } from "../../store/services/board-service"
-import { AppRootState } from "../../store/store"
+import { useUpdateTaskMutation } from "../../../store/services/board-service"
+import { AppRootState } from "../../../store/store"
 import { useState } from "react"
-import { setViewingTask } from "../../store/slices/board-slice";
+import { setViewingTask } from "../../../store/slices/board-slice";
 import ColumnMoveDialog from "./column-move-dialog";
 
 const TaskHeader = () => {

@@ -1,4 +1,4 @@
-import SearchIcon from "../Icon/search-icon";
+import SearchIcon from "../../Icon/search-icon";
 
 function KanbanBoardTitle() {
     return (

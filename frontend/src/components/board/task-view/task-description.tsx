@@ -1,8 +1,8 @@
 import { Bars3BottomLeftIcon } from "@heroicons/react/16/solid"
-import { setViewingTask } from "../../store/slices/board-slice"
+import { setViewingTask } from "../../../store/slices/board-slice"
 import { useDispatch } from "react-redux"
-import { Task } from "../../types/board-type"
-import { useUpdateTaskMutation } from "../../store/services/board-service"
+import { Task } from "../../../types/board-type"
+import { useUpdateTaskMutation } from "../../../store/services/board-service"
 import { useState } from "react"
 
 const TaskDescription = ({ task }: { task: Task }) => {

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Task } from "../types/board-type";
-import { DraggingItem } from "../types/draging-item";
+import { Task } from "../../types/board-type";
+import { DraggingItem } from "../../types/draging-item";
 import { useDispatch } from "react-redux";
-import { setViewingTask } from "../store/slices/board-slice";
+import { setViewingTask } from "../../store/slices/board-slice";
 import { PencilIcon } from "@heroicons/react/16/solid";
 
 interface Props {

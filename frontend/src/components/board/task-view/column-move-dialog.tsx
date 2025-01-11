@@ -1,11 +1,11 @@
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AppRootState } from "../../store/store";
-import { useUpdateTaskMutation } from "../../store/services/board-service";
-import { UpdateTaskData } from "../../types/board-type";
-import { setViewingTask } from "../../store/slices/board-slice";
-import useClickOutside from "../../custom-hooks/use-click-outside";
+import { AppRootState } from "../../../store/store";
+import { useUpdateTaskMutation } from "../../../store/services/board-service";
+import { UpdateTaskData } from "../../../types/board-type";
+import { setViewingTask } from "../../../store/slices/board-slice";
+import useClickOutside from "../../../custom-hooks/use-click-outside";
 
 interface Props {
     isActive: boolean
