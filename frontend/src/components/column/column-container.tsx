@@ -1,6 +1,6 @@
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Group, Task } from "../../types/board-type";
 import { DraggingItem } from "../../types/draging-item";
 import { PlusSmallIcon } from "@heroicons/react/24/solid";
@@ -9,15 +9,27 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import NewTaskCreator from "./new-task-creator";
 
 interface Props {
+    isOverlay: boolean
+    targetHeight: number
     column: Group
     tasks: Task[]
     deleteColumn: (id: number) => void
-    createTask: (group_id: number, title: string) => void
+    setRef: (id: number, node: HTMLElement) => void
 }
 
 function ColumnContainer(props: Props) {
-    const { column, deleteColumn, createTask, tasks } = props
-    const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
+    const { column, deleteColumn, isOverlay, tasks, setRef, targetHeight } = props
+
+
+    const {
+        setNodeRef,
+        attributes,
+        listeners,
+        transform,
+        transition,
+        isDragging,
+        node
+    } = useSortable({
         id: `${DraggingItem.COLUMN}_${column.id}`,
         data: {
             type: DraggingItem.COLUMN,
@@ -25,6 +37,12 @@ function ColumnContainer(props: Props) {
         }
     })
 
+    if (!isOverlay) {
+        useEffect(() => {
+            if (!node || !node.current) { return }
+            setRef(column.id, node.current)
+        }, [node, column])
+    }
 
     const style = {
         transition,
@@ -33,52 +51,12 @@ function ColumnContainer(props: Props) {
     const taskIds = useMemo(() => tasks.map(task => `${DraggingItem.TASK}_${task.id}`), [tasks])
 
 
-
-    // const inputCreateTaskRef = createRef<HTMLTextAreaElement>()
-    const [taskInputState, setTaskInputState] = useState<{ value: string, visible: boolean }>({
-        value: '',
-        visible: false
-    })
-
-    // useEffect(() => {
-    //     if (!taskInputState.visible || !inputCreateTaskRef) { return }
-    //     inputCreateTaskRef.current?.scrollIntoView({ behavior: "instant" })
-    //     inputCreateTaskRef.current?.focus()
-
-    // }, [taskInputState.visible, inputCreateTaskRef.current, tasks])
-
-    const showTaskInput = () => {
-        if (taskInputState.visible) { return }
-        setTaskInputState({
-            ...taskInputState,
-            visible: true
-        })
-    }
-    const onTaskInputHide = async () => {
-        const { value } = taskInputState
-        setTaskInputState({
-            value: '',
-            visible: false
-        })
-        if (value) {
-            await createTask(column.id, value)
-        }
-    }
-
-    const onTaskInputChange = (str: string) => {
-        setTaskInputState({
-            ...taskInputState,
-            value: str
-        })
-    }
-
     if (isDragging) {
         return (
             <div
                 ref={setNodeRef}
                 style={style}
-                className="opacity-0 w-[350px] max-h-full rounded-md flex flex-col">
-
+                className="bg-gray-400 w-72 h-full rounded-xl flex flex-col">
             </div>
         )
     }
@@ -86,7 +64,7 @@ function ColumnContainer(props: Props) {
         <div
             ref={setNodeRef}
             style={style}
-            className="bg-white w-72 max-h-full rounded-xl flex flex-col"
+            className={`bg-white w-72 rounded-xl flex flex-col ${(isOverlay ? `h-[${targetHeight}px]` : 'max-h-full')}`}
         >
             <div
                 {...attributes}

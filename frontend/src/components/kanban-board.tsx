@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import PlusIcon from "../Icon/plus-icon";
 import ColumnContainer from "./column/column-container";
 import {
@@ -13,10 +13,9 @@ import {
     closestCenter
 } from "@dnd-kit/core";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
-import { createPortal } from "react-dom";
 import TaskCard from "./task-card";
-import { AddGroupData, AddTaskData, Group, Task } from "../types/board-type";
-import { useAddColumnsMutation, useAddTasksMutation, useDeleteColumnMutation, useDeleteTaskMutation, useUpdateColumnMutation, useUpdateTaskMutation } from "../store/services/board-service";
+import { AddGroupData, Group, Task } from "../types/board-type";
+import { useAddColumnsMutation, useDeleteColumnMutation, useUpdateColumnMutation, useUpdateTaskMutation } from "../store/services/board-service";
 import { useDispatch, useSelector } from "react-redux";
 import { AppRootState } from "../store/store";
 import { setColumns, setDraggingColumn, setDraggingTask, setTasks, setViewingTask } from "../store/slices/board-slice";
@@ -29,13 +28,19 @@ function KanbanBoard() {
     const dispatch = useDispatch()
 
     const [requestAddColumn] = useAddColumnsMutation()
-    const [requestAddTask] = useAddTasksMutation()
     const [requestDeleteAColumn] = useDeleteColumnMutation()
     const [requestUpdateTask] = useUpdateTaskMutation()
     const [requestUpdateColumn] = useUpdateColumnMutation()
 
     const { columns, tasks, draggingColumn, draggingTask } = useSelector((state: AppRootState) => state.boardView)
     const { viewingTask } = useSelector((state: AppRootState) => state.boardView)
+
+    const columnHeightRef = useRef<{ [id: number]: number }>({})
+
+    const setColumnRef = (id: number, node: HTMLElement) => {
+        columnHeightRef.current[id] = node.clientHeight
+        console.log(`refs: `, columnHeightRef)
+    }
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -53,17 +58,6 @@ function KanbanBoard() {
         await requestAddColumn(newColumn)
     }
 
-    const createNewTask = async (group_id: number, title: string) => {
-        const newTask: AddTaskData = {
-            group_id,
-            title,
-            description: ``,
-            estimate: 1,
-            priority: 1
-        }
-        await requestAddTask(newTask)
-    }
-
     const deleteColumn = async (id: number) => {
         await requestDeleteAColumn(id)
     }
@@ -71,6 +65,7 @@ function KanbanBoard() {
     const onDragStart = (event: DragStartEvent) => {
         switch (event.active.data.current?.type) {
             case DraggingItem.COLUMN:
+                console.log(`rect: `, event.active.rect)
                 dispatch(setDraggingColumn(event.active.data.current.column))
                 break
             case DraggingItem.TASK:
@@ -178,10 +173,10 @@ function KanbanBoard() {
             return
         }
     }
-    const columnsId = useMemo(() => columns.map(col => `${DraggingItem.COLUMN}_${col.id}`), [columns])
 
+    const columnsId = useMemo(() => columns.map(col => `${DraggingItem.COLUMN}_${col.id}`), [columns])
     return (
-        <div className="pt-2 flex flex-col h-full w-full overflow-x-auto">
+        <>
             <DndContext
                 sensors={sensors}
                 onDragStart={onDragStart}
@@ -189,47 +184,52 @@ function KanbanBoard() {
                 onDragOver={onDragOver}
                 collisionDetection={closestCenter}
             >
-                <div className="flex gap-2 h-full">
-                    <div className="flex gap-2 h-full justify-start items-start">
-                        <SortableContext items={columnsId}>
-                            {columns.map(col =>
-                                <ColumnContainer
-                                    key={`col-${col.id}`}
-                                    column={col}
-                                    deleteColumn={deleteColumn}
-                                    createTask={createNewTask}
-                                    tasks={tasks.filter(t => t.group_id === col.id && !t.archived)}
-                                />
-                            )}
-                        </SortableContext>
-                        <button className="
+                <div className="pt-2 flex flex-col h-full w-full overflow-x-auto relative">
+
+                    <div className="flex flex-1 gap-2 h-full z-10">
+                        <div className="flex gap-2 h-full justify-start items-start">
+                            <SortableContext items={columnsId}>
+                                {columns.map(col =>
+                                    <ColumnContainer
+                                        key={`col-${col.id}`}
+                                        column={col}
+                                        deleteColumn={deleteColumn}
+                                        isOverlay={false}
+                                        targetHeight={0}
+                                        setRef={setColumnRef}
+                                        tasks={tasks.filter(t => t.group_id === col.id && !t.archived)}
+                                    />
+                                )}
+                            </SortableContext>
+                            <button className="
                             h-[60px] w-72 cursor-lg bg-white
                             border-2 p-4 hover:border-rose-500  flex gap-2 rounded-md"
-                            onClick={createNewColumn}>
-                            <PlusIcon /> Add column
-                        </button>
+                                onClick={createNewColumn}>
+                                <PlusIcon /> Add column
+                            </button>
+                        </div>
                     </div>
 
+                    <DragOverlay>
+                        {
+                            draggingColumn &&
+                            <ColumnContainer
+                                column={draggingColumn}
+                                deleteColumn={deleteColumn}
+                                isOverlay={true}
+                                setRef={(id, node) => { }}
+                                targetHeight={columnHeightRef.current[draggingColumn.id]}
+                                tasks={tasks.filter(t => t.group_id === draggingColumn.id)}
+                            />
+
+                        }
+                        {
+                            draggingTask &&
+                            <TaskCard task={draggingTask} />
+                        }
+                    </DragOverlay>
+
                 </div>
-                {
-                    createPortal(
-                        <DragOverlay>
-                            {
-                                draggingColumn &&
-                                <ColumnContainer
-                                    column={draggingColumn}
-                                    deleteColumn={deleteColumn}
-                                    createTask={createNewTask}
-                                    tasks={tasks.filter(t => t.group_id === draggingColumn.id)}
-                                />
-                            }
-                            {
-                                draggingTask &&
-                                <TaskCard task={draggingTask} />
-                            }
-                        </DragOverlay>,
-                        document.body)
-                }
             </DndContext>
             <Modal
                 isShow={viewingTask != null}
@@ -243,7 +243,7 @@ function KanbanBoard() {
                     />
                 }
             </Modal>
-        </div>
+        </>
     );
 }
 

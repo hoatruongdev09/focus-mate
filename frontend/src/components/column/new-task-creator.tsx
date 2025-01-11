@@ -18,8 +18,6 @@ function NewTaskCreator({ column }: { column: Group }) {
         }
     }
 
-
-
     const detectEnterKeyPress = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key.toLowerCase() == "enter") {
             e.preventDefault();
