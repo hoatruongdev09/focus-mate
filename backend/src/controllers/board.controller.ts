@@ -130,7 +130,6 @@ export const reorderGroup = async (req: Request, res: Response) => {
 export const archiveOrUnarchiveTask = async (req: Request, res: Response) => {
     try {
         const { task_id } = req.params
-        console.log(`receive task urchive`)
         const task = await boardService.archiveOrUnarchiveTask(+task_id)
         res.status(200).json(task)
     } catch (error) {

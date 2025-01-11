@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Task } from "../../types/board-type";
@@ -11,12 +11,12 @@ interface Props {
     task: Task
 }
 
+
 function TaskCard(props: Props) {
     const dispatch = useDispatch()
 
     const { task } = props
     const [mouseIsOver, setMouseIsOver] = useState(false)
-
     const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
         id: `${DraggingItem.TASK}_${task.id}`,
         data: {
@@ -25,10 +25,22 @@ function TaskCard(props: Props) {
         },
     })
 
-    const style = {
+    const style = useMemo(() => ({
         transition,
         transform: CSS.Translate.toString(transform),
-    }
+    }), [transition, transform]);
+
+    const handleClick = useCallback(() => {
+        dispatch(setViewingTask(task));
+    }, [dispatch, task]);
+
+    const handleMouseEnter = useCallback(() => {
+        setMouseIsOver(true);
+    }, []);
+
+    const handleMouseLeave = useCallback(() => {
+        setMouseIsOver(false);
+    }, []);
 
     return (
         <div
@@ -38,9 +50,9 @@ function TaskCard(props: Props) {
             {...listeners}
             className={`border bg-mainBackgroundColor p-2 ${(isDragging ? "bg-rose-200" : "")}
                 rounded-md hover:border-rose-500 hover:cursor-pointer relative`}
-            onClick={() => dispatch(setViewingTask(task))}
-            onMouseEnter={() => setMouseIsOver(true)}
-            onMouseLeave={() => setMouseIsOver(false)}
+            onClick={handleClick}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
         >
 
 

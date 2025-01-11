@@ -18,7 +18,10 @@ function App() {
       dispatch(setColumns([...columns].reverse()))
     }
     if (tasks?.length) {
-      dispatch(setTasks(tasks))
+      dispatch(setTasks(tasks.map(t => ({
+        task: t,
+        nextTimeUpdate: Date.now()
+      }))))
     }
   }, [columns, tasks])
 

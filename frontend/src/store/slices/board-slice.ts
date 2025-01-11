@@ -1,10 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Group, Task } from "../../types/board-type";
 
+interface BoardTaskData {
+    task: Task
+    nextTimeUpdate: number
+}
 
 interface BoardViewSliceData {
     columns: Group[]
-    tasks: Task[]
+    tasks: BoardTaskData[]
     draggingColumn: Group | null
     draggingTask: Task | null
     viewingTask: Task | null
@@ -25,7 +29,7 @@ export const boardViewSlice = createSlice({
         setColumns: (state, action: PayloadAction<Group[]>) => {
             state.columns = action.payload
         },
-        setTasks: (state, action: PayloadAction<Task[]>) => {
+        setTasks: (state, action: PayloadAction<BoardTaskData[]>) => {
             state.tasks = action.payload
         },
         setDraggingColumn: (state, action: PayloadAction<Group | null>) => {
@@ -36,7 +40,14 @@ export const boardViewSlice = createSlice({
         },
         setViewingTask: (state, action: PayloadAction<Task | null>) => {
             state.viewingTask = action.payload
-        }
+        },
+        changeTaskGroup: (state, action: PayloadAction<{ id: number, groupId: number }>) => {
+            const index = state.tasks.findIndex(t => t.task.id === action.payload.id)
+            if (index == -1) { return }
+            if (state.tasks[index].nextTimeUpdate > Date.now()) { return }
+            state.tasks[index].task.group_id = action.payload.groupId
+            state.tasks[index].nextTimeUpdate = Date.now() + 500
+        },
     }
 })
 
@@ -45,5 +56,6 @@ export const { setColumns,
     setDraggingColumn,
     setDraggingTask,
     setViewingTask,
+    changeTaskGroup
 } = boardViewSlice.actions
 export default boardViewSlice.reducer

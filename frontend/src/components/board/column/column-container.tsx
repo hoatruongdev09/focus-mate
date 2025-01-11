@@ -8,7 +8,7 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import NewTaskCreator from "./new-task-creator";
 
 interface Props {
-    isOverlay: boolean
+    isOverlay?: boolean
     targetHeight?: number
     column: Group
     setRef?: (id: number, node: HTMLElement) => void
@@ -16,10 +16,9 @@ interface Props {
 }
 
 
-
 function ColumnContainer(props: Props) {
     const { column, tasks, isOverlay, setRef, targetHeight } = props
-
+    console.log(`column ${column.name} rerender`)
     const isRegisteredRef = useRef<boolean>(false)
     const {
         setNodeRef,
@@ -37,20 +36,18 @@ function ColumnContainer(props: Props) {
         }
     })
 
-    if (!isOverlay) {
-        useEffect(() => {
-            if (isRegisteredRef.current) { return }
-            if (!node || !node.current || !setRef) { return }
-            setRef(column.id, node.current)
-            isRegisteredRef.current = true
-            console.log('register')
-        }, [node, column, setRef])
-    }
+    useEffect(() => {
+        if (!isOverlay && !isRegisteredRef.current && node.current && setRef) {
+            setRef(column.id, node.current);
+            isRegisteredRef.current = true;
+            console.log('register');
+        }
+    }, [isOverlay, column.id, setRef]);
 
-    const style = {
+    const style = useMemo(() => ({
         transition,
         transform: CSS.Translate.toString(transform),
-    }
+    }), [transition, transform])
 
     const taskIds = useMemo(() => tasks.map(t => `${DraggingItem.TASK}_${t.id}`), [tasks])
 
@@ -59,7 +56,7 @@ function ColumnContainer(props: Props) {
             <div
                 ref={setNodeRef}
                 style={style}
-                className="w-72 rounded-xl flex flex-col">
+                className="w-72 rounded-xl flex flex-col h-full">
             </div>
         )
     }
