@@ -153,7 +153,6 @@ export const archiveOrUnarchiveTasksInColumn = async (req: Request, res: Respons
     try {
         const { id } = req.params
         const { action } = req.body
-        console.log(`hey hey ${action}`)
         await boardService.archiveOrUnarchiveTasksInColumn(+id, action)
         res.status(200).json({ message: "oke" })
     } catch (error) {

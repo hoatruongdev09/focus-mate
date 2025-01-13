@@ -1,7 +1,7 @@
 import { Group, UpdateGroupData } from "../../../types/board-type";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAddTasksMutation, useArchiveAllTasksInColumnMutation, useArchiveOrUnarchiveColumnMutation, useUpdateColumnMutation } from "../../../store/services/board-service";
-import ColumnContextMenu from "./column-context-menu";
+import ColumnContextMenu from "./context-menu.tsx/column-context-menu";
 import { HashtagIcon } from "@heroicons/react/24/solid";
 import InputTaskCreator from "./input-task-creator";
 

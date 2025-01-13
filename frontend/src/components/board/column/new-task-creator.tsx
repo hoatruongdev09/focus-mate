@@ -1,5 +1,5 @@
 import { PlusSmallIcon } from "@heroicons/react/20/solid";
-import { useRef, useState, KeyboardEvent } from "react";
+import { useRef, useState, KeyboardEvent, useCallback, ChangeEvent } from "react";
 import { Group } from "../../../types/board-type";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { useAddTasksMutation } from "../../../store/services/board-service";
@@ -17,20 +17,10 @@ function NewTaskCreator(props: Props) {
 
     const showAddInput = () => {
         setShowInput(true)
-        if (inputRef) {
-            inputRef.current?.focus()
-        }
-    }
-
-    const detectEnterKeyPress = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key.toLowerCase() == "enter") {
-            e.preventDefault();
-            setShowInput(false)
-            if (inputRef) {
-                inputRef.current?.blur()
-            }
-
-            onCreateTask()
+        if (inputRef && inputRef.current) {
+            inputRef.current.style.display = "block"
+            inputRef.current.style.height = '42px'
+            inputRef.current.focus()
         }
     }
 
@@ -49,10 +39,38 @@ function NewTaskCreator(props: Props) {
     const onCancelCreateTask = () => {
         setInputValue("")
         setShowInput(false)
-        if (inputRef) {
-            inputRef.current?.blur()
+        if (inputRef && inputRef.current) {
+            inputRef.current.blur()
+            inputRef.current.style.display = 'none'
         }
     }
+    const computeHeight = useCallback((e: React.ChangeEvent<HTMLElement>) => {
+        e.target.style.height = '42px';
+        // const computed = window.getComputedStyle(e.target)
+        const height = e.target.scrollHeight
+        // + parseInt(computed.getPropertyValue("padding-top"), 10)
+        // + parseInt(computed.getPropertyValue("padding-bottom"), 10)
+        e.target.style.height = `${height}px`
+    }, [])
+
+    const handleSetInput = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
+        setInputValue(e.target.value)
+        computeHeight(e)
+    }, [setInputValue, computeHeight])
+
+
+    const handleKeyPress = useCallback((e: KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key.toLowerCase() == "enter") {
+            e.preventDefault();
+            setShowInput(false)
+            if (inputRef && inputRef.current) {
+                inputRef.current.blur()
+                inputRef.current.style.display = 'none'
+            }
+
+            onCreateTask()
+        }
+    }, [inputRef, setShowInput, onCreateTask])
 
 
     return (
@@ -60,11 +78,12 @@ function NewTaskCreator(props: Props) {
             <div className={showInput ? '' : `h-0`}>
                 <textarea
                     ref={inputRef}
-                    className="px-2 py-1 h-full w-full"
+                    rows={1}
+                    className={`px-2 py-2 h-full w-full resize-none outline-none rounded-md ${showInput ? "border" : ""}`}
                     placeholder="Enter a title"
                     value={inputValue}
-                    onChange={e => setInputValue(e.target.value)}
-                    onKeyDown={e => detectEnterKeyPress(e)}
+                    onChange={handleSetInput}
+                    onKeyDown={handleKeyPress}
                 />
             </div>
             {

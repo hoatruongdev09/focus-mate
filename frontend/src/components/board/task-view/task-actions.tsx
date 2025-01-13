@@ -1,12 +1,12 @@
-import { XMarkIcon } from "@heroicons/react/16/solid"
 import ColumnMoveDialog from "./column-move-dialog"
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import ArchiveBoxXMarkIcon from "@heroicons/react/24/outline/ArchiveBoxXMarkIcon"
 import { Task } from "../../../types/board-type"
 import { useArchiveOrUnarchiveTaskMutation, useDeleteTaskMutation } from "../../../store/services/board-service"
 import { useDispatch } from "react-redux"
 import { setViewingTask } from "../../../store/slices/board-slice"
-import { ArrowLongLeftIcon, MinusIcon } from "@heroicons/react/24/solid"
+import { ArrowLongLeftIcon, ArrowLongRightIcon, MinusIcon } from "@heroicons/react/24/solid"
+import { DocumentDuplicateIcon } from "@heroicons/react/24/outline"
 
 
 const TaskActions = ({ task }: { task: Task }) => {
@@ -16,7 +16,7 @@ const TaskActions = ({ task }: { task: Task }) => {
     const [archiveOrUnarchiveTask] = useArchiveOrUnarchiveTaskMutation()
     const [deleteTask] = useDeleteTaskMutation()
 
-    const onArchiveClick = async () => {
+    const handleArchiveClick = useCallback(async () => {
         const { data: newTask } = await archiveOrUnarchiveTask(task.id)
         if (newTask) {
             dispatch(setViewingTask({
@@ -24,21 +24,22 @@ const TaskActions = ({ task }: { task: Task }) => {
                 archived: !task.archived
             }))
         }
-    }
-    const onDeleteClick = async () => {
+    }, [archiveOrUnarchiveTask, dispatch, setViewingTask, task])
+
+    const handleDeleteClick = useCallback(async () => {
         await deleteTask(task.id)
         dispatch(setViewingTask(null))
-    }
+    }, [deleteTask, dispatch, setViewingTask])
 
     return (<div className="flex flex-col gap-1">
         <p className="font-semibold text-sm">Actions</p>
         <div className="flex flex-col gap-2">
             <div className="flex w-full relative">
                 <button
-                    className="flex flex-1 items-center gap-2 bg-slate-300 bg-opacity-25 px-2 py-1 rounded"
+                    className="flex flex-1 items-center gap-2 bg-gray-200 bg-opacity-25 px-2 py-1 rounded hover:bg-gray-300"
                     onClick={() => setShowChangeColumn(true)}
                 >
-                    <XMarkIcon className="size-4" />
+                    <ArrowLongRightIcon className="size-4" />
                     Move
                 </button>
                 <div className="absolute top-8 right-0">
@@ -48,15 +49,15 @@ const TaskActions = ({ task }: { task: Task }) => {
                     />
                 </div>
             </div>
-            <button className="flex items-center gap-2 bg-slate-300 bg-opacity-25 px-2 py-1 rounded">
-                <XMarkIcon className="size-4" />
+            <button className="flex flex-1 items-center gap-2 bg-gray-200 bg-opacity-25 px-2 py-1 rounded hover:bg-gray-300">
+                <DocumentDuplicateIcon className="size-4" />
                 Copy
             </button>
             <div className="bg-slate-300 h-px"></div>
 
             <button
-                className="flex items-center gap-2 bg-slate-300 bg-opacity-25 px-2 py-1 rounded"
-                onClick={onArchiveClick}>
+                className="flex flex-1 items-center gap-2 bg-gray-200 bg-opacity-25 px-2 py-1 rounded hover:bg-gray-300"
+                onClick={handleArchiveClick}>
                 {
                     task.archived ?
                         <>
@@ -75,8 +76,8 @@ const TaskActions = ({ task }: { task: Task }) => {
                 <>
                     <div className="bg-slate-300 h-px"></div>
                     <button
-                        className="flex items-center gap-2 bg-red-300 bg-opacity-25 px-2 py-1 rounded"
-                        onClick={onDeleteClick}
+                        className="flex items-center gap-2 bg-red-300 px-2 py-1 rounded hover:bg-red-200"
+                        onClick={handleDeleteClick}
                     >
                         <MinusIcon className="size-4" />
                         Delete

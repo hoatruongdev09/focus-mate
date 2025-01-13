@@ -74,7 +74,7 @@ export default class BoardService {
         const newGroup = new Group()
 
         const topRank = await this.getGroupTopRank()
-        newGroup.name = name
+        newGroup.name = name || "Untitled list"
         newGroup.description = description
         newGroup.rank = this.midString(topRank?.rank ?? "", "")
         return await this.groupRepository.save(newGroup)
