@@ -4,8 +4,8 @@ import { useEffect, useMemo, useRef } from "react";
 import { Group, Task } from "../../../types/board-type";
 import { DraggingItem } from "../../../types/draging-item";
 import ColumnTaskContainer from "./column-task-container";
-import { TrashIcon } from "@heroicons/react/24/outline";
 import NewTaskCreator from "./new-task-creator";
+import ColumnHeader from "./column-header";
 
 interface Props {
     isOverlay?: boolean
@@ -18,7 +18,6 @@ interface Props {
 
 function ColumnContainer(props: Props) {
     const { column, tasks, isOverlay, setRef, targetHeight } = props
-    console.log(`column ${column.name} rerender`)
     const isRegisteredRef = useRef<boolean>(false)
     const {
         setNodeRef,
@@ -69,18 +68,14 @@ function ColumnContainer(props: Props) {
             <div className="bg-white w-72 rounded-xl flex flex-col max-h-full">
                 <div
                     {...attributes}
-                    {...listeners}
-                    className="bg-white text-md cursor-grab rounded-xl px-2 py-1 flex items-center justify-between">
-                    <div className="flex gap-2 items-center justify-center">
-                        <p className="bg-white px-2 py-1 rounded-full">{tasks.length}</p>
-                        <p className="py-1">{column.name}</p>
-                    </div>
-                    <button className="rounded px-2 py-2 hover:bg-gray-200">
-                        <TrashIcon className="size-4" />
-                    </button>
+                    {...listeners}>
+                    <ColumnHeader
+                        column={column}
+                        taskCount={taskIds.length}
+                    />
                 </div>
 
-                <div className="flex flex-col flex-1 gap-2 p-2 overflow-x-hidden overflow-y-scroll">
+                <div className="flex flex-col flex-1 gap-2 px-2 overflow-x-hidden overflow-y-scroll">
                     <ColumnTaskContainer
                         tasks={tasks}
                         taskIds={taskIds}
