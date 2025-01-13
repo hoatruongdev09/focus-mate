@@ -25,6 +25,34 @@ export default class BoardService {
         return await this.taskRepository.save(task)
     }
 
+    async archiveOrUnarchiveColumn(column_id: number) {
+        const column = await this.groupRepository.findOne({ where: { id: column_id } })
+        if (!column) {
+            throw new Error("Column not found")
+        }
+        column.archived = !column.archived
+        return await this.groupRepository.save(column)
+    }
+
+    async archiveOrUnarchiveTasksInColumn(column_id: number, archived: boolean) {
+        const column = await this.groupRepository.findOne({ where: { id: column_id } })
+        if (!column) {
+            throw new Error("Column not found")
+        }
+        await this.taskRepository
+            .createQueryBuilder()
+            .update()
+            .set({ archived: archived })
+            .where("group_id = :column_id", { column_id })
+            .execute()
+
+        return this.taskRepository
+            .createQueryBuilder()
+            .select(["id", "title", "estimate", "priority", "description", "rank", "group_id", "archived"])
+            .where("group_id = :column_id", { column_id })
+            .execute()
+    }
+
     async getGroups() {
         return this.groupRepository
             .createQueryBuilder()
@@ -182,8 +210,6 @@ export default class BoardService {
 
 
     async updateTask(id: number, data: UpdateTaskDto) {
-
-
         const task = await this.taskRepository.findOne({
             where: { id },
             relations: {

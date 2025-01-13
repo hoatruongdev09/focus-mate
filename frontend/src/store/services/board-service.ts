@@ -62,7 +62,22 @@ export const boardApi = createApi({
         }),
         archiveOrUnarchiveTask: builder.mutation<Task, number>({
             query: data => ({
-                url: `/tasks/archive-or-unarchive/${data}`,
+                url: `/tasks/${data}/archive-or-unarchive`,
+                method: 'POST'
+            }),
+            invalidatesTags: ['tasks']
+        }),
+        archiveOrUnarchiveColumn: builder.mutation<Group, number>({
+            query: data => ({
+                url: `groups/${data}/archive-or-unarchive`,
+                method: 'POST'
+            }),
+            invalidatesTags: ['columns']
+        }),
+        archiveAllTasksInColumn: builder.mutation<Task[], { id: number, action: boolean }>({
+            query: data => ({
+                url: `groups/${data.id}/archive-or-unarchive-all-task`,
+                body: { action: data.action },
                 method: 'POST'
             }),
             invalidatesTags: ['tasks']
@@ -79,5 +94,7 @@ export const {
     useDeleteTaskMutation,
     useUpdateTaskMutation,
     useUpdateColumnMutation,
-    useArchiveOrUnarchiveTaskMutation
+    useArchiveOrUnarchiveTaskMutation,
+    useArchiveAllTasksInColumnMutation,
+    useArchiveOrUnarchiveColumnMutation
 } = boardApi

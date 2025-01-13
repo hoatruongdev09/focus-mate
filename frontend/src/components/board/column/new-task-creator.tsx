@@ -1,11 +1,15 @@
 import { PlusSmallIcon } from "@heroicons/react/20/solid";
-import { useRef, useState } from "react";
-import { KeyboardEvent } from "react";
+import { useRef, useState, KeyboardEvent } from "react";
 import { Group } from "../../../types/board-type";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { useAddTasksMutation } from "../../../store/services/board-service";
 
-function NewTaskCreator({ column }: { column: Group }) {
+interface Props {
+    column: Group
+}
+
+function NewTaskCreator(props: Props) {
+    const { column } = props
     const [createTask] = useAddTasksMutation()
     const [inputValue, setInputValue] = useState('')
     const [showInput, setShowInput] = useState(false)

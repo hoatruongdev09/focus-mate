@@ -16,6 +16,7 @@ export type Group = {
     name: string
     description: string
     rank: string
+    archived: boolean
 }
 
 export type Task = {

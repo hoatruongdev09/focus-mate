@@ -129,9 +129,33 @@ export const reorderGroup = async (req: Request, res: Response) => {
 
 export const archiveOrUnarchiveTask = async (req: Request, res: Response) => {
     try {
-        const { task_id } = req.params
-        const task = await boardService.archiveOrUnarchiveTask(+task_id)
+        const { id } = req.params
+        const task = await boardService.archiveOrUnarchiveTask(+id)
         res.status(200).json(task)
+    } catch (error) {
+        console.error(error)
+        res.status(500).json(error)
+    }
+}
+
+export const archiveOrUnarchiveColumn = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params
+        const task = await boardService.archiveOrUnarchiveColumn(+id)
+        res.status(200).json(task)
+    } catch (error) {
+        console.error(error)
+        res.status(500).json(error)
+    }
+}
+
+export const archiveOrUnarchiveTasksInColumn = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params
+        const { action } = req.body
+        console.log(`hey hey ${action}`)
+        await boardService.archiveOrUnarchiveTasksInColumn(+id, action)
+        res.status(200).json({ message: "oke" })
     } catch (error) {
         console.error(error)
         res.status(500).json(error)

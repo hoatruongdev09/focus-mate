@@ -2,8 +2,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { DraggingItem } from "../../types/draging-item";
 import { useUpdateColumnMutation, useUpdateTaskMutation } from "../../store/services/board-service";
 import { useCallback, useMemo, useRef } from "react";
-import { DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, PointerSensor, UniqueIdentifier, useSensor, useSensors } from "@dnd-kit/core";
-import { changeTaskGroup, setColumns, setDraggingColumn, setDraggingTask, setTasks } from "../../store/slices/board-slice";
+import {
+    DndContext,
+    DragEndEvent,
+    DragOverEvent,
+    DragOverlay,
+    DragStartEvent,
+    PointerSensor,
+    UniqueIdentifier,
+    useSensor,
+    useSensors
+} from "@dnd-kit/core";
+import {
+    changeTaskGroup,
+    setColumns,
+    setDraggingColumn,
+    setDraggingTask,
+    setTasks
+} from "../../store/slices/board-slice";
 import { AppRootState } from "../../store/store";
 import { Group, Task } from "../../types/board-type";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
@@ -19,7 +35,9 @@ function BoardContent() {
     const [requestUpdateColumn] = useUpdateColumnMutation()
 
     const { columns, tasks, draggingColumn, draggingTask } = useSelector((state: AppRootState) => state.boardView)
-
+    const renderTasks = useMemo(() => tasks.filter(t => !t.task.archived), [tasks])
+    const renderColumns = useMemo(() => columns.filter(t => !t.archived), [columns])
+    const columnIds = useMemo(() => columns.map(col => `${DraggingItem.COLUMN}_${col.id}`), [renderColumns])
     const columnHeightRef = useRef<{ [id: number]: number }>({})
 
     const setColumnRef = useCallback((id: number, node: HTMLElement) => {
@@ -69,29 +87,29 @@ function BoardContent() {
     const dropColumn = useCallback((activeColumnId: UniqueIdentifier, overColumnId: UniqueIdentifier) => {
         if (activeColumnId === overColumnId) { return; }
 
-        let activeColumnIndex = columns.findIndex(c => `${DraggingItem.COLUMN}_${c.id}` === activeColumnId);
+        let activeColumnIndex = renderColumns.findIndex(c => `${DraggingItem.COLUMN}_${c.id}` === activeColumnId);
         if (activeColumnIndex == -1) { return; }
-        let overColumnIndex = columns.findIndex(c => `${DraggingItem.COLUMN}_${c.id}` === overColumnId);
-        const resultColumns = arrayMove(columns, activeColumnIndex, overColumnIndex);
+        let overColumnIndex = renderColumns.findIndex(c => `${DraggingItem.COLUMN}_${c.id}` === overColumnId);
+        const resultColumns = arrayMove(renderColumns, activeColumnIndex, overColumnIndex);
 
         activeColumnIndex = resultColumns.findIndex(c => `${DraggingItem.COLUMN}_${c.id}` === activeColumnId);
         const frontColumnIndex = activeColumnIndex - 1;
         const behindColumnIndex = activeColumnIndex + 1;
 
         const frontColumnId: number | null = frontColumnIndex < 0 ? null : resultColumns[frontColumnIndex].id;
-        const behindColumnId: number | null = behindColumnIndex >= columns.length ? null : resultColumns[behindColumnIndex].id;
+        const behindColumnId: number | null = behindColumnIndex >= renderColumns.length ? null : resultColumns[behindColumnIndex].id;
 
         dispatch(setColumns(resultColumns));
         doReorderColumn(resultColumns[activeColumnIndex], frontColumnId, behindColumnId);
-    }, [columns, dispatch, doReorderColumn]);
+    }, [renderColumns, dispatch, doReorderColumn]);
 
     const dropTask = useCallback((activeId: UniqueIdentifier, overId: UniqueIdentifier) => {
         const activeTaskId = +activeId.toString().replace(`${DraggingItem.TASK}_`, '');
         const overTaskId = +overId.toString().replace(`${DraggingItem.TASK}_`, '');
-        let activeTaskIndex = tasks.findIndex(t => t.task.id === activeTaskId);
+        let activeTaskIndex = renderTasks.findIndex(t => t.task.id === activeTaskId);
         if (activeTaskIndex == -1) { return; }
-        let overTaskIndex = tasks.findIndex(t => t.task.id === overTaskId);
-        const resultTasks = arrayMove(tasks, activeTaskIndex, overTaskIndex);
+        let overTaskIndex = renderTasks.findIndex(t => t.task.id === overTaskId);
+        const resultTasks = arrayMove(renderTasks, activeTaskIndex, overTaskIndex);
 
         activeTaskIndex = resultTasks.findIndex(t => t.task.id === activeTaskId);
         const frontTaskIndex = activeTaskIndex - 1;
@@ -101,7 +119,7 @@ function BoardContent() {
         const behindTaskId: number | null = behindTaskIndex >= resultTasks.length ? null : resultTasks[behindTaskIndex].task.id;
         dispatch(setTasks(resultTasks));
         doReorderTask(resultTasks[activeTaskIndex].task, behindTaskId, frontTaskId);
-    }, [tasks, dispatch, doReorderTask]);
+    }, [renderTasks, dispatch, doReorderTask]);
 
     const onDragEnd = useCallback((event: DragEndEvent) => {
         dispatch(setDraggingColumn(null));
@@ -123,22 +141,22 @@ function BoardContent() {
     const moveTaskOverTask = useCallback((activeId: UniqueIdentifier, overId: UniqueIdentifier) => {
         const activeTaskId = +activeId.toString().replace(`${DraggingItem.TASK}_`, '');
         const overTaskId = +overId.toString().replace(`${DraggingItem.TASK}_`, '');
-        const activeTask = tasks.find(t => t.task.id === activeTaskId);
+        const activeTask = renderTasks.find(t => t.task.id === activeTaskId);
         if (!activeTask) { return; }
-        const overTask = tasks.find(t => t.task.id === overTaskId);
+        const overTask = renderTasks.find(t => t.task.id === overTaskId);
         if (overTask == null) { return; }
         if (activeTask.task.group_id == overTask.task.group_id) { return; }
         dispatch(changeTaskGroup({ id: activeTask.task.id, groupId: overTask.task.group_id }));
-    }, [tasks, dispatch]);
+    }, [renderTasks, dispatch]);
 
     const moveTaskOverColumn = useCallback((activeId: UniqueIdentifier, overId: UniqueIdentifier) => {
         const id = +activeId.toString().replace(`${DraggingItem.TASK}_`, '');
-        const task = tasks.find(t => t.task.id === id);
+        const task = renderTasks.find(t => t.task.id === id);
         if (!task) { return; }
         const groupId = Number((overId as string).split("_")[1]);
         if (task.task.group_id == groupId) { return; }
         dispatch(changeTaskGroup({ id: task.task.id, groupId }));
-    }, [tasks, dispatch]);
+    }, [renderTasks, dispatch]);
 
     const onDragOver = useCallback((event: DragOverEvent) => {
         const { active, over } = event;
@@ -165,8 +183,7 @@ function BoardContent() {
         }
     }, [moveTaskOverTask, moveTaskOverColumn]);
 
-    const renderTasks = useMemo(() => tasks.map(t => t.task), [tasks])
-    const columnsId = useMemo(() => columns.map(col => `${DraggingItem.COLUMN}_${col.id}`), [columns])
+
 
     return (
         <DndContext
@@ -178,14 +195,14 @@ function BoardContent() {
 
             <div className="flex flex-1 gap-2 h-full z-10">
                 <div className="flex gap-2 h-full justify-start items-start">
-                    <SortableContext items={columnsId}>
-                        {columns.map(col =>
+                    <SortableContext items={columnIds}>
+                        {renderColumns.map(col =>
                             <ColumnContainer
                                 key={`col-${col.id}`}
                                 column={col}
                                 isOverlay={false}
                                 setRef={setColumnRef}
-                                tasks={renderTasks.filter(t => t.group_id == col.id)}
+                                tasks={renderTasks.map(t => t.task).filter(t => t.group_id == col.id)}
                             />
                         )}
                     </SortableContext>
@@ -202,7 +219,7 @@ function BoardContent() {
                                 column={draggingColumn}
                                 isOverlay={true}
                                 targetHeight={columnHeightRef.current[draggingColumn.id]}
-                                tasks={renderTasks.filter(t => t.group_id == draggingColumn.id)}
+                                tasks={renderTasks.map(t => t.task).filter(t => t.group_id == draggingColumn.id)}
                             />
                         }
                         {

@@ -20,7 +20,7 @@ function ColumnMoveDialog(props: Props) {
 
     const [updateTask] = useUpdateTaskMutation()
 
-    const currentTaskIndex = tasks.findIndex(t => t.id == viewingTask?.id)
+    const currentTaskIndex = tasks.findIndex(t => t.task.id == viewingTask?.id)
     const [selectingPosition, setSelectingPosition] = useState(currentTaskIndex)
 
     const ref = useClickOutside(hide, [], [hide])
@@ -48,8 +48,8 @@ function ColumnMoveDialog(props: Props) {
         if (selectingPosition != currentTaskIndex || selectingColumnId != viewingTask.group_id) {
             data.group_id = selectingColumnId
             if (filteredTasks.length > 0) {
-                const behindTaskId: number | null = selectingPosition >= filteredTasks.length ? null : filteredTasks[selectingPosition].id
-                const frontTaskId: number | null = selectingPosition - 1 < 0 ? null : filteredTasks[selectingPosition - 1].id
+                const behindTaskId: number | null = selectingPosition >= filteredTasks.length ? null : filteredTasks[selectingPosition].task.id
+                const frontTaskId: number | null = selectingPosition - 1 < 0 ? null : filteredTasks[selectingPosition - 1].task.id
                 data.behind_id = behindTaskId
                 data.front_id = frontTaskId
             }
@@ -64,7 +64,7 @@ function ColumnMoveDialog(props: Props) {
 
 
 
-    const filteredTasks = tasks.filter(t => t.group_id === selectingColumnId)
+    const filteredTasks = tasks.filter(t => t.task.group_id === selectingColumnId)
     return (
 
         isActive ?

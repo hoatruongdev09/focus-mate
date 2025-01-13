@@ -18,6 +18,9 @@ export class Group {
     })
     rank: string
 
+    @Column({ default: false })
+    archived: boolean
+
     @CreateDateColumn()
     created_at: Date
 
