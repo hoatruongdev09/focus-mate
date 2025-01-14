@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux"
 import { Task } from "../../../types/board-type"
 import { useUpdateTaskMutation } from "../../../store/services/board-service"
 import { useState } from "react"
+import DescriptionTextEditor from "./description-editor/description-texteditor"
 
 const TaskDescription = ({ task }: { task: Task }) => {
 
@@ -35,15 +36,16 @@ const TaskDescription = ({ task }: { task: Task }) => {
             </div>
             <div className="flex flex-col flex-1 gap-1">
                 <p className="font-semibold text-lg">Description</p>
-                <textarea
-                    className="bg-slate-300 bg-opacity-25 min-h-16 max-h-72 rounded p-2"
+                {/* <textarea
+                    className="bg-slate-300 bg-opacity-25 min-h-16 max-h-72 rounded p-2 resize-none"
                     placeholder="Add a more detailed description..."
                     value={task.description}
                     onChange={onDescriptionChange}
                     onBlur={onOutOfFocusDescription}
                 >
 
-                </textarea>
+                </textarea> */}
+                <DescriptionTextEditor />
             </div>
         </div>
     )
