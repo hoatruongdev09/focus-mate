@@ -1,13 +1,16 @@
 // Import React dependencies.
-import React, { ReactNode, useCallback, useState } from 'react'
+import React, { ReactNode, useCallback, useMemo, useState } from 'react'
 // Import the Slate editor factory.
 import { BaseEditor, createEditor, Descendant, Editor, Transforms, Element } from 'slate'
 
 // Import the Slate components and React plugin.
-import { Slate, Editable, withReact, ReactEditor, RenderElementProps } from 'slate-react'
+import { Slate, Editable, withReact, ReactEditor, RenderElementProps, RenderLeafProps } from 'slate-react'
 
 type CustomElement = { type: 'paragraph' | 'code'; children: CustomText[] }
-type CustomText = { text: string }
+type CustomText = {
+    text: string
+    bold?: boolean | undefined
+}
 
 declare module 'slate' {
     interface CustomTypes {
@@ -20,7 +23,10 @@ declare module 'slate' {
 const initialValue: Descendant[] = [
     {
         type: 'paragraph',
-        children: [{ text: 'A line of text in a paragraph.' }],
+        children: [{
+            text: 'A line of text in a paragraph.',
+            bold: false
+        }],
     },
 ]
 
@@ -44,14 +50,16 @@ const DefaultElement = ({ attributes, children }: {
     </p>)
 }
 
-const Leaf = ({ attributes, children }:
-    {
-        attributes: React.HTMLAttributes<HTMLSpanElement>,
-        children: React.ReactNode
-    }) => {
-    <span {...attributes}>
-        {children}
-    </span>
+const Leaf = (props: RenderLeafProps) => {
+    const { attributes, children, leaf } = props
+    console.log(leaf)
+    return (
+        <span
+            {...attributes}
+            style={{ fontWeight: props.leaf.bold ? 'bold' : 'normal' }}
+        >
+            {children}
+        </span>)
 }
 
 function DescriptionTextEditor() {
@@ -66,38 +74,84 @@ function DescriptionTextEditor() {
         }
     }, [])
 
+
+
+    const customEditor = {
+        isBoldMarkActive(editor: BaseEditor & ReactEditor) {
+            const marks = Editor.marks(editor)
+            return marks ? marks.bold === true : false
+        },
+        isCodeBlockActive(editor: BaseEditor & ReactEditor) {
+            const [match] = Editor.nodes(editor, {
+                match: (n: any) => n.type === 'code'
+            })
+            return match
+        },
+        toggleBoldMark(editor: BaseEditor & ReactEditor) {
+            const isActive = customEditor.isBoldMarkActive(editor)
+            if (isActive) {
+                Editor.removeMark(editor, 'bold')
+            } else {
+                Editor.addMark(editor, 'bold', true)
+            }
+        },
+        toggleCodeBlock(editor: BaseEditor & ReactEditor) {
+            const isActive = customEditor.isCodeBlockActive(editor)
+            Transforms.setNodes(
+                editor,
+                { type: isActive ? 'paragraph' : 'code' },
+                { match: n => Element.isElement(n) && Editor.isBlock(editor, n) }
+            )
+        }
+    }
+
     const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
-        if (!e.ctrlKey) {
+        if (!(e.ctrlKey)) {
             return
         }
         switch (e.key) {
             case '`':
                 e.preventDefault()
-                // Determine whether any of the currently selected blocks are code blocks.
-                const [match] = Editor.nodes(editor, {
-                    match: (n: any) => n.type === 'code',
-                })
-                // Otherwise, set the currently selected blocks type to "code".
-                Transforms.setNodes(
-                    editor,
-                    { type: match ? 'paragraph' : 'code' },
-                    { match: n => Element.isElement(n) && Editor.isBlock(editor, n) }
-                )
+                customEditor.toggleCodeBlock(editor)
                 break
             case 'b':
                 e.preventDefault()
-                Editor.addMark(editor, 'bold', true)
+                customEditor.toggleBoldMark(editor)
                 break
         }
+    }, [customEditor])
+
+    const renderLeaf = useCallback((props: RenderLeafProps) => {
+        return (
+            <Leaf {...props} />
+        )
     }, [])
 
     return (
         <Slate
             editor={editor}
             initialValue={initialValue}
-        >
+        ><div>
+                <button
+                    onMouseDown={event => {
+                        event.preventDefault()
+                        customEditor.toggleBoldMark(editor)
+                    }}
+                >
+                    Bold
+                </button>
+                <button
+                    onMouseDown={event => {
+                        event.preventDefault()
+                        customEditor.toggleCodeBlock(editor)
+                    }}
+                >
+                    Code Block
+                </button>
+            </div>
             <Editable
                 renderElement={renderElement}
+                renderLeaf={renderLeaf}
                 onKeyDown={handleKeyDown}
             />
         </Slate>
