@@ -3,8 +3,8 @@ import { setViewingTask } from "../../../store/slices/board-slice"
 import { useDispatch } from "react-redux"
 import { Task } from "../../../types/board-type"
 import { useUpdateTaskMutation } from "../../../store/services/board-service"
-import { useState } from "react"
-import DescriptionTextEditor from "./description-editor/description-texteditor"
+import { useCallback, useState } from "react"
+import DescriptionTextEditor from "./description-editor/components/text-editor"
 
 const TaskDescription = ({ task }: { task: Task }) => {
 
@@ -29,6 +29,14 @@ const TaskDescription = ({ task }: { task: Task }) => {
         })
     }
 
+    const handleFocus = useCallback(() => {
+
+    }, [])
+
+    const handleChange = useCallback((value: string) => {
+
+    }, [])
+
     return (
         <div className="flex gap-2">
             <div className="h-10 w-10 flex items-center justify-center">
@@ -45,7 +53,11 @@ const TaskDescription = ({ task }: { task: Task }) => {
                 >
 
                 </textarea> */}
-                <DescriptionTextEditor />
+                <DescriptionTextEditor
+                    value={task.description}
+                    onFocus={handleFocus}
+                    onChange={handleChange}
+                />
             </div>
         </div>
     )
