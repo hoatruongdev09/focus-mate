@@ -5,37 +5,42 @@ import { Task } from "../../../types/board-type"
 import { useUpdateTaskMutation } from "../../../store/services/board-service"
 import { useCallback, useState } from "react"
 import DescriptionTextEditor from "./description-editor/components/text-editor"
+import { XMarkIcon } from "@heroicons/react/16/solid";
 
 const TaskDescription = ({ task }: { task: Task }) => {
 
     const dispatch = useDispatch()
     const [updateTask] = useUpdateTaskMutation()
-    const [wasEditDescription, setWasEditDescription] = useState(false)
-
-
-    const onDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setWasEditDescription(true)
-        dispatch(setViewingTask({
-            ...task,
-            description: e.target.value
-        }))
-    }
-
-    const onOutOfFocusDescription = () => {
-        if (!wasEditDescription) { return }
-        setWasEditDescription(false)
-        updateTask({
-            ...task
-        })
-    }
+    const [content, setContent] = useState(task.description)
+    const [onFocus, setOnFocus] = useState(false)
 
     const handleFocus = useCallback(() => {
-
-    }, [])
+        setOnFocus(true)
+    }, [setOnFocus])
 
     const handleChange = useCallback((value: string) => {
+        setContent(value)
+    }, [setContent, task, dispatch])
 
-    }, [])
+    const handleSave = useCallback(async () => {
+        dispatch(setViewingTask({
+            ...task,
+            description: content
+        }))
+        await updateTask({
+            ...task,
+            description: content
+        })
+        setOnFocus(false)
+    }, [updateTask, task, setOnFocus])
+
+    const handleSetOnFocus = useCallback((focus: boolean) => {
+        setOnFocus(focus)
+    }, [setOnFocus])
+
+    const handleBlur = useCallback(() => {
+        setOnFocus(false)
+    }, [setOnFocus])
 
     return (
         <div className="flex gap-2">
@@ -44,20 +49,29 @@ const TaskDescription = ({ task }: { task: Task }) => {
             </div>
             <div className="flex flex-col flex-1 gap-1">
                 <p className="font-semibold text-lg">Description</p>
-                {/* <textarea
-                    className="bg-slate-300 bg-opacity-25 min-h-16 max-h-72 rounded p-2 resize-none"
-                    placeholder="Add a more detailed description..."
-                    value={task.description}
-                    onChange={onDescriptionChange}
-                    onBlur={onOutOfFocusDescription}
-                >
-
-                </textarea> */}
                 <DescriptionTextEditor
-                    value={task.description}
+                    value={content}
+                    isActive={onFocus}
+                    setIsActive={handleSetOnFocus}
                     onFocus={handleFocus}
                     onChange={handleChange}
                 />
+                {
+                    onFocus ? <div className="flex items-center gap-2 pt-2">
+                        <button
+                            className="bg-blue-600 text-white px-3 rounded py-1 hover:bg-blue-500"
+                            onClick={handleSave}
+                        >
+                            Save
+                        </button>
+                        <button
+                            className="p-1 hover:bg-gray-200 rounded"
+                            onClick={handleBlur}
+                        >
+                            <XMarkIcon className="size-6" />
+                        </button>
+                    </div> : <></>
+                }
             </div>
         </div>
     )

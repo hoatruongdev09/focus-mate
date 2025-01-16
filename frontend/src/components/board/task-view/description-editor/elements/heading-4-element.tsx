@@ -1,23 +1,26 @@
+import { AlignType } from "../text-editor-element"
+
 interface Props {
-    attributes: React.HTMLAttributes<HTMLParagraphElement>,
+    attributes: React.HTMLAttributes<HTMLHeadingElement>,
     children?: React.ReactNode | undefined
     align?: string | undefined
 }
 
-const ParagraphElement = (props: Props) => {
+const Heading4Element = (props: Props) => {
     const { attributes, children, align } = props
     let style = {}
     if (align) {
         style = { textAlign: align }
     }
     return (
-        <p
+        <h3
             style={style}
             {...attributes}
+            className="text-2xl font-bold leading-none tracking-tight"
         >
             {children}
-        </p>
+        </h3>
     )
 }
 
-export default ParagraphElement
+export default Heading4Element

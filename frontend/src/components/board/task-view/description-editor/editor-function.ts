@@ -1,66 +1,56 @@
 import { BaseEditor, Editor, Transforms, Element } from "slate"
 import { ReactEditor } from "slate-react"
-import { ElementType } from "./text-editor-element"
+import { EditorElement, ElementType, TEXT_ALIGN_TYPES } from "./text-editor-element"
 
-export const isBoldMarkActive = (editor: BaseEditor & ReactEditor) => {
-    const marks = Editor.marks(editor)
-    return marks ? marks.bold === true : false
-}
-
-export const isUnderlineMarkActive = (editor: BaseEditor & ReactEditor) => {
-    const marks = Editor.marks(editor)
-    return marks ? marks.underline === true : false
-}
-
-export const isItalicMarkActive = (editor: BaseEditor & ReactEditor) => {
-    const marks = Editor.marks(editor)
-    return marks ? marks.italic === true : false
-}
-
-export const isCodeBlockActive = (editor: BaseEditor & ReactEditor) => {
-    const [match] = Editor.nodes(editor, {
-        match: (n: any) => n.type === 'code'
-    })
-    return match
-}
-export const toggleBoldMark = (editor: BaseEditor & ReactEditor) => {
-    const isActive = isBoldMarkActive(editor)
-    if (isActive) {
-        Editor.removeMark(editor, 'bold')
-    } else {
-        Editor.addMark(editor, 'bold', true)
-    }
-}
-
-export const toggleItalic = (editor: BaseEditor & ReactEditor) => {
-    const isActive = isItalicMarkActive(editor)
-    if (isActive) {
-        Editor.removeMark(editor, 'italic')
-    } else {
-        Editor.addMark(editor, 'italic', true)
-    }
-}
-
-export const toggleUnderline = (editor: BaseEditor & ReactEditor) => {
-    const isActive = isUnderlineMarkActive(editor)
-    if (isActive) {
-        Editor.removeMark(editor, 'underline')
-    } else {
-        Editor.addMark(editor, 'underline', true)
-    }
-}
-
-export const toggleCodeBlock = (editor: BaseEditor & ReactEditor) => {
-    const isActive = isCodeBlockActive(editor)
-    Transforms.setNodes(
-        editor,
-        { type: isActive ? ElementType.paragraph : ElementType.code },
-        { match: n => Element.isElement(n) && Editor.isBlock(editor, n) }
-    )
-}
 
 export const isMarkActive = (editor: BaseEditor & ReactEditor, format: string) => {
     const marks = Editor.marks(editor)
     if (!marks) { return false }
     return marks ? Object(marks)[format] === true : false
+}
+
+export const toggleMark = (editor: BaseEditor & ReactEditor, format: string) => {
+    const isActive = isMarkActive(editor, format)
+    if (isActive) {
+        Editor.removeMark(editor, format)
+    } else {
+        Editor.addMark(editor, format, true)
+    }
+}
+
+
+export const isBlockActive = (editor: BaseEditor & ReactEditor, format: string, blockType = 'type'): boolean => {
+    const { selection } = editor
+    if (!selection) return false
+
+    const [match] = Array.from(
+        Editor.nodes(editor, {
+            at: Editor.unhangRange(editor, selection),
+            match: n =>
+                !Editor.isEditor(n) &&
+                Element.isElement(n) &&
+                Object(n)[blockType] === format,
+        })
+    )
+    return !!match
+}
+
+export const toggleBlock = (editor: BaseEditor & ReactEditor, format: string) => {
+    const isActive = isBlockActive(
+        editor,
+        format,
+        TEXT_ALIGN_TYPES.includes(format) ? 'align' : 'type'
+    )
+    let newProperties: Partial<EditorElement>
+    if (TEXT_ALIGN_TYPES.includes(format)) {
+        newProperties = {
+            align: isActive ? undefined : format,
+        }
+    } else {
+        newProperties = {
+            type: isActive ? ElementType.paragraph : format,
+        }
+    }
+    Transforms.setNodes<EditorElement>(editor, newProperties)
+
 }

@@ -1,6 +1,7 @@
 import { ReactNode } from "react"
 import { useSlate } from "slate-react"
-import { isMarkActive } from "../editor-function"
+import { isBlockActive } from "../editor-function"
+import { TEXT_ALIGN_TYPES } from "../text-editor-element"
 
 interface Props {
     children: ReactNode
@@ -8,11 +9,15 @@ interface Props {
     format: string
 }
 
-const ToolbarButton = (props: Props) => {
+const BlockButton = (props: Props) => {
     const { children, onMouseDown, format } = props
     const editor = useSlate()
 
-    const isActive = isMarkActive(editor, format)
+    const isActive = isBlockActive(
+        editor,
+        format,
+        TEXT_ALIGN_TYPES.includes(format) ? 'align' : 'type'
+    )
     return (
         <button
             onMouseDown={onMouseDown}
@@ -23,4 +28,4 @@ const ToolbarButton = (props: Props) => {
     )
 }
 
-export default ToolbarButton
+export default BlockButton
