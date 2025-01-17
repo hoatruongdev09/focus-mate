@@ -40,20 +40,16 @@ function DescriptionTextEditor(props: Props) {
 
     const [editor] = useState(() => withReact(createEditor()))
     const initialValue = useMemo(() => {
-        if (!value) {
-            return [
-                {
-                    type: ElementType.paragraph,
-                    children: [{ text: '' }],
-                }
-            ]
-        }
-        return JSON.parse(value) || [
+        const defaultValue: EditorElement[] = [
             {
                 type: ElementType.paragraph,
-                children: [{ text: 'A line of text in a paragraph.' }],
+                children: [{ text: '' }],
             }
         ]
+        if (!value) {
+            return defaultValue
+        }
+        return JSON.parse(value) || defaultValue
     }, [value])
 
     const renderElement = useCallback(RenderElement, [])

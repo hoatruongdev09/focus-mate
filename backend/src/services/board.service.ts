@@ -218,7 +218,7 @@ export default class BoardService {
         })
 
         if (task == null) { throw new Error("Task not found") }
-
+        console.log(`task update description: ${data.description}`)
         task.title = data.title
         task.description = data.description
         task.priority = data.priority

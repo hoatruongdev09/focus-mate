@@ -32,7 +32,7 @@ const TaskDescription = ({ task }: { task: Task }) => {
             description: content
         })
         setOnFocus(false)
-    }, [updateTask, task, setOnFocus])
+    }, [content, updateTask, task, setOnFocus])
 
     const handleSetOnFocus = useCallback((focus: boolean) => {
         setOnFocus(focus)
