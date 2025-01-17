@@ -1,5 +1,6 @@
 import { Router } from "express";
 import * as boardController from "../controllers/board.controller";
+import { auth } from "../middlewares/authenticate.middleware";
 
 const route = Router()
 route.get('/', boardController.fetchBoard)

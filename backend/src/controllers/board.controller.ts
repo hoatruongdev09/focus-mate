@@ -1,4 +1,4 @@
-import e, { Request, Response } from 'express'
+import { Request, Response } from 'express'
 import BoardService from '../services/board.service'
 import UpdateGroupDto from '../dto/board/update-group.dto'
 import CreateGroupDto from '../dto/board/create-group.dto'

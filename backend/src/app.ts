@@ -1,7 +1,17 @@
 import "reflect-metadata"
 import express from 'express';
 import cors from 'cors'
+
+
 import boardRoute from './routes/board.route'
+import authRoute from './routes/auth.route'
+
+declare module "express-serve-static-core" {
+    interface Request {
+        user_id?: number | undefined
+        user_role?: number | undefined
+    }
+}
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -14,6 +24,7 @@ app.get('/', async (req, res) => {
     res.json("OK");
 });
 
+app.use("/auth", authRoute)
 app.use("/board", boardRoute)
 
 
