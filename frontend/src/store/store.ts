@@ -3,16 +3,25 @@ import { boardViewSlice } from "./slices/board-slice";
 import { boardApi } from "./services/board-service";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { authApi } from "./services/auth-service";
+import { authSlice } from "./slices/auth-slice";
+import { appViewSlice } from "./slices/app-slice";
+import { userSlice } from "./slices/user-slice";
+import { userApi } from "./services/user-service";
 
 export const store = configureStore({
     reducer: {
+        app: appViewSlice.reducer,
         boardView: boardViewSlice.reducer,
+        auth: authSlice.reducer,
+        user: userSlice.reducer,
+        [userApi.reducerPath]: userApi.reducer,
         [boardApi.reducerPath]: boardApi.reducer,
         [authApi.reducerPath]: authApi.reducer
     },
     middleware: (getDefaultConfig) => getDefaultConfig()
         .concat(boardApi.middleware)
-        .concat(authApi.middleware),
+        .concat(authApi.middleware)
+        .concat(userApi.middleware),
 })
 
 setupListeners(store.dispatch)

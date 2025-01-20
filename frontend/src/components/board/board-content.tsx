@@ -194,7 +194,7 @@ function BoardContent() {
         >
 
             <div className="flex flex-1 gap-2 h-full z-10">
-                <div className="flex gap-2 h-full justify-start items-start">
+                <div className="flex gap-2 h-full justify-start items-start px-3">
                     <SortableContext items={columnIds}>
                         {renderColumns.map(col =>
                             <ColumnContainer

@@ -5,6 +5,7 @@ import cors from 'cors'
 
 import boardRoute from './routes/board.route'
 import authRoute from './routes/auth.route'
+import userRoute from './routes/user.route'
 
 declare module "express-serve-static-core" {
     interface Request {
@@ -26,6 +27,7 @@ app.get('/', async (req, res) => {
 
 app.use("/auth", authRoute)
 app.use("/board", boardRoute)
+app.use("/user", userRoute)
 
 
 app.listen(port, () => {
