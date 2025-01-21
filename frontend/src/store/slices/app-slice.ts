@@ -5,7 +5,7 @@ interface AppState {
 }
 
 const initialState: AppState = {
-    showLoadingScreen: true
+    showLoadingScreen: false
 }
 
 export const appViewSlice = createSlice({

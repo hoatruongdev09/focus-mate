@@ -4,6 +4,7 @@ import { AppRootState } from "../store";
 
 export const userApi = createApi({
     reducerPath: "userApi",
+    tagTypes: ['user'],
     baseQuery: fetchBaseQuery({
         baseUrl: `http://localhost:3000/user`,
         prepareHeaders: (headers, { getState }) => {
@@ -16,7 +17,8 @@ export const userApi = createApi({
     }),
     endpoints: (builder) => ({
         getMyInfo: builder.query<BasicUserData, void>({
-            query: () => `/my-info`
+            query: () => `/my-info`,
+            providesTags: ['user']
         })
     })
 })

@@ -4,7 +4,7 @@ import ArrowRightStartOnRectangleIcon from "@heroicons/react/24/outline/ArrowRig
 
 const UserInfoDialog = () => {
 
-    const userData = useSelector((state: AppRootState) => state.auth.userData)
+    const userData = useSelector((state: AppRootState) => state.user.data)
     if (!userData) {
         return <></>
     }

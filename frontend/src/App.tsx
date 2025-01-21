@@ -7,6 +7,8 @@ import Layout from "./pages/Layout";
 import KanbanBoardPage from "./pages/Kanbanboard";
 import LoadingScreen from "./components/loading-screen";
 import PrivateOutlet from "./pages/PrivateOutlet";
+import LandingPage from "./pages/LandingPage";
+import Workspace from "./pages/Workspace";
 
 function App() {
   const dispatch = useDispatch()
@@ -27,7 +29,7 @@ function App() {
   }, [columns, tasks])
 
   if (isLoadingColumns && isLoadingTasks) {
-    return (<>Loading</>)
+    return (<></>)
   }
 
   return (
@@ -36,7 +38,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
-            <Route path="*" element={<PrivateOutlet />}>
+            <Route index element={<LandingPage />} />
+            <Route path="u" element={<PrivateOutlet />}>
+              <Route index element={<Workspace />} />
               <Route path="board" element={<KanbanBoardPage />} />
             </Route>
           </Route>

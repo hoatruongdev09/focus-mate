@@ -1,16 +1,23 @@
-import { useSelector } from "react-redux"
 import { Navigate, Outlet, useLocation } from "react-router-dom"
-import { AppRootState } from "../store/store"
+import { useGetMyInfoQuery } from "../store/services/user-service"
+import { useDispatch } from "react-redux"
+import { useEffect } from "react"
+import { hideLoadingScreen, showLoadingScreen } from "../store/slices/app-slice"
+import NavBar from "../components/nav-bar"
 
 const PrivateOutlet = () => {
-    const auth = useSelector((state: AppRootState) => state.auth)
     const location = useLocation()
+    const { data: user, isLoading } = useGetMyInfoQuery();
 
-    if (!auth.token && !auth.refresh_token) {
+    if (!user && !isLoading) {
         return (<Navigate to={'/'} state={{ from: location }} />)
     }
+
     return (
-        <Outlet />
+        <>
+            <NavBar />
+            <Outlet />
+        </>
     )
 }
 

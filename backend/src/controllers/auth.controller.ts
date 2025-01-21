@@ -30,6 +30,7 @@ export const registerEmailPassword = async (req: Request, res: Response) => {
 
 export const loginEmailPassword = async (req: Request, res: Response) => {
     const { email, password } = req.body
+    console.log(`${email} ${password}`)
     try {
         const result = await authService.loginEmailPassword(email, password)
         res.status(200).json(result)

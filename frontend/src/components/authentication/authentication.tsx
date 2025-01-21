@@ -1,7 +1,5 @@
 import { UserIcon } from "@heroicons/react/16/solid"
 import { useCallback, useState } from "react";
-import { useSelector } from "react-redux";
-import { AppRootState } from "../../store/store";
 import LoginDialog from "./login-dialog";
 import UserInfoDialog from "./user-info-dialog";
 import { useGetMyInfoQuery } from "../../store/services/user-service";
@@ -9,17 +7,11 @@ import { useGetMyInfoQuery } from "../../store/services/user-service";
 const Authentication = () => {
     const [showUserInfo, setShowUserInfo] = useState(false)
     const [showLoginDialog, setShowLoginDialog] = useState(false)
-    const authData = useSelector((state: AppRootState) => state.auth);
 
-    const isAuthenticated = authData.token && authData.refresh_token
+    const { data: user } = useGetMyInfoQuery()
 
-    const { data, error, isLoading } = useGetMyInfoQuery()
+    const isAuthenticated = !!user
 
-    // TODO: implement auth before loading user data
-
-
-
-    console.log(`is authenticated: ${isAuthenticated}`)
 
     const handleUserIconClick = useCallback(() => {
         if (isAuthenticated) {
@@ -32,7 +24,7 @@ const Authentication = () => {
     }, [showUserInfo, setShowUserInfo, showLoginDialog, setShowLoginDialog, isAuthenticated])
 
     return (
-        <div className="relative">
+        <div className="relative flex flex-col items-center">
             {
                 !isAuthenticated && showLoginDialog ? <LoginDialog /> : <></>
             }
@@ -41,10 +33,13 @@ const Authentication = () => {
             }
 
             <button
-                className="hover:bg-gray-200 p-1 rounded"
+                className=""
                 onClick={handleUserIconClick}
             >
-                <UserIcon className="size-5" />
+                <img
+                    src={`https://avatar.iran.liara.run/public/${user?.id ?? 34}`}
+                    className="w-10 h-10"
+                />
 
             </button>
         </div>
