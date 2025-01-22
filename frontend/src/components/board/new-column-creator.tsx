@@ -4,10 +4,13 @@ import { AddGroupData } from "../../types/board-type";
 import { PlusSmallIcon } from "@heroicons/react/20/solid";
 import { KeyboardEvent } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
+import { useSelector } from "react-redux";
+import { AppRootState } from "../../store/store";
 
 function NewColumnCreator() {
     const [requestAddColumn] = useAddColumnsMutation()
 
+    const board = useSelector((state: AppRootState) => state.boardView.board)
     const [inputValue, setInputValue] = useState('')
     const [showInput, setShowInput] = useState(false)
     const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -22,9 +25,11 @@ function NewColumnCreator() {
     }, [inputRef, setShowInput])
 
     const handleCreateColumn = useCallback(async () => {
+        if (!board) { return }
         const value = inputValue
         setInputValue("")
         const newColumn: AddGroupData = {
+            board_id: board?.id,
             name: value,
             description: ''
         }

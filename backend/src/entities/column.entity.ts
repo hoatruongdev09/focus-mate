@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, Generated, JoinTable, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Task } from "./task.entity";
+import Board from "./board.entity";
 
 @Entity()
 export class Group {
@@ -32,4 +33,8 @@ export class Group {
 
     @OneToMany(() => Task, (task) => task.group, { cascade: true })
     tasks: Task[]
+
+    @ManyToOne(() => Board, (board) => board.groups)
+    @JoinColumn({ name: "board_id" })
+    board: Board
 }

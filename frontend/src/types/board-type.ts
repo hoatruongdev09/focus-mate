@@ -1,5 +1,17 @@
-export type AddGroupData = {
+export type Board = {
+    id: number
     name: string,
+    description: string
+}
+
+export type CreateBoardData = {
+    title: string,
+    description: string
+}
+
+export type AddGroupData = {
+    board_id: number
+    name: string
     description: string
 }
 
@@ -9,6 +21,7 @@ export type AddTaskData = {
     priority: number
     estimate: number
     group_id: number
+    board_id: number
 }
 
 export type Group = {
@@ -17,6 +30,7 @@ export type Group = {
     description: string
     rank: string
     archived: boolean
+    board_id: number
 }
 
 export type Task = {

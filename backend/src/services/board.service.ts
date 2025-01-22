@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { In, NumericType, Repository } from "typeorm";
 import dataSource from "../db/data-source";
 import { Task } from "../entities/task.entity";
 import { Group } from "../entities/column.entity";
@@ -6,14 +6,59 @@ import CreateGroupDto from "../dto/board/create-group.dto";
 import UpdateGroupDto from "../dto/board/update-group.dto";
 import CreateTaskDto from "../dto/board/create-task.dto";
 import UpdateTaskDto from "../dto/board/update-task.dto";
+import Board from "../entities/board.entity";
+import User from "../entities/user.entity";
+import CreateBoardDto from "../dto/board/create-board.dto";
 
 export default class BoardService {
     private taskRepository: Repository<Task>
     private groupRepository: Repository<Group>
+    private boardRepository: Repository<Board>
 
     constructor() {
         this.taskRepository = dataSource.getRepository(Task)
         this.groupRepository = dataSource.getRepository(Group)
+        this.boardRepository = dataSource.getRepository(Board)
+    }
+
+    async getBoards(user_id: number): Promise<Board[]> {
+        return await this.boardRepository.find({
+            where: {
+                owner: {
+                    id: user_id
+                }
+            }
+        })
+    }
+
+    async getBoard(board_id: number): Promise<Board> {
+        return await this.boardRepository.findOne({
+            where: {
+                id: board_id
+            }
+        })
+    }
+
+    async createBoard(user_id: number, data: CreateBoardDto): Promise<Board> {
+        const { title, description } = data
+        const existBoard = await this.boardRepository.findOne({
+            where: {
+                owner: {
+                    id: user_id
+                },
+                name: title
+            }
+        })
+        if (existBoard) {
+            throw new Error("Title is exist")
+        }
+
+        const newBoard = new Board()
+        newBoard.name = title
+        newBoard.description = description
+        newBoard.owner = { id: user_id } as User
+
+        return await this.boardRepository.save(newBoard)
     }
 
     async archiveOrUnarchiveTask(task_id: number) {
@@ -25,8 +70,14 @@ export default class BoardService {
         return await this.taskRepository.save(task)
     }
 
-    async archiveOrUnarchiveColumn(column_id: number) {
-        const column = await this.groupRepository.findOne({ where: { id: column_id } })
+    async archiveOrUnarchiveColumn(board_id: number, column_id: number) {
+        const column = await this.groupRepository.findOne({
+            where: {
+                id: column_id, board: {
+                    id: board_id
+                }
+            }
+        })
         if (!column) {
             throw new Error("Column not found")
         }
@@ -34,55 +85,91 @@ export default class BoardService {
         return await this.groupRepository.save(column)
     }
 
-    async archiveOrUnarchiveTasksInColumn(column_id: number, archived: boolean) {
-        const column = await this.groupRepository.findOne({ where: { id: column_id } })
+    async archiveOrUnarchiveTasksInColumn(board_id: number, column_id: number, archived: boolean) {
+        const column = await this.groupRepository.findOne({
+            where: {
+                id: column_id,
+                board: { id: board_id }
+            }
+        })
         if (!column) {
             throw new Error("Column not found")
         }
+
         await this.taskRepository
-            .createQueryBuilder()
+            .createQueryBuilder("task")
+            .leftJoin("task.group", "group")
+            .leftJoin("group.board", "board")
             .update()
             .set({ archived: archived })
-            .where("group_id = :column_id", { column_id })
+            .where("group.id = :column_id AND board.id = :board_id", { column_id, board_id })
             .execute()
 
         return this.taskRepository
-            .createQueryBuilder()
+            .createQueryBuilder("task")
+            .leftJoin("task.group", "group")
+            .leftJoin("group.board", "board")
             .select(["id", "title", "estimate", "priority", "description", "rank", "group_id", "archived"])
-            .where("group_id = :column_id", { column_id })
-            .execute()
-    }
-
-    async getGroups() {
-        return this.groupRepository
-            .createQueryBuilder()
-            .select()
-            .orderBy("rank", "DESC")
+            .where("group.id = :column_id AND board.id = :board_id", { column_id, board_id })
             .getMany()
     }
 
-    private async getGroupTopRank() {
+    async getGroups(board_id: number) {
+        const groups: Group[] = await this.groupRepository
+            .createQueryBuilder("group")
+            .leftJoinAndSelect("group.board", "board")
+            .addSelect(["board.id"])
+            .where("board_id = :board_id", { board_id })
+            .orderBy("rank", "DESC")
+            .getMany()
+
+        return groups.map(g => {
+            const { board, ...data } = g
+            return {
+                ...data,
+                board_id: board.id
+            }
+        })
+    }
+
+    private async getGroupTopRank(board_id: number) {
         return await this.groupRepository
             .createQueryBuilder()
             .select()
+            .where("board_id = :board_id", { board_id })
             .orderBy("rank", "DESC")
             .getOne()
     }
 
-    async createGroup(data: CreateGroupDto) {
+    async createGroup(board_id: number, data: CreateGroupDto) {
         const { name, description } = data
+
+        const board = await this.getBoard(board_id)
+        if (!board) {
+            throw new Error("Board not found")
+        }
+
         const newGroup = new Group()
 
-        const topRank = await this.getGroupTopRank()
+        const topRank = await this.getGroupTopRank(board_id)
         newGroup.name = name || "Untitled list"
         newGroup.description = description
         newGroup.rank = this.midString(topRank?.rank ?? "", "")
+        newGroup.board = board
         return await this.groupRepository.save(newGroup)
     }
 
-    async updateGroup(id: number, data: UpdateGroupDto) {
+    async updateGroup(board_id: number, id: number, data: UpdateGroupDto) {
         const { name, description } = data
-        const group = await this.groupRepository.findOne({ where: { id } })
+
+        const group = await this.groupRepository.findOne({
+            where: {
+                id,
+                board: {
+                    id: board_id
+                }
+            }
+        })
         if (group == null) {
             throw new Error("Group not found")
         }
@@ -94,7 +181,7 @@ export default class BoardService {
             const groups = await this.groupRepository
                 .createQueryBuilder()
                 .select()
-                .where("id in (:...ids)", { ids: [front_id, behind_id].filter(id => id !== null) })
+                .where("id in (:...ids) AND board_id = :board_id", { board_id, ids: [front_id, behind_id].filter(id => id !== null) })
                 .getMany()
             const frontGroupRank = front_id ? groups.find(g => g.id == front_id).rank : null
             const behindGroupRank = behind_id ? groups.find(g => g.id == behind_id).rank : null
@@ -123,8 +210,15 @@ export default class BoardService {
         return await this.groupRepository.save(targetGroup)
     }
 
-    async deleteGroup(id: number) {
-        const group = await this.groupRepository.findOne({ where: { id } })
+    async deleteGroup(board_id: number, id: number) {
+        const group = await this.groupRepository.findOne({
+            where: {
+                id,
+                board: {
+                    id: board_id
+                }
+            }
+        })
         if (group == null) {
             throw new Error("Group not found")
         }
@@ -135,7 +229,7 @@ export default class BoardService {
             .execute()
         await this.groupRepository.createQueryBuilder()
             .softDelete()
-            .where("id = :id", { id })
+            .where("id = :id AND board_id = :board_id", { id, board_id })
             .execute()
     }
 
@@ -169,9 +263,15 @@ export default class BoardService {
             .getOne()
     }
 
-    async addTask(groupId: number, data: CreateTaskDto) {
+    async addTask(board_id: number, groupId: number, data: CreateTaskDto) {
 
-        const group = await this.groupRepository.findOne({ where: { id: groupId } })
+        const group = await this.groupRepository.findOne({
+            where: {
+                id: groupId, board: {
+                    id: board_id
+                }
+            }
+        })
 
         if (group == null) {
             throw new Error("Group not found")
@@ -195,9 +295,14 @@ export default class BoardService {
         return await this.taskRepository.save(newTask)
     }
 
-    async getTasks() {
+    async getTasks(board_id: number) {
+        const groups = await this.groupRepository.find({ where: { board: { id: board_id } } })
+        if (!groups || groups.length == 0) {
+            return []
+        }
         return await this.taskRepository.createQueryBuilder()
             .select(["id", "title", "estimate", "priority", "description", "rank", "group_id", "archived"])
+            .where("group_id IN (:...group_ids)", { group_ids: groups.map(g => g.id) })
             .orderBy("rank", "DESC")
             .execute()
     }
@@ -209,16 +314,21 @@ export default class BoardService {
     }
 
 
-    async updateTask(id: number, data: UpdateTaskDto) {
-        const task = await this.taskRepository.findOne({
-            where: { id },
-            relations: {
-                group: true
-            }
-        })
+    async updateTask(board_id: number, id: number, data: UpdateTaskDto) {
+        // const task = await this.taskRepository.findOne({
+        //     where: { id },
+        //     relations: {
+        //         group: true
+        //     }
+        // })
+
+        const task = await this.taskRepository.createQueryBuilder("task")
+            .leftJoinAndSelect("task.group", "group")
+            .leftJoinAndSelect("group.board", "board")
+            .where("board.id = :board_id AND task.id = :id", { board_id, id })
+            .getOne()
 
         if (task == null) { throw new Error("Task not found") }
-        console.log(`task update description: ${data.description}`)
         task.title = data.title
         task.description = data.description
         task.priority = data.priority
@@ -266,25 +376,42 @@ export default class BoardService {
         }
     }
 
-    async deleteTask(id: number) {
-        await this.taskRepository.createQueryBuilder()
-            .softDelete().where("id = :id", { id })
+    async deleteTask(board_id: number, id: number) {
+        await this.taskRepository.createQueryBuilder("task")
+            .leftJoin("task.group", "group")
+            .leftJoin("group.board", "board")
+            .softDelete().where("task.id = :id AND board.id = :board_id", { id, board_id })
             .execute()
     }
 
-    async getBoard() {
-        const columns = await this.groupRepository.find()
-        const tasks = await this.taskRepository.find()
+    async getBoardColumnsAndTasks(board_id: number) {
+        const columns = await this.groupRepository.find({
+            where: {
+                board: {
+                    id: board_id
+                }
+            }
+        })
+        const tasks = await this.taskRepository.find({
+            where: {
+                group: {
+                    id: In([columns.map(col => col.id)])
+                }
+            }
+        })
 
         return { tasks, columns }
     }
 
-    async getTasksInColumn(columnId: number) {
+    async getTasksInColumn(board_id: number, columnId: number) {
         const tasks = await this.taskRepository.find({
             relations: { group: true },
             where: {
                 group: {
-                    id: columnId
+                    id: columnId,
+                    board: {
+                        id: board_id
+                    }
                 }
             }
         })

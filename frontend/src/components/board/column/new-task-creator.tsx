@@ -30,6 +30,7 @@ function NewTaskCreator(props: Props) {
         await createTask({
             title: value,
             group_id: column.id,
+            board_id: column.board_id,
             description: '',
             estimate: 1,
             priority: 1

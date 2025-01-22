@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import Board from "./board.entity";
 
 @Entity()
 export default class User {
@@ -25,4 +26,8 @@ export default class User {
 
     @Column({ default: 0 })
     role: number
+
+    @OneToMany(() => Board, (board) => board.owner, { cascade: true })
+    boards: Board[]
+
 }

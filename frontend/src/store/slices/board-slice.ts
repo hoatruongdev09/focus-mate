@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Group, Task } from "../../types/board-type";
+import { Board, Group, Task } from "../../types/board-type";
 
 interface BoardTaskData {
     task: Task
@@ -7,6 +7,7 @@ interface BoardTaskData {
 }
 
 interface BoardViewSliceData {
+    board: Board | null,
     columns: Group[]
     tasks: BoardTaskData[]
     draggingColumn: Group | null
@@ -15,6 +16,7 @@ interface BoardViewSliceData {
 }
 
 const initialState: BoardViewSliceData = {
+    board: null,
     columns: [],
     tasks: [],
     draggingColumn: null,
@@ -26,6 +28,9 @@ export const boardViewSlice = createSlice({
     name: "boardViewSlice",
     initialState,
     reducers: {
+        setBoard: (state, action: PayloadAction<Board | null>) => {
+            state.board = action.payload
+        },
         setColumns: (state, action: PayloadAction<Group[]>) => {
             state.columns = action.payload
         },
@@ -51,7 +56,9 @@ export const boardViewSlice = createSlice({
     }
 })
 
-export const { setColumns,
+export const {
+    setBoard,
+    setColumns,
     setTasks,
     setDraggingColumn,
     setDraggingTask,

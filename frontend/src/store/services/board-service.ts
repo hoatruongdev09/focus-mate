@@ -1,22 +1,47 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { AddGroupData, AddTaskData, Group, Task, UpdateGroupData, UpdateTaskData } from "../../types/board-type";
+import { AddGroupData, AddTaskData, Board, CreateBoardData, Group, Task, UpdateGroupData, UpdateTaskData } from "../../types/board-type";
+import { AppRootState } from "../store";
 
 export const boardApi = createApi({
     reducerPath: 'boardApi',
-    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000/board' }),
-    tagTypes: ['columns', 'tasks'],
+    baseQuery: fetchBaseQuery({
+        baseUrl: 'http://localhost:3000/board',
+        prepareHeaders: (headers, { getState }) => {
+            const token = (getState() as AppRootState).auth.token
+            if (token) {
+                headers.set('authorization', `Bearer ${token}`)
+            }
+            return headers
+        }
+    }),
+    tagTypes: ['board', 'columns', 'tasks'],
     endpoints: (builder) => ({
-        getColumns: builder.query<Group[], void>({
-            query: () => '/groups',
+        getBoards: builder.query<Board[], void>({
+            query: () => `/`,
+            providesTags: ['board']
+        }),
+        getBoard: builder.query<Board, number>({
+            query: (data) => `/${data}`
+        }),
+        createBoard: builder.mutation<Board, CreateBoardData>({
+            query: data => ({
+                url: '/',
+                method: 'POST',
+                body: data
+            }),
+            invalidatesTags: ['board']
+        }),
+        getColumns: builder.query<Group[], number>({
+            query: (data) => `${data}/groups`,
             providesTags: ['columns']
         }),
-        getTasks: builder.query<Task[], void>({
-            query: () => '/tasks',
+        getTasks: builder.query<Task[], number>({
+            query: (data) => `${data}/tasks`,
             providesTags: ['tasks']
         }),
         addColumns: builder.mutation<Group, AddGroupData>({
             query: data => ({
-                url: `/groups`,
+                url: `${data.board_id}/groups`,
                 method: 'POST',
                 body: data
             }),
@@ -31,7 +56,7 @@ export const boardApi = createApi({
         }),
         addTasks: builder.mutation<Group, AddTaskData>({
             query: data => ({
-                url: `/groups/${data.group_id}/task`,
+                url: `/${data.board_id}/groups/${data.group_id}/task`,
                 method: 'POST',
                 body: data
             }),
@@ -86,6 +111,9 @@ export const boardApi = createApi({
 })
 
 export const {
+    useGetBoardsQuery,
+    useCreateBoardMutation,
+    useGetBoardQuery,
     useGetTasksQuery,
     useGetColumnsQuery,
     useAddColumnsMutation,
