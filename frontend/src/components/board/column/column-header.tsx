@@ -67,6 +67,7 @@ function ColumnHeader(props: Props) {
         await createTask({
             title: str,
             group_id: column.id,
+            board_id: column.board_id,
             description: '',
             estimate: 1,
             priority: 1
@@ -78,12 +79,11 @@ function ColumnHeader(props: Props) {
     }, [setShowCreateTaskInput])
 
     const handleArchiveColumn = useCallback(() => {
-        archiveColumn(column.id)
+        archiveColumn({ board_id: column.board_id, column_id: column.id })
     }, [column, archiveColumn])
 
     const handleArchiveTasksInList = () => {
-        console.log(`archive task in list `)
-        archiveTasksInColumn({ id: column.id, action: true })
+        archiveTasksInColumn({ board_id: column.board_id, column_id: column.id, action: true })
     }
 
     return (

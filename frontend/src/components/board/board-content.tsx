@@ -34,7 +34,7 @@ function BoardContent() {
     const [requestUpdateTask] = useUpdateTaskMutation()
     const [requestUpdateColumn] = useUpdateColumnMutation()
 
-    const { columns, tasks, draggingColumn, draggingTask } = useSelector((state: AppRootState) => state.boardView)
+    const { columns, tasks, draggingColumn, draggingTask, board } = useSelector((state: AppRootState) => state.boardView)
     const renderTasks = useMemo(() => tasks.filter(t => !t.task.archived), [tasks])
     const renderColumns = useMemo(() => columns.filter(t => !t.archived), [columns])
     const columnIds = useMemo(() => columns.map(col => `${DraggingItem.COLUMN}_${col.id}`), [renderColumns])
@@ -76,13 +76,14 @@ function BoardContent() {
 
     const doReorderTask = useCallback(async (task: Task, frontTaskId: number | null, behindTaskId: number | null) => {
         if (!frontTaskId && !behindTaskId) { return; }
-        if (task == null) { return; }
+        if (!task || !board) { return; }
         await requestUpdateTask({
             ...task,
+            board_id: board.id,
             front_id: frontTaskId,
             behind_id: behindTaskId
         });
-    }, [requestUpdateTask]);
+    }, [requestUpdateTask, board]);
 
     const dropColumn = useCallback((activeColumnId: UniqueIdentifier, overColumnId: UniqueIdentifier) => {
         if (activeColumnId === overColumnId) { return; }

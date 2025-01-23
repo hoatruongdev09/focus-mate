@@ -51,6 +51,7 @@ export type UpdateTaskData = {
     priority: number
     estimate: number
     group_id: number
+    board_id: number
 
     front_id?: number | null
     behind_id?: number | null
@@ -58,6 +59,7 @@ export type UpdateTaskData = {
 
 export type UpdateGroupData = {
     id: number
+    board_id: number
     name: string
     description: string
 

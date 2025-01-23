@@ -17,7 +17,7 @@ function Modal(prop: Props) {
     return (
         <>
             <div
-                className="fixed inset-0 bg-gray-950 bg-opacity-80 z-30"
+                className="fixed inset-0 bg-gray-950 bg-opacity-80 z-50"
                 onClick={e => onClick(e)}
             >
                 {children}

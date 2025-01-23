@@ -1,5 +1,5 @@
 import { XMarkIcon } from "@heroicons/react/16/solid";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppRootState } from "../../../store/store";
 import { useUpdateTaskMutation } from "../../../store/services/board-service";
@@ -15,7 +15,7 @@ interface Props {
 function ColumnMoveDialog(props: Props) {
     const { isActive, hide } = props
     const dispatch = useDispatch()
-    const { viewingTask, columns, tasks } = useSelector((state: AppRootState) => state.boardView)
+    const { viewingTask, columns, tasks, board } = useSelector((state: AppRootState) => state.boardView)
     const [selectingColumnId, setSelectingColumnId] = useState<number>(viewingTask?.group_id ?? 0)
 
     const [updateTask] = useUpdateTaskMutation()
@@ -23,9 +23,11 @@ function ColumnMoveDialog(props: Props) {
     const currentTaskIndex = tasks.findIndex(t => t.task.id == viewingTask?.id)
     const [selectingPosition, setSelectingPosition] = useState(currentTaskIndex)
 
+    const filteredTasks = useMemo(() => tasks.filter(t => t.task.group_id === selectingColumnId), [tasks, selectingColumnId])
+
     const ref = useClickOutside(hide, [], [hide])
 
-    const onChangeColumn = (e: ChangeEvent<HTMLSelectElement>) => {
+    const onChangeColumn = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
         const colId: number = +e.target.value
         setSelectingColumnId(colId)
         if (colId == viewingTask?.group_id) {
@@ -33,17 +35,26 @@ function ColumnMoveDialog(props: Props) {
         } else {
             setSelectingPosition(0)
         }
-    }
+    }, [setSelectingColumnId, viewingTask, currentTaskIndex])
 
-    const onChangePosition = (e: ChangeEvent<HTMLSelectElement>) => {
+    const onChangePosition = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
         setSelectingPosition(+e.target.value)
-    }
+    }, [setSelectingPosition])
 
-    const onMoveTask = async () => {
-        if (!viewingTask) { return }
+    const doUpdateTask = useCallback(async (data: UpdateTaskData) => {
+        const { data: updatedTask, error } = await updateTask(data)
+        if (updatedTask) {
+            dispatch(setViewingTask(updatedTask))
+            hide()
+        }
+    }, [dispatch, updateTask, hide])
+
+    const onMoveTask = useCallback(async () => {
+        if (!viewingTask || !board) { return }
 
         const data: UpdateTaskData = {
             ...viewingTask,
+            board_id: board.id
         }
         if (selectingPosition != currentTaskIndex || selectingColumnId != viewingTask.group_id) {
             data.group_id = selectingColumnId
@@ -54,17 +65,13 @@ function ColumnMoveDialog(props: Props) {
                 data.front_id = frontTaskId
             }
         }
-        const { data: updatedTask, error } = await updateTask(data)
-        if (updatedTask) {
-            dispatch(setViewingTask(updatedTask))
-            hide()
-        }
 
-    }
+        doUpdateTask(data)
+    }, [doUpdateTask, viewingTask, board, selectingColumnId, selectingPosition, currentTaskIndex, filteredTasks])
 
 
 
-    const filteredTasks = tasks.filter(t => t.task.group_id === selectingColumnId)
+
     return (
 
         isActive ?

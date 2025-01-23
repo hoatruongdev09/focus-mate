@@ -9,6 +9,7 @@ import ColumnMoveDialog from "./column-move-dialog";
 
 const TaskHeader = () => {
     const dispatch = useDispatch()
+    const board = useSelector((state: AppRootState) => state.boardView.board)
     const [updateTask] = useUpdateTaskMutation()
     const { viewingTask, columns } = useSelector((state: AppRootState) => state.boardView)
 
@@ -37,12 +38,13 @@ const TaskHeader = () => {
     }, [dispatch, state, setState, setViewingTask, viewingTask, computeHeight])
 
     const handleOutOfFocus = useCallback(() => {
-        if (!state.wasEditTitle) { return }
+        if (!state.wasEditTitle || !board) { return }
         setState({ ...state, wasEditTitle: false })
         updateTask({
-            ...viewingTask
+            ...viewingTask,
+            board_id: board.id,
         })
-    }, [state, setState, updateTask, viewingTask])
+    }, [state, setState, updateTask, viewingTask, board])
 
     const handleShowChangeColumnDialog = useCallback(() => {
         setState({ ...state, showChangeColumn: true })

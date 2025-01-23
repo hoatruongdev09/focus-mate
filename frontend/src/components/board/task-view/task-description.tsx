@@ -1,16 +1,18 @@
 import { Bars3BottomLeftIcon } from "@heroicons/react/16/solid"
 import { setViewingTask } from "../../../store/slices/board-slice"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { Task } from "../../../types/board-type"
 import { useUpdateTaskMutation } from "../../../store/services/board-service"
 import { useCallback, useState } from "react"
 import DescriptionTextEditor from "./description-editor/components/text-editor"
 import { XMarkIcon } from "@heroicons/react/16/solid";
+import { AppRootState } from "../../../store/store"
 
 const TaskDescription = ({ task }: { task: Task }) => {
 
     const dispatch = useDispatch()
     const [updateTask] = useUpdateTaskMutation()
+    const board = useSelector((state: AppRootState) => state.boardView.board)
     const [content, setContent] = useState(task.description)
     const [onFocus, setOnFocus] = useState(false)
 
@@ -23,16 +25,18 @@ const TaskDescription = ({ task }: { task: Task }) => {
     }, [setContent, task, dispatch])
 
     const handleSave = useCallback(async () => {
+        if (!board) { return }
         dispatch(setViewingTask({
             ...task,
             description: content
         }))
         await updateTask({
             ...task,
+            board_id: board.id,
             description: content
         })
         setOnFocus(false)
-    }, [content, updateTask, task, setOnFocus])
+    }, [content, updateTask, task, setOnFocus, board])
 
     const handleSetOnFocus = useCallback((focus: boolean) => {
         setOnFocus(focus)

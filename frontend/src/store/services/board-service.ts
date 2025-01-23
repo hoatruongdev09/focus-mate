@@ -32,11 +32,11 @@ export const boardApi = createApi({
             invalidatesTags: ['board']
         }),
         getColumns: builder.query<Group[], number>({
-            query: (data) => `${data}/groups`,
+            query: (data) => `/${data}/groups`,
             providesTags: ['columns']
         }),
         getTasks: builder.query<Task[], number>({
-            query: (data) => `${data}/tasks`,
+            query: (data) => `/${data}/tasks`,
             providesTags: ['tasks']
         }),
         addColumns: builder.mutation<Group, AddGroupData>({
@@ -47,9 +47,9 @@ export const boardApi = createApi({
             }),
             invalidatesTags: ['columns']
         }),
-        deleteColumn: builder.mutation<void, number>({
+        deleteColumn: builder.mutation<void, { board_id: number, column_id: number }>({
             query: data => ({
-                url: `/groups/${data}`,
+                url: `/${data.board_id}/groups/${data.column_id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['columns']
@@ -62,16 +62,16 @@ export const boardApi = createApi({
             }),
             invalidatesTags: ['tasks']
         }),
-        deleteTask: builder.mutation<void, number>({
+        deleteTask: builder.mutation<void, { board_id: number, task_id: number }>({
             query: data => ({
-                url: `/tasks/${data}`,
+                url: `/${data.board_id}/tasks/${data.task_id}`,
                 method: 'DELETE'
             }),
             invalidatesTags: ['tasks']
         }),
         updateTask: builder.mutation<Task, UpdateTaskData>({
             query: data => ({
-                url: `/tasks/${data.id}`,
+                url: `/${data.board_id}/tasks/${data.id}`,
                 method: 'PUT',
                 body: data
             }),
@@ -79,29 +79,29 @@ export const boardApi = createApi({
         }),
         updateColumn: builder.mutation<Group, UpdateGroupData>({
             query: data => ({
-                url: `/groups/${data.id}`,
+                url: `/${data.board_id}/groups/${data.id}`,
                 method: 'PUT',
                 body: data
             }),
             invalidatesTags: ['columns']
         }),
-        archiveOrUnarchiveTask: builder.mutation<Task, number>({
+        archiveOrUnarchiveTask: builder.mutation<Task, { board_id: number, task_id: number }>({
             query: data => ({
-                url: `/tasks/${data}/archive-or-unarchive`,
+                url: `${data.board_id}/tasks/${data.task_id}/archive-or-unarchive`,
                 method: 'POST'
             }),
             invalidatesTags: ['tasks']
         }),
-        archiveOrUnarchiveColumn: builder.mutation<Group, number>({
+        archiveOrUnarchiveColumn: builder.mutation<Group, { board_id: number, column_id: number }>({
             query: data => ({
-                url: `groups/${data}/archive-or-unarchive`,
+                url: `/${data.board_id}/groups/${data.column_id}/archive-or-unarchive`,
                 method: 'POST'
             }),
             invalidatesTags: ['columns']
         }),
-        archiveAllTasksInColumn: builder.mutation<Task[], { id: number, action: boolean }>({
+        archiveAllTasksInColumn: builder.mutation<Task[], { board_id: number, column_id: number, action: boolean }>({
             query: data => ({
-                url: `groups/${data.id}/archive-or-unarchive-all-task`,
+                url: `${data.board_id}/groups/${data.column_id}/archive-or-unarchive-all-task`,
                 body: { action: data.action },
                 method: 'POST'
             }),

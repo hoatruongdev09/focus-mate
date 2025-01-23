@@ -86,30 +86,29 @@ export default class BoardService {
     }
 
     async archiveOrUnarchiveTasksInColumn(board_id: number, column_id: number, archived: boolean) {
-        const column = await this.groupRepository.findOne({
-            where: {
-                id: column_id,
-                board: { id: board_id }
-            }
-        })
-        if (!column) {
-            throw new Error("Column not found")
+        const affectedTaskIds = await this.taskRepository
+            .createQueryBuilder("task")
+            .leftJoinAndSelect("task.group", "group")
+            .leftJoinAndSelect("group.board", "board")
+            .select(["task.id"])
+            .where("group.id = :column_id AND board.id = :board_id", { column_id, board_id })
+            .getMany()
+
+        if (affectedTaskIds?.length != 0) {
+            await this.taskRepository
+                .createQueryBuilder("task")
+                .update()
+                .set({ archived: archived })
+                .where("task.id IN(:...ids)", { ids: affectedTaskIds.map(t => t.id) })
+                .execute()
         }
 
-        await this.taskRepository
-            .createQueryBuilder("task")
-            .leftJoin("task.group", "group")
-            .leftJoin("group.board", "board")
-            .update()
-            .set({ archived: archived })
-            .where("group.id = :column_id AND board.id = :board_id", { column_id, board_id })
-            .execute()
 
         return this.taskRepository
             .createQueryBuilder("task")
             .leftJoin("task.group", "group")
             .leftJoin("group.board", "board")
-            .select(["id", "title", "estimate", "priority", "description", "rank", "group_id", "archived"])
+            .select(["task"])
             .where("group.id = :column_id AND board.id = :board_id", { column_id, board_id })
             .getMany()
     }

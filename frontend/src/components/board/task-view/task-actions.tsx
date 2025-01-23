@@ -3,10 +3,11 @@ import { useCallback, useState } from "react"
 import ArchiveBoxXMarkIcon from "@heroicons/react/24/outline/ArchiveBoxXMarkIcon"
 import { Task } from "../../../types/board-type"
 import { useArchiveOrUnarchiveTaskMutation, useDeleteTaskMutation } from "../../../store/services/board-service"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { setViewingTask } from "../../../store/slices/board-slice"
 import { ArrowLongLeftIcon, ArrowLongRightIcon, MinusIcon } from "@heroicons/react/24/solid"
 import { DocumentDuplicateIcon } from "@heroicons/react/24/outline"
+import { AppRootState } from "../../../store/store"
 
 
 const TaskActions = ({ task }: { task: Task }) => {
@@ -15,21 +16,24 @@ const TaskActions = ({ task }: { task: Task }) => {
     const [showChangeColumn, setShowChangeColumn] = useState(false)
     const [archiveOrUnarchiveTask] = useArchiveOrUnarchiveTaskMutation()
     const [deleteTask] = useDeleteTaskMutation()
+    const board = useSelector((state: AppRootState) => state.boardView.board)
 
     const handleArchiveClick = useCallback(async () => {
-        const { data: newTask } = await archiveOrUnarchiveTask(task.id)
+        if (!board) { return }
+        const { data: newTask } = await archiveOrUnarchiveTask({ board_id: board.id, task_id: task.id })
         if (newTask) {
             dispatch(setViewingTask({
                 ...task,
                 archived: !task.archived
             }))
         }
-    }, [archiveOrUnarchiveTask, dispatch, setViewingTask, task])
+    }, [archiveOrUnarchiveTask, dispatch, setViewingTask, task, board])
 
     const handleDeleteClick = useCallback(async () => {
-        await deleteTask(task.id)
+        if (!board) { return }
+        await deleteTask({ task_id: task.id, board_id: board.id })
         dispatch(setViewingTask(null))
-    }, [deleteTask, dispatch, setViewingTask])
+    }, [deleteTask, dispatch, setViewingTask, board, task])
 
     return (<div className="flex flex-col gap-1">
         <p className="font-semibold text-sm">Actions</p>
