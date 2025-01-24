@@ -14,6 +14,12 @@ export class Task {
     })
     rank: string
 
+    @Column({ default: 0 })
+    cover_type: number
+
+    @Column({ default: '' })
+    cover_value: string
+
     @Column({ default: "", nullable: true })
     description: string
 

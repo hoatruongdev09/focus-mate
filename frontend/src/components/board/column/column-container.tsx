@@ -49,7 +49,6 @@ function ColumnContainer(props: Props) {
     }), [transition, transform])
 
     const taskIds = useMemo(() => tasks.map(t => `${DraggingItem.TASK}_${t.id}`), [tasks])
-
     if (isDragging) {
         return (
             <div

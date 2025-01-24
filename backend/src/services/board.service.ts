@@ -22,13 +22,11 @@ export default class BoardService {
     }
 
     async getBoards(user_id: number): Promise<Board[]> {
-        return await this.boardRepository.find({
-            where: {
-                owner: {
-                    id: user_id
-                }
-            }
-        })
+        return await this.boardRepository.createQueryBuilder("board")
+            .leftJoin("board.owner", "user")
+            .select()
+            .where("user.id = :user_id", { user_id })
+            .getMany()
     }
 
     async getBoard(board_id: number): Promise<Board> {
@@ -104,13 +102,22 @@ export default class BoardService {
         }
 
 
-        return this.taskRepository
+        const tasks = await this.taskRepository
             .createQueryBuilder("task")
             .leftJoin("task.group", "group")
             .leftJoin("group.board", "board")
-            .select(["task"])
             .where("group.id = :column_id AND board.id = :board_id", { column_id, board_id })
             .getMany()
+
+        return tasks.map(t => {
+            const { group, ...task } = t
+
+            return {
+                ...task,
+                group_id: group.id,
+                board_id: group.board.id
+            }
+        })
     }
 
     async getGroups(board_id: number) {
@@ -153,7 +160,7 @@ export default class BoardService {
         const topRank = await this.getGroupTopRank(board_id)
         newGroup.name = name || "Untitled list"
         newGroup.description = description
-        newGroup.rank = this.midString(topRank?.rank ?? "", "")
+        newGroup.rank = this.findMiddleString(topRank?.rank ?? "", "")
         newGroup.board = board
         return await this.groupRepository.save(newGroup)
     }
@@ -184,7 +191,7 @@ export default class BoardService {
                 .getMany()
             const frontGroupRank = front_id ? groups.find(g => g.id == front_id).rank : null
             const behindGroupRank = behind_id ? groups.find(g => g.id == behind_id).rank : null
-            group.rank = this.midString(frontGroupRank ?? "", behindGroupRank ?? "")
+            group.rank = this.findMiddleString(frontGroupRank ?? "", behindGroupRank ?? "")
         }
 
         return await this.groupRepository.save(group)
@@ -205,7 +212,7 @@ export default class BoardService {
         const frontGroup: Group | null = frontId ? groups.find(g => g.id === frontId) : null
         const behindGroup: Group | null = behindId ? groups.find(g => g.id === behindId) : null
 
-        targetGroup.rank = this.midString(frontGroup?.rank ?? "", behindGroup?.rank ?? "")
+        targetGroup.rank = this.findMiddleString(frontGroup?.rank ?? "", behindGroup?.rank ?? "")
         return await this.groupRepository.save(targetGroup)
     }
 
@@ -285,25 +292,33 @@ export default class BoardService {
         newTask.estimate = data.estimate
         if (group) {
             const lowestRank = await this.getTaskLowestRankInColumn(groupId)
-            newTask.rank = this.midString("", lowestRank?.rank ?? "")
+            newTask.rank = this.findMiddleString("", lowestRank?.rank ?? "")
         } else {
             const lowestRank = await this.getTaskLowestRank()
-            newTask.rank = this.midString("", lowestRank?.rank ?? "")
+            newTask.rank = this.findMiddleString("", lowestRank?.rank ?? "")
         }
 
         return await this.taskRepository.save(newTask)
     }
 
     async getTasks(board_id: number) {
-        const groups = await this.groupRepository.find({ where: { board: { id: board_id } } })
-        if (!groups || groups.length == 0) {
-            return []
-        }
-        return await this.taskRepository.createQueryBuilder()
-            .select(["id", "title", "estimate", "priority", "description", "rank", "group_id", "archived"])
-            .where("group_id IN (:...group_ids)", { group_ids: groups.map(g => g.id) })
-            .orderBy("rank", "DESC")
-            .execute()
+
+        const tasks = await this.taskRepository
+            .createQueryBuilder("task")
+            .leftJoin("task.group", "group")
+            .leftJoin("group.board", "board")
+            .select(["task", "group.id", "board.id"])
+            .where("board.id = :board_id", { board_id })
+            .orderBy("task.rank", "DESC")
+            .getMany();
+        return tasks.map(t => {
+            const { group, ...task } = t
+            return {
+                ...task,
+                group_id: group.id,
+                board_id: group.board.id
+            }
+        })
     }
 
     private async changeTaskColumn(task: Task, columnId: number) {
@@ -314,12 +329,6 @@ export default class BoardService {
 
 
     async updateTask(board_id: number, id: number, data: UpdateTaskDto) {
-        // const task = await this.taskRepository.findOne({
-        //     where: { id },
-        //     relations: {
-        //         group: true
-        //     }
-        // })
 
         const task = await this.taskRepository.createQueryBuilder("task")
             .leftJoinAndSelect("task.group", "group")
@@ -346,7 +355,7 @@ export default class BoardService {
                 // -> need to find the top task in that column and place task
                 const topRank = await this.getTaskTopRankInColumn(data.group_id)
                 if (topRank) {
-                    task.rank = this.midString(topRank?.rank ?? "", "")
+                    task.rank = this.findMiddleString(topRank?.rank ?? "", "")
                 }
             }
 
@@ -360,7 +369,7 @@ export default class BoardService {
                 .getMany()
             const frontTask = front_id ? tasks.find(t => t.id === front_id) : null
             const behindTask = behind_id ? tasks.find(t => t.id === behind_id) : null
-            task.rank = this.midString(frontTask?.rank ?? "", behindTask?.rank ?? "")
+            task.rank = this.findMiddleString(frontTask?.rank ?? "", behindTask?.rank ?? "")
         }
         const newTask = await this.taskRepository.save(task)
         const { title, estimate, priority, description, rank, group } = newTask
@@ -371,7 +380,8 @@ export default class BoardService {
             priority,
             description,
             rank,
-            group_id: group.id
+            group_id: group.id,
+            board_id: group.board.id
         }
     }
 
@@ -417,7 +427,7 @@ export default class BoardService {
         return tasks
     }
 
-    private midString(prev: string, next: string) {
+    private findMiddleString(prev: string, next: string) {
         var p, n, pos, str;
         for (pos = 0; p == n; pos++) {               // find leftmost non-matching character
             p = pos < prev.length ? prev.charCodeAt(pos) : 96;

@@ -30,7 +30,7 @@ const KanbanBoardPage = () => {
         else {
             dispatch(setColumns([]))
         }
-    }, [columns, board])
+    }, [columns])
 
     useEffect(() => {
         if (tasks?.length) {

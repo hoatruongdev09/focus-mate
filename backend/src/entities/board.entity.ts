@@ -19,6 +19,13 @@ export default class Board {
     @Column({ default: false })
     archived: boolean
 
+    @Column({ default: 0 })
+    cover_type: number
+
+    @Column({ default: '' })
+    cover_value: string
+
+
     @CreateDateColumn()
     created_at: Date
 

@@ -75,7 +75,7 @@ function ColumnMoveDialog(props: Props) {
     return (
 
         isActive ?
-            < div ref={ref} className="w-72 h-72 bg-white shadow-md rounded-md p-3 relative" >
+            < div ref={ref} className="w-72 h-72 bg-white rounded-md p-3 relative shadow-xl border z-10" >
                 <div className="w-full h-full flex flex-col items-center justify-between">
                     <button
                         className="absolute right-3 top-3 text-gray-700  rounded p-1 hover:bg-gray-100"

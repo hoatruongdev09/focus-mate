@@ -1,7 +1,14 @@
+export enum CoverType {
+    None = 0,
+    SolidColor = 1,
+    Gradient = 2
+}
 export type Board = {
     id: number
-    name: string,
+    name: string
     description: string
+    cover_type: CoverType
+    cover_value: string
 }
 
 export type CreateBoardData = {
@@ -42,6 +49,8 @@ export type Task = {
     estimate: number
     group_id: number
     archived: boolean
+    cover_type: CoverType
+    cover_value: string
 }
 
 export type UpdateTaskData = {

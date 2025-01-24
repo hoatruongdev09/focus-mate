@@ -36,6 +36,7 @@ function BoardContent() {
 
     const { columns, tasks, draggingColumn, draggingTask, board } = useSelector((state: AppRootState) => state.boardView)
     const renderTasks = useMemo(() => tasks.filter(t => !t.task.archived), [tasks])
+
     const renderColumns = useMemo(() => columns.filter(t => !t.archived), [columns])
     const columnIds = useMemo(() => columns.map(col => `${DraggingItem.COLUMN}_${col.id}`), [renderColumns])
     const columnHeightRef = useRef<{ [id: number]: number }>({})
