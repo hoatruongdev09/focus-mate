@@ -1,6 +1,8 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import User from "./user.entity";
 import { Group } from "./column.entity";
+import BoardActivities from "./board-action.entity";
+import UserComment from "./user-comment.entity";
 
 @Entity()
 export default class Board {
@@ -41,6 +43,12 @@ export default class Board {
 
     @OneToMany(() => Group, (group) => group.board)
     groups: Group[]
+
+    @OneToMany(() => BoardActivities, (action) => action.board, { cascade: true })
+    activities: BoardActivities[]
+
+    @OneToMany(() => UserComment, comment => comment.board, { cascade: true })
+    comments: UserComment[]
 }
 
 

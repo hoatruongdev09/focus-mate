@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { AddGroupData, AddTaskData, Board, CreateBoardData, Group, Task, UpdateGroupData, UpdateTaskData } from "../../types/board-type";
+import { AddGroupData, AddTaskData, Board, CreateBoardData, Group, Task, TaskComment, UpdateGroupData, UpdateTaskData } from "../../types/board-type";
 import { AppRootState } from "../store";
 
 export const boardApi = createApi({
@@ -14,7 +14,7 @@ export const boardApi = createApi({
             return headers
         }
     }),
-    tagTypes: ['board', 'columns', 'tasks'],
+    tagTypes: ['board', 'columns', 'tasks', 'comments'],
     endpoints: (builder) => ({
         getBoards: builder.query<Board[], void>({
             query: () => `/`,
@@ -85,9 +85,9 @@ export const boardApi = createApi({
             }),
             invalidatesTags: ['columns']
         }),
-        archiveOrUnarchiveTask: builder.mutation<Task, { board_id: number, task_id: number }>({
+        archiveOrUnarchiveTask: builder.mutation<Task, { board_id: number, group_id: number, task_id: number }>({
             query: data => ({
-                url: `${data.board_id}/tasks/${data.task_id}/archive-or-unarchive`,
+                url: `${data.board_id}/${data.group_id}/tasks/${data.task_id}/archive-or-unarchive`,
                 method: 'POST'
             }),
             invalidatesTags: ['tasks']
@@ -106,6 +106,20 @@ export const boardApi = createApi({
                 method: 'POST'
             }),
             invalidatesTags: ['tasks']
+        }),
+        commentTask: builder.mutation<TaskComment, { board_id: number, column_id: number, task_id: number, content: string }>(
+            {
+                query: data => ({
+                    url: `${data.board_id}/${data.column_id}/tasks/${data.task_id}/comment`,
+                    body: { content: data.content },
+                    method: 'POST'
+                }),
+                invalidatesTags: ['comments']
+            }
+        ),
+        getTaskComments: builder.query<TaskComment[], { board_id: number, column_id: number, task_id: number }>({
+            query: data => `${data.board_id}/${data.column_id}/tasks/${data.task_id}/comments`,
+            providesTags: ['comments']
         })
     })
 })
@@ -124,5 +138,7 @@ export const {
     useUpdateColumnMutation,
     useArchiveOrUnarchiveTaskMutation,
     useArchiveAllTasksInColumnMutation,
-    useArchiveOrUnarchiveColumnMutation
+    useArchiveOrUnarchiveColumnMutation,
+    useCommentTaskMutation,
+    useGetTaskCommentsQuery
 } = boardApi

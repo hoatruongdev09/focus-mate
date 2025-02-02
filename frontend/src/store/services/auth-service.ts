@@ -11,8 +11,17 @@ export const authApi = createApi({
                 method: 'POST',
                 body: data
             })
+        }),
+        refreshToken: builder.mutation<AuthResult, { refresh_token: string }>({
+            query: data => ({
+                url: `/refresh_token`,
+                method: 'POST',
+                headers: {
+                    "authorization": `Refresh ${data}`
+                }
+            })
         })
     })
 })
 
-export const { useLoginEmailPasswordMutation } = authApi    
+export const { useLoginEmailPasswordMutation, useRefreshTokenMutation } = authApi    

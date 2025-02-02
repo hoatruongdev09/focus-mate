@@ -1,4 +1,4 @@
-import { In, NumericType, Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 import dataSource from "../db/data-source";
 import { Task } from "../entities/task.entity";
 import { Group } from "../entities/column.entity";
@@ -9,16 +9,20 @@ import UpdateTaskDto from "../dto/board/update-task.dto";
 import Board from "../entities/board.entity";
 import User from "../entities/user.entity";
 import CreateBoardDto from "../dto/board/create-board.dto";
+import UserComment from "../entities/user-comment.entity";
+
 
 export default class BoardService {
     private taskRepository: Repository<Task>
     private groupRepository: Repository<Group>
     private boardRepository: Repository<Board>
+    private userCommentRepository: Repository<UserComment>
 
     constructor() {
         this.taskRepository = dataSource.getRepository(Task)
         this.groupRepository = dataSource.getRepository(Group)
         this.boardRepository = dataSource.getRepository(Board)
+        this.userCommentRepository = dataSource.getRepository(UserComment)
     }
 
     async getBoards(user_id: number): Promise<Board[]> {
@@ -58,17 +62,45 @@ export default class BoardService {
 
         return await this.boardRepository.save(newBoard)
     }
-
-    async archiveOrUnarchiveTask(task_id: number) {
-        const task = await this.taskRepository.findOne({ where: { id: task_id } })
+    async unarchiveTask(board_id: number, group_id: number, task_id: number) {
+        const task = await this.taskRepository.findOne({
+            where: {
+                id: task_id,
+                group: {
+                    id: group_id,
+                    board: {
+                        id: board_id
+                    }
+                }
+            }
+        })
         if (!task) {
             throw new Error("Task not foud")
         }
-        task.archived = !task.archived
+        task.archived = false;
+        return await this.taskRepository.save(task)
+    }
+    async archiveTask(board_id: number, group_id: number, task_id: number) {
+        const task = await this.taskRepository.findOne({
+            where: {
+                id: task_id,
+                group: {
+                    id: group_id,
+                    board: {
+                        id: board_id
+                    }
+                }
+            }
+        })
+        if (!task) {
+            throw new Error("Task not foud")
+        }
+        task.archived = true;
         return await this.taskRepository.save(task)
     }
 
-    async archiveOrUnarchiveColumn(board_id: number, column_id: number) {
+
+    async archiveColumn(board_id: number, column_id: number) {
         const column = await this.groupRepository.findOne({
             where: {
                 id: column_id, board: {
@@ -79,7 +111,22 @@ export default class BoardService {
         if (!column) {
             throw new Error("Column not found")
         }
-        column.archived = !column.archived
+        column.archived = true
+        return await this.groupRepository.save(column)
+    }
+
+    async unarchiveColumn(board_id: number, column_id: number) {
+        const column = await this.groupRepository.findOne({
+            where: {
+                id: column_id, board: {
+                    id: board_id
+                }
+            }
+        })
+        if (!column) {
+            throw new Error("Column not found")
+        }
+        column.archived = false
         return await this.groupRepository.save(column)
     }
 
@@ -136,6 +183,13 @@ export default class BoardService {
                 board_id: board.id
             }
         })
+    }
+
+    async getGroup(board_id: number, group_id: number) {
+        return await this.groupRepository.createQueryBuilder("group")
+            .leftJoinAndSelect("group.board", "board")
+            .where("group.id = :group_id AND board.id = :board_id", { group_id, board_id })
+            .getOne()
     }
 
     private async getGroupTopRank(board_id: number) {
@@ -297,7 +351,6 @@ export default class BoardService {
             const lowestRank = await this.getTaskLowestRank()
             newTask.rank = this.findMiddleString("", lowestRank?.rank ?? "")
         }
-
         return await this.taskRepository.save(newTask)
     }
 
@@ -321,8 +374,8 @@ export default class BoardService {
         })
     }
 
-    private async changeTaskColumn(task: Task, columnId: number) {
-        const group = await this.groupRepository.findOne({ where: { id: columnId } })
+    private async changeTaskColumn(task: Task, board_id: number, columnId: number) {
+        const group = await this.getGroup(board_id, columnId)
         if (group == null) { throw new Error("Group not found") }
         task.group = group
     }
@@ -341,11 +394,13 @@ export default class BoardService {
         task.description = data.description
         task.priority = data.priority
         task.estimate = data.estimate
-
+        task.cover_type = data.cover_type
+        task.cover_value = data.cover_value
+        task.layout_type = data.layout_type
 
         const isChangeGroup = task.group.id != data.group_id
         if (isChangeGroup) {
-            await this.changeTaskColumn(task, data.group_id)
+            await this.changeTaskColumn(task, board_id, data.group_id)
         }
 
         const { front_id, behind_id } = data
@@ -425,6 +480,48 @@ export default class BoardService {
             }
         })
         return tasks
+    }
+
+    async getTask(board_id: number, column_id: number, task_id: number) {
+        return await this.taskRepository.findOne({
+            where: {
+                id: task_id,
+                group: {
+                    id: column_id,
+                    board: {
+                        id: board_id
+                    }
+                }
+            }
+        })
+    }
+
+    async postComment(board_id: number, group_id: number, task_id: number, user_id: number, content: string) {
+        const comment: UserComment = new UserComment()
+        comment.board_id = board_id
+        comment.task_id = task_id
+        comment.group_id = group_id
+        comment.user_id = user_id
+        comment.content = content
+
+        const { id } = await this.userCommentRepository.save(comment)
+
+        const result = await this.userCommentRepository.createQueryBuilder("comment")
+            .leftJoinAndSelect("comment.user", "user")
+            .where("comment.board_id = :board_id AND comment.group_id = :group_id AND comment.task_id = :task_id AND comment.id = :comment_id", { board_id, group_id, task_id, comment_id: id })
+            .select(["comment", "user.id", "user.first_name", "user.last_name"])
+            .getOne()
+        console.log(result)
+        return result
+    }
+
+    async getComments(board_id: number, group_id: number, task_id: number) {
+        return await this.userCommentRepository.createQueryBuilder("comment")
+            .leftJoinAndSelect("comment.user", "user")
+            .where("comment.board_id = :board_id AND comment.group_id = :group_id AND comment.task_id = :task_id", { board_id, group_id, task_id })
+            .orderBy("comment.created_at", "DESC")
+            .select(["comment", "user.id", "user.first_name", "user.last_name"])
+            .getMany()
     }
 
     private findMiddleString(prev: string, next: string) {

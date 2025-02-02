@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Task } from "../../types/board-type";
+import { CoverType, Task, TaskLayoutType } from "../../types/board-type";
 import { DraggingItem } from "../../types/draging-item";
 import { useDispatch } from "react-redux";
 import { setViewingTask } from "../../store/slices/board-slice";
@@ -42,21 +42,35 @@ function TaskCard(props: Props) {
         setMouseIsOver(false);
     }, []);
 
+    const hasCover = useMemo(() => task.cover_type != CoverType.None, [task.cover_type])
+
     return (
         <div
             ref={setNodeRef}
-            style={style}
+            style={{
+                ...style,
+                backgroundColor: isDragging ? "#fecdd3" : (hasCover && task.layout_type == TaskLayoutType.Large ? task.cover_value : "#f4f4f5"),
+            }}
             {...attributes}
             {...listeners}
-            className={`border bg-mainBackgroundColor p-2 ${(isDragging ? "bg-rose-200" : "")}
-                rounded-md hover:border-rose-500 hover:cursor-pointer relative`}
+            className={`rounded-md hover:cursor-pointer relative shadow-sm`}
             onClick={handleClick}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-
-
-            <div className={`flex w-full ${(isDragging ? "opacity-0" : "opacity-100")} justify-stretch transition-opacity duration-600`}>
+            {
+                hasCover && task.layout_type == TaskLayoutType.Large && <div className="h-10" />
+            }
+            {
+                hasCover && task.layout_type == TaskLayoutType.Normal && <div
+                    style={{
+                        backgroundColor: !isDragging ? task.cover_value : "transparent",
+                    }}
+                    className="h-10 rounded-t-md" />
+            }
+            <div
+                className={`flex w-full ${(isDragging ? "opacity-0" : "opacity-100")} justify-stretch transition-opacity duration-600  p-2`}
+            >
                 <p className="overflow-x-clip whitespace-pre-wrap align-middle flex-1">
                     {task.title}
                 </p>

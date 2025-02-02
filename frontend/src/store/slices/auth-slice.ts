@@ -43,12 +43,22 @@ export const authSlice = createSlice({
                 localStorage.setItem(storeTokenKey, access_token)
                 localStorage.setItem(storeRefreshTokenKey, refresh_token)
             }
+        ).addMatcher(
+            authApi.endpoints.refreshToken.matchFulfilled, (state, { payload }) => {
+                const { access_token, refresh_token } = payload
+                state.token = access_token
+                state.refresh_token = refresh_token
+
+                localStorage.setItem(storeTokenKey, access_token)
+                localStorage.setItem(storeRefreshTokenKey, refresh_token)
+            }
         )
     }
 })
 
 export const {
-    removeAuthData
+    removeAuthData,
+    setAuthData
 } = authSlice.actions
 
 export default authSlice.reducer

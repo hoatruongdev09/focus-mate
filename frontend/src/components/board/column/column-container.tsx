@@ -74,7 +74,7 @@ function ColumnContainer(props: Props) {
                     />
                 </div>
 
-                <div className="flex flex-col flex-1 gap-2 px-2 overflow-x-hidden overflow-y-scroll">
+                <div className="flex flex-col flex-1 gap-2 px-2 overflow-x-hidden overflow-y-scroll py-2">
                     <ColumnTaskContainer
                         tasks={tasks}
                         taskIds={taskIds}

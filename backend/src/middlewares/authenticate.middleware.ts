@@ -9,12 +9,12 @@ const authService: AuthService = new AuthService(userService)
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
     const { authorization } = req.headers
     if (!authorization) {
-        res.status(403).json({ error: "unauthorized" })
+        res.status(401).json({ error: "unauthorized" })
         return
     }
     const [tag, token] = authorization.split(" ")
     if (tag !== 'Bearer') {
-        res.status(403).json({ error: "unauthorized" })
+        res.status(401).json({ error: "unauthorized" })
         return
     }
 
@@ -25,6 +25,6 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
         next()
     } catch (error) {
         console.error(error)
-        res.status(500).json(error)
+        res.status(401).json(error)
     }
 }

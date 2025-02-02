@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux"
 import { useEffect } from "react"
 import { hideLoadingScreen, showLoadingScreen } from "../store/slices/app-slice"
 import NavBar from "../components/nav-bar"
+import AuthContext from "../components/authentication/auth-context"
 
 const PrivateOutlet = () => {
     const location = useLocation()

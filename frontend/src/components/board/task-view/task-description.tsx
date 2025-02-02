@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { Task } from "../../../types/board-type"
 import { useUpdateTaskMutation } from "../../../store/services/board-service"
 import { useCallback, useState } from "react"
-import DescriptionTextEditor from "./description-editor/components/text-editor"
+import TextEditor from "../../text-editor/components/text-editor"
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import { AppRootState } from "../../../store/store"
 
@@ -53,12 +53,13 @@ const TaskDescription = ({ task }: { task: Task }) => {
             </div>
             <div className="flex flex-col flex-1 gap-1">
                 <p className="font-semibold text-lg">Description</p>
-                <DescriptionTextEditor
+                <TextEditor
                     value={content}
                     isActive={onFocus}
                     setIsActive={handleSetOnFocus}
-                    onFocus={handleFocus}
+                    onBlur={handleFocus}
                     onChange={handleChange}
+                    placeHolder="Add a more detailed description"
                 />
                 {
                     onFocus ? <div className="flex items-center gap-2 pt-2">

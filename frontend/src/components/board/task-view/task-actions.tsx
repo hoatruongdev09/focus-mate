@@ -20,7 +20,7 @@ const TaskActions = ({ task }: { task: Task }) => {
 
     const handleArchiveClick = useCallback(async () => {
         if (!board) { return }
-        const { data: newTask } = await archiveOrUnarchiveTask({ board_id: board.id, task_id: task.id })
+        const { data: newTask } = await archiveOrUnarchiveTask({ board_id: board.id, group_id: task.group_id, task_id: task.id })
         if (newTask) {
             dispatch(setViewingTask({
                 ...task,

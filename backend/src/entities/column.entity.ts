@@ -1,12 +1,17 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Task } from "./task.entity";
 import Board from "./board.entity";
+import BoardAction from "./board-action.entity";
+import UserComment from "./user-comment.entity";
 
 @Entity()
 export class Group {
 
     @PrimaryGeneratedColumn()
     id: number
+
+    @Column()
+    board_id: number
 
     @Column()
     name: string
@@ -37,4 +42,10 @@ export class Group {
     @ManyToOne(() => Board, (board) => board.groups)
     @JoinColumn({ name: "board_id" })
     board: Board
+
+    @OneToMany(() => BoardAction, action => action.group, { cascade: true })
+    activities: BoardAction[]
+
+    @OneToMany(() => UserComment, comment => comment.group, { cascade: true })
+    comments: UserComment[]
 }

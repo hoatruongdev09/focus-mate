@@ -4,6 +4,9 @@ export default class UpdateTaskDto {
     priority: number
     estimate: number
     group_id: number
+    cover_type: number
+    cover_value: string
+    layout_type: number
 
     front_id: number | null
     behind_id: number | null

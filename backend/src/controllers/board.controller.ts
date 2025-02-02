@@ -4,8 +4,12 @@ import UpdateGroupDto from '../dto/board/update-group.dto'
 import CreateGroupDto from '../dto/board/create-group.dto'
 import CreateTaskDto from '../dto/board/create-task.dto'
 import UpdateTaskDto from '../dto/board/update-task.dto'
+import BoardActivityService from '../services/board-activity.service'
+import { ActivityType } from '../enums/activity-type'
 
 const boardService = new BoardService()
+const boardActivityService = new BoardActivityService()
+
 
 export const getBoards = async (req: Request, res: Response) => {
     const { user_id } = req
@@ -22,6 +26,7 @@ export const createBoard = async (req: Request, res: Response) => {
     const { user_id } = req
     try {
         const board = await boardService.createBoard(user_id, req.body)
+        boardActivityService.createNewActivity(req.user_id, board.id, ActivityType.CREATE_BOARD)
         res.status(200).json(board)
     } catch (err) {
         console.error(err)
@@ -47,6 +52,7 @@ export const addGroup = async (req: Request, res: Response) => {
     try {
         const { board_id } = req.params
         const group = await boardService.createGroup(+board_id, req.body)
+        boardActivityService.createNewActivity(req.user_id, +board_id, ActivityType.CREATE_GROUP, null, group.id)
         res.status(200).json(group)
     } catch (e) {
         res.status(500).json(e)
@@ -90,6 +96,7 @@ export const createTask = async (req: Request, res: Response) => {
         const { board_id, id } = req.params
         const data: CreateTaskDto = req.body
         const newTask = await boardService.addTask(+board_id, +id, data)
+        boardActivityService.createNewActivity(req.user_id, +board_id, ActivityType.CREATE_TASK, newTask.id)
         res.status(200).json(newTask)
     } catch (e) {
         console.error(e)
@@ -168,20 +175,35 @@ export const reorderGroup = async (req: Request, res: Response) => {
 
 export const archiveOrUnarchiveTask = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params
-        const task = await boardService.archiveOrUnarchiveTask(+id)
-        res.status(200).json(task)
+        const { board_id, group_id, task_id } = req.params
+        const task = await boardService.getTask(+board_id, +group_id, +task_id)
+        if (task.archived) {
+            await boardActivityService.createNewActivity(req.user_id, +board_id, ActivityType.UNARCHIVE_TASK, +task_id, +group_id);
+            res.status(200).json(await boardService.unarchiveTask(+board_id, +group_id, +task_id))
+        }
+        else {
+            await boardActivityService.createNewActivity(req.user_id, +board_id, ActivityType.ARCHIVE_TASK, +task_id, +group_id);
+            res.status(200).json(await boardService.archiveTask(+board_id, +group_id, +task_id))
+        }
     } catch (error) {
         console.error(error)
         res.status(500).json(error)
     }
 }
 
+
 export const archiveOrUnarchiveColumn = async (req: Request, res: Response) => {
     try {
         const { board_id, id } = req.params
-        const task = await boardService.archiveOrUnarchiveColumn(+board_id, +id)
-        res.status(200).json(task)
+        const column = await boardService.getGroup(+board_id, +id);
+        if (column.archived) {
+            await boardActivityService.createNewActivity(req.user_id, + board_id, ActivityType.ARCHIVE_COLUMN, null, +id)
+            res.status(200).json(await boardService.archiveColumn(+board_id, +id))
+        }
+        else {
+            await boardActivityService.createNewActivity(req.user_id, + board_id, ActivityType.UNARCHIVE_COLUMN, null, +id)
+            res.status(200).json(await boardService.unarchiveColumn(+board_id, +id))
+        }
     } catch (error) {
         console.error(error)
         res.status(500).json(error)
@@ -197,5 +219,28 @@ export const archiveOrUnarchiveTasksInColumn = async (req: Request, res: Respons
     } catch (error) {
         console.error(error)
         res.status(500).json(error)
+    }
+}
+
+export const userCommentTask = async (req: Request, res: Response) => {
+    try {
+        const { board_id, group_id, task_id } = req.params
+        const { content } = req.body
+        const comment = await boardService.postComment(+board_id, +group_id, +task_id, req.user_id, content)
+        res.status(200).json(comment)
+    } catch (error) {
+        console.error(error)
+        res.status(500).json(error)
+    }
+}
+
+export const getTaskComments = async (req: Request, res: Response) => {
+    try {
+        const { board_id, group_id, task_id } = req.params
+        const comments = await boardService.getComments(+board_id, +group_id, +task_id)
+        res.status(200).json(comments)
+    }
+    catch (error) {
+
     }
 }

@@ -1,0 +1,17 @@
+export enum ActivityType {
+    CREATE_BOARD = 1,
+    UPDATE_BOARD = 2,
+    DELETE_BOARD = 3,
+    CREATE_TASK = 4,
+    UPDATE_TASK = 5,
+    DELETE_TASK = 6,
+    CREATE_GROUP = 7,
+    UPDATE_GROUP = 8,
+    DELETE_GROUP = 9,
+    MOVE_TASK = 10,
+    ARCHIVE_COLUMN = 11,
+    UNARCHIVE_COLUMN = 12,
+    ARCHIVE_TASK = 13,
+    UNARCHIVE_TASK = 14,
+
+}

@@ -4,7 +4,7 @@ import { refresh as refreshTokenMiddleware } from "../middlewares/refresh-token.
 
 const route = Router()
 
-route.post('/refresh-token', refreshTokenMiddleware, authController.refreshToken)
+route.post('/refresh-token', authController.refreshToken)
 route.post('/register-email-password', authController.registerEmailPassword)
 route.post('/login-email-password', authController.loginEmailPassword)
 

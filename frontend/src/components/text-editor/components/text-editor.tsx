@@ -1,7 +1,7 @@
 // Import React dependencies.
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react'
 // Import the Slate editor factory.
-import { BaseEditor, createEditor, Descendant, Operation } from 'slate'
+import { BaseEditor, createEditor, Descendant, Operation, Transforms } from 'slate'
 
 // Import the Slate components and React plugin.
 import { Slate, Editable, withReact, ReactEditor, } from 'slate-react'
@@ -21,23 +21,32 @@ declare module 'slate' {
     }
 
 }
-
-type CustomDescendant = Descendant | EditorElement
+export type EditorRef = {
+    clear: () => void
+}
+export type CustomDescendant = Descendant | EditorElement
 
 interface Props {
     isActive: boolean
-    setIsActive: (active: boolean) => void
+    setIsActive?: (active: boolean) => void
     value: string
-    onChange: (value: string) => void
-    onFocus: () => void
+    onChange?: (value: string) => void
+    onRawValueChange?: (value: CustomDescendant[]) => void
+    onBlur?: () => void
+    isReadonly?: boolean
+    placeHolder?: string
 }
 
-function DescriptionTextEditor(props: Props) {
-
-    const { value, onChange, onFocus, isActive, setIsActive } = props
-
+const TextEditor = forwardRef<EditorRef | undefined | null, Props>((props: Props, ref: any) => {
+    const { value,
+        onChange,
+        onBlur,
+        isActive,
+        setIsActive,
+        onRawValueChange,
+        isReadonly,
+        placeHolder } = props
     const [isFocus, setIsFocus] = useState(false)
-
     const [editor] = useState(() => withReact(createEditor()))
     const initialValue = useMemo(() => {
         const defaultValue: EditorElement[] = [
@@ -51,6 +60,14 @@ function DescriptionTextEditor(props: Props) {
         }
         return JSON.parse(value) || defaultValue
     }, [value])
+
+    useImperativeHandle(ref, () => ({
+        clear() {
+            editor.children = [{ type: ElementType.paragraph, children: [{ text: '' }] }];
+            Transforms.select(editor, { path: [0, 0], offset: 0 });
+            editor.onChange();
+        }
+    }))
 
     const renderElement = useCallback(RenderElement, [])
     const handleShortcut = useCallback(shortCutHandler, [editor])
@@ -67,19 +84,18 @@ function DescriptionTextEditor(props: Props) {
             return op.type !== 'set_selection'
         })
         if (!isAstChange) { return }
-        console.log(value)
+        onRawValueChange && onRawValueChange(value);
         const content = JSON.stringify(value)
-        onChange(content)
+        onChange && onChange(content)
     }, [editor])
 
     const handleOnFocus = useCallback(() => {
-        onFocus()
         setIsFocus(true)
-        setIsActive(true)
+        setIsActive && setIsActive(true)
     }, [setIsFocus, setIsActive])
 
     const handleOnBlur = useCallback(() => {
-        onFocus()
+        onBlur && onBlur()
         setIsFocus(false)
     }, [setIsFocus])
 
@@ -95,8 +111,9 @@ function DescriptionTextEditor(props: Props) {
                     editor={editor}
                 />
                 <Editable
+                    readOnly={isReadonly}
                     renderPlaceholder={renderPlaceHolder}
-                    placeholder='Add a more detailed description'
+                    placeholder={placeHolder}
                     className='outline-none p-2 pb-4 rounded-b-sm placeholder:pt-10 placeholder:font-bold'
                     renderElement={renderElement}
                     renderLeaf={renderLeaf}
@@ -107,6 +124,6 @@ function DescriptionTextEditor(props: Props) {
             </div>
         </Slate >
     )
-}
+})
 
-export default DescriptionTextEditor;
+export default TextEditor;
