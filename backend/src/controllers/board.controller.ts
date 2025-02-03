@@ -39,7 +39,7 @@ export const getBoard = async (req: Request, res: Response) => {
     const { board_id } = req.params
 
     try {
-        const board = await boardService.getBoard(+board_id)
+        const board = await boardService.getBoard(+board_id, +user_id)
         res.status(200).json(board)
     } catch (err) {
         console.error(err)

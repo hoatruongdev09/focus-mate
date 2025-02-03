@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import Board from "./board.entity";
-import BoardActivities from "./board-action.entity";
+import BoardActivity from "./board-activity.entity";
 import UserComment from "./user-comment.entity";
 
 @Entity()
@@ -32,8 +32,8 @@ export default class User {
     @OneToMany(() => Board, (board) => board.owner, { cascade: true })
     boards: Board[]
 
-    @OneToMany(() => BoardActivities, action => action.user, { cascade: true })
-    activities: BoardActivities[]
+    @OneToMany(() => BoardActivity, action => action.user, { cascade: true })
+    activities: BoardActivity[]
 
     @OneToMany(() => UserComment, comment => comment.user, { cascade: true })
     comments: UserComment[]

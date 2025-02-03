@@ -9,12 +9,20 @@ export enum TaskLayoutType {
     Large = 1
 }
 
+export type BoardTheme = {
+    id: number
+    bg_type: number
+    bg_value: string
+    fg_value: string
+}
+
 export type Board = {
     id: number
     name: string
     description: string
-    cover_type: CoverType
-    cover_value: string
+    archived: boolean
+    theme_id: number | null
+    theme: BoardTheme | null
 }
 
 export type CreateBoardData = {

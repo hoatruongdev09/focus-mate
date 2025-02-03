@@ -1,4 +1,3 @@
-import { UserIcon } from "@heroicons/react/16/solid"
 import { useCallback, useState } from "react";
 import LoginDialog from "./login-dialog";
 import UserInfoDialog from "./user-info-dialog";
@@ -38,7 +37,7 @@ const Authentication = () => {
             >
                 <img
                     src={`https://avatar.iran.liara.run/public/${user?.id ?? 34}`}
-                    className="w-10 h-10"
+                    className="w-7 h-7"
                 />
 
             </button>

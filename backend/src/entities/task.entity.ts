@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, Generated, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 import { Group } from "./column.entity"
-import BoardActivities from "./board-action.entity"
+import BoardActivity from "./board-activity.entity"
 import UserComment from "./user-comment.entity"
 
 @Entity()
@@ -53,8 +53,8 @@ export class Task {
     @JoinColumn({ name: 'group_id' })
     group: Group
 
-    @OneToMany(() => BoardActivities, action => action.task, { cascade: true })
-    activities: BoardActivities[]
+    @OneToMany(() => BoardActivity, action => action.task, { cascade: true })
+    activities: BoardActivity[]
 
     @OneToMany(() => UserComment, comment => comment.task, { cascade: true })
     comments: UserComment[]

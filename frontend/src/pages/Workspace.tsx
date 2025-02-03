@@ -2,11 +2,10 @@ import { useCallback, useState } from "react"
 import Modal from "../components/modal"
 import CreateNewBoard from "../components/workspace/create-new-board"
 import { useGetBoardsQuery } from "../store/services/board-service"
-import { useDispatch } from "react-redux"
 import { NavLink } from "react-router-dom"
 
 const Workspace = () => {
-    const { data: boards, isLoading, isError } = useGetBoardsQuery()
+    const { data: boards, isLoading } = useGetBoardsQuery()
     const [isShowCreateBoard, setIsShowCreateBoard] = useState(false)
 
     const handleHideCreateBoard = useCallback(() => {
@@ -23,7 +22,7 @@ const Workspace = () => {
 
     return (
         <>
-            <div className="fixed left-0 right-0 top-12 bottom-0">
+            <div className="fixed left-0 right-0 top-10 bottom-0">
                 <div className="w-full md:w-[1000px] mt-20 mx-auto flex flex-col gap-3">
                     <div className="flex">
                         <p className="text-3xl font-extrabold leading-none">Boards:</p>

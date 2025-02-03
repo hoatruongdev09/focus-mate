@@ -4,7 +4,7 @@ import Board from "./board.entity";
 import { Group } from "./column.entity";
 import { Task } from "./task.entity";
 
-@Entity()
+@Entity({ name: "user_comment" })
 export default class UserComment {
     @PrimaryGeneratedColumn()
     id: number

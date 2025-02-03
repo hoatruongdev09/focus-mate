@@ -1,12 +1,13 @@
 import { useDispatch } from "react-redux"
 import KanbanBoard from "../components/board/kanban-board"
 import KanbanBoardTitle from "../components/board/kanban-board-title"
-import SideBar from "../components/side-bar"
+import LeftSideBar from "../components/left-side-bar"
 import { useGetBoardQuery, useGetColumnsQuery, useGetTasksQuery } from "../store/services/board-service"
 import { useEffect } from "react"
 import { setBoard, setColumns, setTasks } from "../store/slices/board-slice"
 import { hideLoadingScreen, showLoadingScreen } from "../store/slices/app-slice"
 import { Navigate, useLocation, useParams } from "react-router-dom"
+import RightSideBar from "../components/right-side-bar"
 
 
 const KanbanBoardPage = () => {
@@ -63,10 +64,19 @@ const KanbanBoardPage = () => {
         return (<></>)
     }
 
+    let bgStyle: React.CSSProperties | undefined = undefined
+
+    if (board.theme) {
+        bgStyle = { background: board.theme.bg_value }
+    }
+
     return (
         <>
-            <div className="fixed left-0 right-0 top-12 bottom-0 flex items-stretch">
-                <SideBar />
+            <div
+                style={bgStyle}
+                className="fixed left-0 right-0 top-10 bottom-0 flex items-stretch transition-all duration-300"
+            >
+                <LeftSideBar board={board} />
                 <div className="flex flex-col flex-1">
                     <KanbanBoardTitle board={board} />
                     <div className="flex-1 relative">
@@ -75,6 +85,7 @@ const KanbanBoardPage = () => {
                         </div>
                     </div>
                 </div>
+                <RightSideBar />
             </div>
         </>
     )

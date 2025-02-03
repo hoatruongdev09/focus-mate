@@ -28,17 +28,19 @@ export default class BoardService {
     async getBoards(user_id: number): Promise<Board[]> {
         return await this.boardRepository.createQueryBuilder("board")
             .leftJoin("board.owner", "user")
+            .leftJoinAndSelect("board.theme", "board_theme")
             .select()
             .where("user.id = :user_id", { user_id })
             .getMany()
     }
 
-    async getBoard(board_id: number): Promise<Board> {
-        return await this.boardRepository.findOne({
-            where: {
-                id: board_id
-            }
-        })
+    async getBoard(board_id: number, user_id: number): Promise<Board> {
+        return await this.boardRepository.createQueryBuilder("board")
+            .leftJoin("board.owner", "user")
+            .leftJoinAndSelect("board.theme", "board_theme")
+            .select()
+            .where("user.id = :user_id AND board.id =:board_id", { user_id, board_id })
+            .getOne()
     }
 
     async createBoard(user_id: number, data: CreateBoardDto): Promise<Board> {
@@ -201,10 +203,19 @@ export default class BoardService {
             .getOne()
     }
 
+    private async findBoard(board_id: number): Promise<Board> {
+        return await this.boardRepository.createQueryBuilder("board")
+            .leftJoin("board.owner", "user")
+            .leftJoinAndSelect("board.theme", "board_theme")
+            .select()
+            .where("board.id =:board_id", { board_id })
+            .getOne()
+    }
+
     async createGroup(board_id: number, data: CreateGroupDto) {
         const { name, description } = data
 
-        const board = await this.getBoard(board_id)
+        const board = await this.findBoard(board_id)
         if (!board) {
             throw new Error("Board not found")
         }

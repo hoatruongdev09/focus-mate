@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Task } from "./task.entity";
 import Board from "./board.entity";
-import BoardAction from "./board-action.entity";
+import BoardAction from "./board-activity.entity";
 import UserComment from "./user-comment.entity";
 
 @Entity()

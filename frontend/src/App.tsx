@@ -5,7 +5,6 @@ import PrivateOutlet from "./pages/PrivateOutlet";
 import LandingPage from "./pages/LandingPage";
 import Workspace from "./pages/Workspace";
 import LoadingScreen from "./components/loading-screen";
-import AuthContext from "./components/authentication/auth-context";
 
 function App() {
 

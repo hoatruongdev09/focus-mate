@@ -4,8 +4,8 @@ import { Task } from "./task.entity";
 import { Group } from "./column.entity";
 import Board from "./board.entity";
 
-@Entity()
-export default class BoardActivities {
+@Entity({ name: "board_activity" })
+export default class BoardActivity {
     @PrimaryGeneratedColumn()
     id: number
 
