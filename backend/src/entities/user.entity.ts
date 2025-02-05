@@ -16,7 +16,8 @@ export default class User {
     email: string
 
     @Column({
-        nullable: false
+        nullable: false,
+        select: false
     })
     password: string
 

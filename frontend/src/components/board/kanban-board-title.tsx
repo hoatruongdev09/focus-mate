@@ -13,7 +13,7 @@ function KanbanBoardTitle(props: Props) {
     let bgStyle: React.CSSProperties | undefined = undefined
     console.log("board theme: ", board)
     if (board.theme) {
-        bgStyle = { background: `${board.theme.fg_value}` }
+        bgStyle = { background: `${board.theme.fg_value}80` }
     } else {
         bgStyle = { background: "#fff" }
     }
@@ -30,9 +30,9 @@ function KanbanBoardTitle(props: Props) {
                 <p className="align-middle font-bold text-xl text-white">{board.name}</p>
             </div>
             <div className="flex gap-2 justify-center items-center">
-                <input className="bg-gray-100 py-2 rounded px-2" placeholder="Type to search..."></input>
-                <button className="px-2 py-2 rounded cursor-pointer hover:bg-gray-100">
-                    <MagnifyingGlassIcon className="size-6" />
+                <input className="bg-gray-100 py-1 rounded px-2" placeholder="Type to search..."></input>
+                <button className="p-1 rounded cursor-pointer hover:bg-zinc-600 hover:bg-opacity-35">
+                    <MagnifyingGlassIcon className="size-6 text-white" />
                 </button>
                 <button
                     className="p-1 hover:bg-zinc-600 hover:bg-opacity-35 rounded"

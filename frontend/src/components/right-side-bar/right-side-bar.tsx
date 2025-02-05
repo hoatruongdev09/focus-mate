@@ -1,3 +1,4 @@
+import BoardInfoMenu from "./board-info-menu"
 import ChangeBackgroundMenu from "./change-background-menu"
 import Header from "./header"
 import MainMenu from "./main-menu"
@@ -38,7 +39,7 @@ const RightSideBar = (props: Props) => {
     }, [setCurrentMenu])
 
     return (
-        <div className={`absolute ${isShow ? "translate-x-0" : "translate-x-80"}  top-0 right-0 bottom-0 w-80 bg-white py-2 flex flex-col z-10 shadow-lg border transition-transform duration-150`}>
+        <div className={`absolute ${isShow ? "translate-x-0" : "translate-x-96"}  top-0 right-0 bottom-0 w-96 bg-white py-2 flex flex-col z-10 shadow-lg border transition-transform duration-150`}>
 
 
             <Header
@@ -53,6 +54,9 @@ const RightSideBar = (props: Props) => {
                 />
                 <ChangeBackgroundMenu
                     isShow={currentMenu == Menu.ChangeBackground}
+                />
+                <BoardInfoMenu
+                    isShow={currentMenu == Menu.AboutThisBoard}
                 />
             </div>
         </div>

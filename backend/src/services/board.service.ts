@@ -10,6 +10,7 @@ import Board from "../entities/board.entity";
 import User from "../entities/user.entity";
 import CreateBoardDto from "../dto/board/create-board.dto";
 import UserComment from "../entities/user-comment.entity";
+import UpdateBoardDto from "../dto/board/update-board.dto";
 
 
 export default class BoardService {
@@ -27,20 +28,35 @@ export default class BoardService {
 
     async getBoards(user_id: number): Promise<Board[]> {
         return await this.boardRepository.createQueryBuilder("board")
-            .leftJoin("board.owner", "user")
+            .leftJoinAndSelect("board.owner", "user")
             .leftJoinAndSelect("board.theme", "board_theme")
-            .select()
             .where("user.id = :user_id", { user_id })
             .getMany()
     }
 
     async getBoard(board_id: number, user_id: number): Promise<Board> {
         return await this.boardRepository.createQueryBuilder("board")
-            .leftJoin("board.owner", "user")
+            .leftJoinAndSelect("board.owner", "user")
             .leftJoinAndSelect("board.theme", "board_theme")
-            .select()
             .where("user.id = :user_id AND board.id =:board_id", { user_id, board_id })
             .getOne()
+    }
+
+    async updateBoard(board_id: number, user_id: number, data: UpdateBoardDto): Promise<Board> {
+        const board = await this.boardRepository.createQueryBuilder("board")
+            .leftJoinAndSelect("board.owner", "user")
+            .where("user.id =:user_id AND board.id =:board_id", { user_id, board_id })
+            .getOne()
+
+        if (!board) {
+            throw new Error("Board not found")
+        }
+
+        board.name = data.title
+        board.description = data.description
+
+        return await this.boardRepository.save(board)
+
     }
 
     async createBoard(user_id: number, data: CreateBoardDto): Promise<Board> {
@@ -522,7 +538,6 @@ export default class BoardService {
             .where("comment.board_id = :board_id AND comment.group_id = :group_id AND comment.task_id = :task_id AND comment.id = :comment_id", { board_id, group_id, task_id, comment_id: id })
             .select(["comment", "user.id", "user.first_name", "user.last_name"])
             .getOne()
-        console.log(result)
         return result
     }
 
@@ -532,6 +547,21 @@ export default class BoardService {
             .where("comment.board_id = :board_id AND comment.group_id = :group_id AND comment.task_id = :task_id", { board_id, group_id, task_id })
             .orderBy("comment.created_at", "DESC")
             .select(["comment", "user.id", "user.first_name", "user.last_name"])
+            .getMany()
+    }
+
+    async getArchivedCards(board_id: number) {
+        return await this.taskRepository.createQueryBuilder("task")
+            .leftJoin("task.group", "group")
+            .leftJoin("group.board", "board")
+            .where("task.archived = true AND board.id =:board_id", { board_id })
+            .getMany()
+    }
+
+    async getArchivedLists(board_id: number) {
+        return await this.groupRepository.createQueryBuilder("group")
+            .leftJoin("group.board", "board")
+            .where("board.id = :board_id", { board_id })
             .getMany()
     }
 

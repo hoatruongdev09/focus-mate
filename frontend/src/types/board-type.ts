@@ -1,3 +1,5 @@
+import { UserData } from "./auth-type"
+
 export enum CoverType {
     None = 0,
     SolidColor = 1,
@@ -23,10 +25,16 @@ export type Board = {
     archived: boolean
     theme_id: number | null
     theme: BoardTheme | null
+    owner: UserData
 }
 
 export type CreateBoardData = {
     title: string,
+    description: string
+}
+
+export type UpdateBoardData = {
+    title: string
     description: string
 }
 

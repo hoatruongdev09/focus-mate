@@ -22,10 +22,13 @@ export default class UserService {
         return await this.userRepository.save(user)
     }
 
-    async findUserByEmail(email: string) {
-        return await this.userRepository.findOneBy({
-            email
-        })
+    async findUserByEmail(email: string, includePassword: boolean) {
+        const queryBuilder = this.userRepository.createQueryBuilder("user")
+            .where("user.email = :email", { email })
+        if (includePassword) {
+            queryBuilder.addSelect("user.password")
+        }
+        return await queryBuilder.getOne()
     }
 
 

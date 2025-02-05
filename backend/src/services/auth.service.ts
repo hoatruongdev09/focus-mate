@@ -29,7 +29,7 @@ export default class AuthService {
     }
 
     async loginEmailPassword(email: string, password: string) {
-        const user = await this.userService.findUserByEmail(email)
+        const user = await this.userService.findUserByEmail(email, true)
         if (!user || !await compare(password, user.password)) {
             throw new Error("email or password not match")
         }
@@ -47,7 +47,7 @@ export default class AuthService {
 
     async registerEmailPassword(data: CreateUserDto) {
         const { email } = data
-        const existedUser = await this.userService.findUserByEmail(email)
+        const existedUser = await this.userService.findUserByEmail(email, false)
         if (existedUser) {
             throw new Error("user is exist")
         }

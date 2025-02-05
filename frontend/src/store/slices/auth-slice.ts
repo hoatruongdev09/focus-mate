@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { BasicUserData } from "../../types/auth-type"
+import { UserData } from "../../types/auth-type"
 import { authApi } from "../services/auth-service"
 
 interface AuthState {
@@ -19,7 +19,7 @@ export const authSlice = createSlice({
     name: "authSlice",
     initialState,
     reducers: {
-        setAuthData: (state, action: PayloadAction<{ token: string, refresh_token: string, userData: BasicUserData }>) => {
+        setAuthData: (state, action: PayloadAction<{ token: string, refresh_token: string, userData: UserData }>) => {
             const { token, refresh_token } = action.payload
             state.refresh_token = refresh_token
             state.token = token

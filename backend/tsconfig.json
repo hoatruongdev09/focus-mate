@@ -8,9 +8,9 @@
         "outDir": "dist",
         "noImplicitAny": true,
         "emitDecoratorMetadata": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
     },
     "lib": [
         "es2015"
-    ],
+    ]
 }

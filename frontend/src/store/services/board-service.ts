@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { AddGroupData, AddTaskData, Board, CreateBoardData, Group, Task, TaskComment, UpdateGroupData, UpdateTaskData } from "../../types/board-type";
+import { AddGroupData, AddTaskData, Board, CreateBoardData, Group, Task, TaskComment, UpdateBoardData, UpdateGroupData, UpdateTaskData } from "../../types/board-type";
 import { baseQueryWithReauth } from "./base-query-with-reauth";
 
 export const boardApi = createApi({
@@ -19,6 +19,14 @@ export const boardApi = createApi({
                 url: '/board',
                 method: 'POST',
                 body: data
+            }),
+            invalidatesTags: ['board']
+        }),
+        updateBoard: builder.mutation<Board, { board_id: number, data: UpdateBoardData }>({
+            query: data => ({
+                url: `/board/${data.board_id}`,
+                body: data.data,
+                method: 'POSt'
             }),
             invalidatesTags: ['board']
         }),
@@ -111,6 +119,14 @@ export const boardApi = createApi({
         getTaskComments: builder.query<TaskComment[], { board_id: number, column_id: number, task_id: number }>({
             query: data => `/board/${data.board_id}/${data.column_id}/tasks/${data.task_id}/comments`,
             providesTags: ['comments']
+        }),
+        postChangeTheme: builder.mutation<Board, { board_id: number, theme_id: number }>({
+            query: (data) => ({
+                url: `/board-theme/${data.board_id}/change`,
+                body: { theme_id: data.theme_id },
+                method: 'POST'
+            }),
+            invalidatesTags: ['board']
         })
     })
 })
@@ -131,5 +147,7 @@ export const {
     useArchiveAllTasksInColumnMutation,
     useArchiveOrUnarchiveColumnMutation,
     useCommentTaskMutation,
-    useGetTaskCommentsQuery
+    useGetTaskCommentsQuery,
+    usePostChangeThemeMutation,
+    useUpdateBoardMutation
 } = boardApi

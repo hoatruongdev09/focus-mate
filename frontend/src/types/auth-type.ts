@@ -1,10 +1,10 @@
 export type AuthResult = {
     access_token: string
     refresh_token: string
-    user: BasicUserData
+    user: UserData
 }
 
-export type BasicUserData = {
+export type UserData = {
     id: number
     email: string
     first_name: string

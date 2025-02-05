@@ -12,17 +12,23 @@ interface Props {
 const MainMenu = (props: Props) => {
     const { isShow, onOpenPage } = props
     const board = useSelector((state: AppRootState) => state.boardView.board)
+    const userData = useSelector((state: AppRootState) => state.user.data)
 
     const bgStyle: CSSProperties = board && board.theme ? { background: board.theme.bg_value } : { background: "#fff" }
 
+    const isAdmin = userData?.id == board?.owner.id
+
     return (
-        <div className={`absolute inset-0 flex flex-col ${isShow ? "opacity-100 -translate-x-0" : "opacity-0 -translate-x-80"}  transition-all duration-100`}>
+        <div className={`absolute inset-0 flex flex-col ${isShow ? "opacity-100 -translate-x-0" : "opacity-0 translate-x-96"}  transition-all duration-100`}>
             <div className="flex flex-col gap-2 mt-1 px-2">
-                <div className="flex items-center gap-3 py-2 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer">
+                <div
+                    className="flex items-center gap-3 py-2 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer"
+                    onClick={() => onOpenPage(Menu.AboutThisBoard)}
+                >
                     <InformationCircleIcon className="size-5 text-zinc-700" />
                     <div className="flex flex-col text-zinc-900">
                         <p className="text-sm font-semibold">About this board</p>
-                        <p className="text-sm">Add description to your board</p>
+                        {isAdmin && <p className="text-sm">Add description to your board</p>}
                     </div>
                 </div>
 

@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { BasicUserData } from "../../types/auth-type";
+import { UserData } from "../../types/auth-type";
 import { baseQueryWithReauth } from "./base-query-with-reauth";
 
 
@@ -8,7 +8,7 @@ export const userApi = createApi({
     tagTypes: ['user'],
     baseQuery: baseQueryWithReauth,
     endpoints: (builder) => ({
-        getMyInfo: builder.query<BasicUserData, void>({
+        getMyInfo: builder.query<UserData, void>({
             query: () => `/user/my-info`,
             providesTags: ['user']
         })

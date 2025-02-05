@@ -13,7 +13,7 @@ function LeftSideBar(props: Props) {
     let bgStyle: React.CSSProperties | undefined = undefined
     console.log("board theme: ", board)
     if (board.theme) {
-        bgStyle = { background: `${board.theme.fg_value}` }
+        bgStyle = { background: `${board.theme.fg_value}80` }
     } else {
         bgStyle = { background: "#fff" }
     }

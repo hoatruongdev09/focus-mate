@@ -4,6 +4,7 @@ import { useGetThemesQuery } from "../../store/services/board-theme-service"
 import { CheckIcon } from "@heroicons/react/24/outline"
 import { BoardTheme } from "../../types/board-type"
 import { setBoard } from "../../store/slices/board-slice"
+import { usePostChangeThemeMutation } from "../../store/services/board-service"
 
 
 interface Props {
@@ -15,18 +16,20 @@ const ChangeBackgroundMenu = (props: Props) => {
     const dispatch = useDispatch()
     const board = useSelector((state: AppRootState) => state.boardView.board)
     const { data: themes, isLoading: isLoadingThemes } = useGetThemesQuery()
+    const [changeBoardTheme] = usePostChangeThemeMutation()
 
-    const selectTheme = (theme: BoardTheme) => {
+    const selectTheme = async (theme: BoardTheme) => {
         if (!board) { return }
         dispatch(setBoard({
             ...board,
             theme_id: theme.id,
             theme: theme
         }))
+        await changeBoardTheme({ board_id: board.id, theme_id: theme.id })
     }
 
     return (
-        <div className={`absolute inset-0 transition-all duration-100 overflow-y-scroll ${isShow ? "opacity-100 -translate-x-0" : "opacity-0 -translate-x-80"} `}>
+        <div className={`absolute inset-0 transition-all duration-100 overflow-y-scroll ${isShow ? "opacity-100 -translate-x-0" : "opacity-0 translate-x-96"} `}>
             {
                 isLoadingThemes ? <div className="w-full">Loading</div> :
                     <div className="w-full flex flex-col">

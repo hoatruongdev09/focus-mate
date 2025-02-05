@@ -23,6 +23,7 @@ declare module 'slate' {
 }
 export type EditorRef = {
     clear: () => void
+    setValue: (value: string) => void
 }
 export type CustomDescendant = Descendant | EditorElement
 
@@ -66,6 +67,20 @@ const TextEditor = forwardRef<EditorRef | undefined | null, Props>((props: Props
             editor.children = [{ type: ElementType.paragraph, children: [{ text: '' }] }];
             Transforms.select(editor, { path: [0, 0], offset: 0 });
             editor.onChange();
+        },
+        setValue(value: string) {
+            const defaultValue: EditorElement[] = [
+                {
+                    type: ElementType.paragraph,
+                    children: [{ text: '' }],
+                }
+            ]
+            if (!value) {
+                return defaultValue
+            }
+            editor.children = JSON.parse(value) || defaultValue
+            Transforms.select(editor, { path: [0, 0], offset: 0 });
+            editor.onChange();
         }
     }))
 
@@ -104,6 +119,7 @@ const TextEditor = forwardRef<EditorRef | undefined | null, Props>((props: Props
             editor={editor}
             initialValue={initialValue}
             onChange={handleOnChange}
+
         >
             <div className={`flex flex-col gap-3 ${isActive ? 'outline outline-2 rounded-sm bg-white' : ''}  ${isFocus ? 'outline-blue-600' : ''}`}>
                 <Toolbar

@@ -7,7 +7,7 @@ const PlaceHolder = (props: RenderPlaceholderProps) => {
         <span
             style={{ userSelect: 'none' }}
             {...attr}
-            className='absolute block max-w-full opacity-30 pointer-events-none font-normal not-italic no-underline'
+            className='absolute block max-w-full opacity-50 pointer-events-none font-normal not-italic no-underline pb-5'
         >
             {children}
         </span>

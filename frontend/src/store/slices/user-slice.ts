@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { BasicUserData } from "../../types/auth-type";
+import { UserData } from "../../types/auth-type";
 import { userApi } from '../services/user-service'
 interface UserState {
-    data?: BasicUserData | undefined
+    data?: UserData | undefined
 }
 
 const initialState: UserState = {

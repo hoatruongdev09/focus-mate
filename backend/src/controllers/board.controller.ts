@@ -7,6 +7,7 @@ import UpdateTaskDto from '../dto/board/update-task.dto'
 import BoardActivityService from '../services/board-activity.service'
 import { ActivityType } from '../enums/activity-type'
 import BoardThemeService from '../services/board-theme.service'
+import UpdateBoardDto from '../dto/board/update-board.dto'
 
 const boardService = new BoardService()
 const boardActivityService = new BoardActivityService()
@@ -51,6 +52,19 @@ export const getBoard = async (req: Request, res: Response) => {
 
     try {
         const board = await boardService.getBoard(+board_id, +user_id)
+        res.status(200).json(board)
+    } catch (err) {
+        console.error(err)
+        res.status(500).json(err)
+    }
+}
+
+export const updateBoard = async (req: Request, res: Response) => {
+    const { user_id } = req
+    const { board_id } = req.params
+    const data: UpdateBoardDto = req.body
+    try {
+        const board = await boardService.updateBoard(+board_id, +user_id, data)
         res.status(200).json(board)
     } catch (err) {
         console.error(err)
@@ -242,6 +256,22 @@ export const getTaskComments = async (req: Request, res: Response) => {
         res.status(200).json(comments)
     }
     catch (error) {
-
+        console.error(error)
+        res.status(500).json(error)
     }
+}
+
+export const getArchivedCards = async (req: Request, res: Response) => {
+    try {
+        const { board_id } = req.params
+        const cards = await boardService.getArchivedCards(+board_id)
+        res.status(200).json(cards)
+    } catch (error) {
+        console.error(error)
+        res.status(500).json(error)
+    }
+}
+
+export const getArchivedLists = async (req: Request, res: Response) => {
+
 }
