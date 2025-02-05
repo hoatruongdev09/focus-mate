@@ -1,21 +1,35 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Authentication from "./authentication/authentication";
 import { useSelector } from "react-redux";
 import { AppRootState } from "../store/store";
+import React, { useEffect, useState } from "react";
 
+const defaultBgStyle: React.CSSProperties = {
+    background: "#fff"
+}
 function NavBar() {
+    const location = useLocation()
     const board = useSelector((state: AppRootState) => state.boardView.board)
-    let bgStyle: React.CSSProperties | undefined = undefined
+    const [bgStyle, setBgStyle] = useState<React.CSSProperties | undefined>(defaultBgStyle)
+    useEffect(() => {
+        if (location) {
+            console.log(`location: `, location.pathname)
+            if (!location.pathname.includes("/board")) {
+                setBgStyle(defaultBgStyle)
+                return
+            }
+        }
+        let style: React.CSSProperties | undefined = undefined
 
-    if (board && board.theme) {
-        bgStyle = {
-            background: board.theme.fg_value
+        if (board && board.theme) {
+            style = {
+                background: board.theme.fg_value
+            }
+        } else {
+            style = defaultBgStyle
         }
-    } else {
-        bgStyle = {
-            background: "#fff"
-        }
-    }
+        setBgStyle(style)
+    }, [board, location])
 
     return (
         <div className="fixed left-0 right-0 top-0 h-10 flex flex-col justify-center items-center">

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "dist/app.js",
   "scripts": {
-    "build": "rimraf ./dist && tsc",
+    "build": "rimraf ./dist && tsc && cp -r src/csv-configs dist",
     "start": "npm run build && node dist/app.js",
     "dev": "npm run build && npx nodemon dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"

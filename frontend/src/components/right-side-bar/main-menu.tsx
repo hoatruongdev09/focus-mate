@@ -1,24 +1,24 @@
-
 import { InformationCircleIcon, ListBulletIcon, ArchiveBoxXMarkIcon, Cog6ToothIcon } from "@heroicons/react/24/outline"
-import ButtonXClose from "./commons/button-x-close"
+import { Menu } from "./right-side-bar"
+import { useSelector } from "react-redux"
+import { AppRootState } from "../../store/store"
+import { CSSProperties } from "react"
 
-const RightSideBar = () => {
+interface Props {
+    isShow: boolean
+    onOpenPage: (menu: Menu) => void
+}
 
-    const handleCloseClick = () => { }
+const MainMenu = (props: Props) => {
+    const { isShow, onOpenPage } = props
+    const board = useSelector((state: AppRootState) => state.boardView.board)
+
+    const bgStyle: CSSProperties = board && board.theme ? { background: board.theme.bg_value } : { background: "#fff" }
+
     return (
-        <div className={`absolute top-0 right-0 bottom-0 w-72 bg-white py-2 flex flex-col z-10 shadow-lg border`}>
-            <ButtonXClose
-                buttonClassName="absolute right-2"
-                iconClassName="text-zinc-700"
-                onClick={handleCloseClick}
-            />
-            <p className="text-center mt-1 h-6 items-center font-semibold text-zinc-900">Menu</p>
-            <div className="w-full px-4">
-                <div className="h-px bg-zinc-300 mt-3" />
-            </div>
-
+        <div className={`absolute inset-0 flex flex-col ${isShow ? "opacity-100 -translate-x-0" : "opacity-0 -translate-x-80"}  transition-all duration-100`}>
             <div className="flex flex-col gap-2 mt-1 px-2">
-                <div className="flex items-center gap-3 py-1 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer">
+                <div className="flex items-center gap-3 py-2 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer">
                     <InformationCircleIcon className="size-5 text-zinc-700" />
                     <div className="flex flex-col text-zinc-900">
                         <p className="text-sm font-semibold">About this board</p>
@@ -26,14 +26,14 @@ const RightSideBar = () => {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 py-1 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer">
+                <div className="flex items-center gap-3 py-2 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer">
                     <ListBulletIcon className="size-5 text-zinc-700" />
                     <div className="flex flex-col text-zinc-900">
                         <p className="text-sm font-semibold">Activity</p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 py-1 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer">
+                <div className="flex items-center gap-3 py-2 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer">
                     <ArchiveBoxXMarkIcon className="size-5 text-zinc-700" />
                     <div className="flex flex-col text-zinc-900">
                         <p className="text-sm font-semibold">Archived items</p>
@@ -47,18 +47,25 @@ const RightSideBar = () => {
             </div>
 
             <div className="flex flex-col gap-2 mt-1 px-2">
-                <div className="flex items-center gap-3 py-1 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer">
+                <div className="flex items-center gap-3 py-2 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer">
                     <Cog6ToothIcon className="size-5 text-zinc-700" />
                     <div className="flex flex-col text-zinc-900">
                         <p className="text-sm font-semibold">Settings</p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 py-1 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer">
-                    {/* <ListBulletIcon className="size-5 text-zinc-700" /> */}
-                    <div className="border size-5 rounded bg-white" />
+                <div
+                    className="flex items-center gap-3 py-2 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer"
+                    onClick={() => onOpenPage(Menu.ChangeBackground)}
+                >
+                    <div
+                        style={bgStyle}
+                        className="border size-5 rounded"
+                    />
                     <div className="flex flex-col text-zinc-900">
-                        <p className="text-sm font-semibold">Change background</p>
+                        <p className="text-sm font-semibold">
+                            Change background
+                        </p>
                     </div>
                 </div>
 
@@ -67,4 +74,4 @@ const RightSideBar = () => {
     )
 }
 
-export default RightSideBar
+export default MainMenu

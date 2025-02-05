@@ -1,25 +1,26 @@
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import KanbanBoard from "../components/board/kanban-board"
 import KanbanBoardTitle from "../components/board/kanban-board-title"
 import LeftSideBar from "../components/left-side-bar"
 import { useGetBoardQuery, useGetColumnsQuery, useGetTasksQuery } from "../store/services/board-service"
-import { useEffect } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { setBoard, setColumns, setTasks } from "../store/slices/board-slice"
 import { hideLoadingScreen, showLoadingScreen } from "../store/slices/app-slice"
 import { Navigate, useLocation, useParams } from "react-router-dom"
-import RightSideBar from "../components/right-side-bar"
+import RightSideBar from "../components/right-side-bar/right-side-bar"
+import { AppRootState } from "../store/store"
 
 
 const KanbanBoardPage = () => {
     const { board_id } = useParams()
     const dispatch = useDispatch()
-
+    const [showRightBar, setShowRightBar] = useState(false)
     const location = useLocation()
 
     if (!board_id) {
         return <Navigate to={'/'} state={{ from: location }} />
     }
-
+    const selectedBoard = useSelector((state: AppRootState) => state.boardView.board)
     const { data: board, isLoading: isLoadingBoard } = useGetBoardQuery(+board_id)
     const { data: columns, isLoading: isLoadingColumns } = useGetColumnsQuery(+board_id)
     const { data: tasks, isLoading: isLoadingTasks } = useGetTasksQuery(+board_id)
@@ -60,15 +61,19 @@ const KanbanBoardPage = () => {
     }, [isLoadingColumns, isLoadingTasks, isLoadingBoard])
 
 
-    if (isLoadingColumns || isLoadingTasks || !board) {
+    if (isLoadingColumns || isLoadingTasks || !selectedBoard) {
         return (<></>)
     }
 
-    let bgStyle: React.CSSProperties | undefined = undefined
-
-    if (board.theme) {
-        bgStyle = { background: board.theme.bg_value }
+    const handleHideRightBar = () => {
+        setShowRightBar(false)
     }
+
+    const handleShowRightBar = () => {
+        setShowRightBar(true)
+    }
+
+    const bgStyle: React.CSSProperties | undefined = selectedBoard.theme ? { background: selectedBoard.theme.bg_value } : undefined
 
     return (
         <>
@@ -76,16 +81,22 @@ const KanbanBoardPage = () => {
                 style={bgStyle}
                 className="fixed left-0 right-0 top-10 bottom-0 flex items-stretch transition-all duration-300"
             >
-                <LeftSideBar board={board} />
+                <LeftSideBar board={selectedBoard} />
                 <div className="flex flex-col flex-1">
-                    <KanbanBoardTitle board={board} />
+                    <KanbanBoardTitle
+                        board={selectedBoard}
+                        showSideBar={handleShowRightBar}
+                    />
                     <div className="flex-1 relative">
                         <div className="absolute left-0 right-0 top-0 bottom-0">
                             <KanbanBoard />
                         </div>
                     </div>
                 </div>
-                <RightSideBar />
+                <RightSideBar
+                    isShow={showRightBar}
+                    hide={handleHideRightBar}
+                />
             </div>
         </>
     )

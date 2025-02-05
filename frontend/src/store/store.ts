@@ -7,6 +7,7 @@ import { authSlice } from "./slices/auth-slice";
 import { appViewSlice } from "./slices/app-slice";
 import { userSlice } from "./slices/user-slice";
 import { userApi } from "./services/user-service";
+import { boardThemeApi } from "./services/board-theme-service";
 
 export const store = configureStore({
     reducer: {
@@ -16,12 +17,14 @@ export const store = configureStore({
         user: userSlice.reducer,
         [userApi.reducerPath]: userApi.reducer,
         [boardApi.reducerPath]: boardApi.reducer,
-        [authApi.reducerPath]: authApi.reducer
+        [authApi.reducerPath]: authApi.reducer,
+        [boardThemeApi.reducerPath]: boardThemeApi.reducer
     },
     middleware: (getDefaultConfig) => getDefaultConfig()
         .concat(boardApi.middleware)
         .concat(authApi.middleware)
-        .concat(userApi.middleware),
+        .concat(userApi.middleware)
+        .concat(boardThemeApi.middleware)
 })
 
 setupListeners(store.dispatch)

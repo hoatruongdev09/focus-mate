@@ -17,4 +17,11 @@ export default class BoardTheme {
 
     @OneToMany(() => Board, board => board.theme)
     boards: Board[]
+
+    constructor(id: number, bg_type: number, bg_value: string, fg_value: string) {
+        this.id = id
+        this.bg_type = bg_type
+        this.bg_value = bg_value
+        this.fg_value = fg_value
+    }
 }

@@ -1,47 +1,38 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { AddGroupData, AddTaskData, Board, CreateBoardData, Group, Task, TaskComment, UpdateGroupData, UpdateTaskData } from "../../types/board-type";
-import { AppRootState } from "../store";
+import { baseQueryWithReauth } from "./base-query-with-reauth";
 
 export const boardApi = createApi({
     reducerPath: 'boardApi',
-    baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:3000/board',
-        prepareHeaders: (headers, { getState }) => {
-            const token = (getState() as AppRootState).auth.token
-            if (token) {
-                headers.set('authorization', `Bearer ${token}`)
-            }
-            return headers
-        }
-    }),
+    baseQuery: baseQueryWithReauth,
     tagTypes: ['board', 'columns', 'tasks', 'comments'],
     endpoints: (builder) => ({
         getBoards: builder.query<Board[], void>({
-            query: () => `/`,
+            query: () => `/board`,
             providesTags: ['board']
         }),
         getBoard: builder.query<Board, number>({
-            query: (data) => `/${data}`
+            query: (data) => `/board/${data}`
         }),
         createBoard: builder.mutation<Board, CreateBoardData>({
             query: data => ({
-                url: '/',
+                url: '/board',
                 method: 'POST',
                 body: data
             }),
             invalidatesTags: ['board']
         }),
         getColumns: builder.query<Group[], number>({
-            query: (data) => `/${data}/groups`,
+            query: (data) => `/board/${data}/groups`,
             providesTags: ['columns']
         }),
         getTasks: builder.query<Task[], number>({
-            query: (data) => `/${data}/tasks`,
+            query: (data) => `/board/${data}/tasks`,
             providesTags: ['tasks']
         }),
         addColumns: builder.mutation<Group, AddGroupData>({
             query: data => ({
-                url: `${data.board_id}/groups`,
+                url: `/board/${data.board_id}/groups`,
                 method: 'POST',
                 body: data
             }),
@@ -49,14 +40,14 @@ export const boardApi = createApi({
         }),
         deleteColumn: builder.mutation<void, { board_id: number, column_id: number }>({
             query: data => ({
-                url: `/${data.board_id}/groups/${data.column_id}`,
+                url: `/board/${data.board_id}/groups/${data.column_id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['columns']
         }),
         addTasks: builder.mutation<Group, AddTaskData>({
             query: data => ({
-                url: `/${data.board_id}/groups/${data.group_id}/task`,
+                url: `/board/${data.board_id}/groups/${data.group_id}/task`,
                 method: 'POST',
                 body: data
             }),
@@ -64,14 +55,14 @@ export const boardApi = createApi({
         }),
         deleteTask: builder.mutation<void, { board_id: number, task_id: number }>({
             query: data => ({
-                url: `/${data.board_id}/tasks/${data.task_id}`,
+                url: `/board/${data.board_id}/tasks/${data.task_id}`,
                 method: 'DELETE'
             }),
             invalidatesTags: ['tasks']
         }),
         updateTask: builder.mutation<Task, UpdateTaskData>({
             query: data => ({
-                url: `/${data.board_id}/tasks/${data.id}`,
+                url: `/board/${data.board_id}/tasks/${data.id}`,
                 method: 'PUT',
                 body: data
             }),
@@ -79,7 +70,7 @@ export const boardApi = createApi({
         }),
         updateColumn: builder.mutation<Group, UpdateGroupData>({
             query: data => ({
-                url: `/${data.board_id}/groups/${data.id}`,
+                url: `/board/${data.board_id}/groups/${data.id}`,
                 method: 'PUT',
                 body: data
             }),
@@ -87,21 +78,21 @@ export const boardApi = createApi({
         }),
         archiveOrUnarchiveTask: builder.mutation<Task, { board_id: number, group_id: number, task_id: number }>({
             query: data => ({
-                url: `${data.board_id}/${data.group_id}/tasks/${data.task_id}/archive-or-unarchive`,
+                url: `/board/${data.board_id}/${data.group_id}/tasks/${data.task_id}/archive-or-unarchive`,
                 method: 'POST'
             }),
             invalidatesTags: ['tasks']
         }),
         archiveOrUnarchiveColumn: builder.mutation<Group, { board_id: number, column_id: number }>({
             query: data => ({
-                url: `/${data.board_id}/groups/${data.column_id}/archive-or-unarchive`,
+                url: `/board/${data.board_id}/groups/${data.column_id}/archive-or-unarchive`,
                 method: 'POST'
             }),
             invalidatesTags: ['columns']
         }),
         archiveAllTasksInColumn: builder.mutation<Task[], { board_id: number, column_id: number, action: boolean }>({
             query: data => ({
-                url: `${data.board_id}/groups/${data.column_id}/archive-or-unarchive-all-task`,
+                url: `/board/${data.board_id}/groups/${data.column_id}/archive-or-unarchive-all-task`,
                 body: { action: data.action },
                 method: 'POST'
             }),
@@ -110,7 +101,7 @@ export const boardApi = createApi({
         commentTask: builder.mutation<TaskComment, { board_id: number, column_id: number, task_id: number, content: string }>(
             {
                 query: data => ({
-                    url: `${data.board_id}/${data.column_id}/tasks/${data.task_id}/comment`,
+                    url: `/board/${data.board_id}/${data.column_id}/tasks/${data.task_id}/comment`,
                     body: { content: data.content },
                     method: 'POST'
                 }),
@@ -118,7 +109,7 @@ export const boardApi = createApi({
             }
         ),
         getTaskComments: builder.query<TaskComment[], { board_id: number, column_id: number, task_id: number }>({
-            query: data => `${data.board_id}/${data.column_id}/tasks/${data.task_id}/comments`,
+            query: data => `/board/${data.board_id}/${data.column_id}/tasks/${data.task_id}/comments`,
             providesTags: ['comments']
         })
     })

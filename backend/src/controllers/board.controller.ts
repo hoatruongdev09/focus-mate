@@ -6,6 +6,7 @@ import CreateTaskDto from '../dto/board/create-task.dto'
 import UpdateTaskDto from '../dto/board/update-task.dto'
 import BoardActivityService from '../services/board-activity.service'
 import { ActivityType } from '../enums/activity-type'
+import BoardThemeService from '../services/board-theme.service'
 
 const boardService = new BoardService()
 const boardActivityService = new BoardActivityService()
@@ -31,6 +32,16 @@ export const createBoard = async (req: Request, res: Response) => {
     } catch (err) {
         console.error(err)
         res.status(500).json(err)
+    }
+}
+
+export const fetchBoard = async (req: Request, res: Response) => {
+    try {
+        const { board_id } = req.params
+        const board = await boardService.getBoardColumnsAndTasks(+board_id)
+        res.status(200).json(board)
+    } catch (error) {
+        res.status(500).json(error)
     }
 }
 
@@ -132,16 +143,6 @@ export const deleteTask = async (req: Request, res: Response) => {
         const { board_id, id } = req.params
         await boardService.deleteTask(+board_id, +id)
         res.status(200).json("oke")
-    } catch (error) {
-        res.status(500).json(error)
-    }
-}
-
-export const fetchBoard = async (req: Request, res: Response) => {
-    try {
-        const { board_id } = req.params
-        const board = await boardService.getBoardColumnsAndTasks(+board_id)
-        res.status(200).json(board)
     } catch (error) {
         res.status(500).json(error)
     }
