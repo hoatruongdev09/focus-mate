@@ -2,6 +2,18 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { AddGroupData, AddTaskData, Board, CreateBoardData, Group, Task, TaskComment, UpdateBoardData, UpdateGroupData, UpdateTaskData } from "../../types/board-type";
 import { baseQueryWithReauth } from "./base-query-with-reauth";
 
+const getArchivedItemsUrl = ({ board_id, type }: { board_id: number, type: string }): string => {
+    console.log(`get archive link: ${type}`)
+    switch (type) {
+        case "cards":
+            return `board/${board_id}/archived-cards`
+        case "lists":
+            return `board/${board_id}/archived-lists`
+        default:
+            return ""
+    }
+}
+
 export const boardApi = createApi({
     reducerPath: 'boardApi',
     baseQuery: baseQueryWithReauth,
@@ -127,6 +139,18 @@ export const boardApi = createApi({
                 method: 'POST'
             }),
             invalidatesTags: ['board']
+        }),
+        getArchivedItems: builder.query<Task[] | Group[], { board_id: number, type: string }>({
+            query: data => getArchivedItemsUrl(data),
+            providesTags: ['tasks', 'columns']
+        }),
+        getArchivedTasks: builder.query<Task[], number>({
+            query: board_id => `board/${board_id}/archived-cards`,
+            providesTags: ['tasks']
+        }),
+        getArchivedColumns: builder.query<Group[], number>({
+            query: board_id => `board/${board_id}/archived-lists`,
+            providesTags: ['columns']
         })
     })
 })
@@ -149,5 +173,8 @@ export const {
     useCommentTaskMutation,
     useGetTaskCommentsQuery,
     usePostChangeThemeMutation,
-    useUpdateBoardMutation
+    useUpdateBoardMutation,
+    useGetArchivedItemsQuery,
+    useGetArchivedColumnsQuery,
+    useGetArchivedTasksQuery
 } = boardApi

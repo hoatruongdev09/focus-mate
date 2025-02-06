@@ -1,3 +1,4 @@
+import ArchivedItemsMenu from "./archived-items-menu/archived-items-menu"
 import BoardInfoMenu from "./board-info-menu"
 import ChangeBackgroundMenu from "./change-background-menu"
 import Header from "./header"
@@ -57,6 +58,9 @@ const RightSideBar = (props: Props) => {
                 />
                 <BoardInfoMenu
                     isShow={currentMenu == Menu.AboutThisBoard}
+                />
+                <ArchivedItemsMenu
+                    isShow={currentMenu == Menu.ArchivedItems}
                 />
             </div>
         </div>

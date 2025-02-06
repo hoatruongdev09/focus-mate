@@ -32,14 +32,18 @@ const MainMenu = (props: Props) => {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 py-2 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer">
+                <div
+
+                    className="flex items-center gap-3 py-2 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer">
                     <ListBulletIcon className="size-5 text-zinc-700" />
                     <div className="flex flex-col text-zinc-900">
                         <p className="text-sm font-semibold">Activity</p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 py-2 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer">
+                <div
+                    onClick={() => onOpenPage(Menu.ArchivedItems)}
+                    className="flex items-center gap-3 py-2 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer">
                     <ArchiveBoxXMarkIcon className="size-5 text-zinc-700" />
                     <div className="flex flex-col text-zinc-900">
                         <p className="text-sm font-semibold">Archived items</p>
