@@ -130,6 +130,7 @@ export default class BoardService {
             throw new Error("Column not found")
         }
         column.archived = true
+        console.log(`archived columnnnn`)
         return await this.groupRepository.save(column)
     }
 
@@ -468,11 +469,17 @@ export default class BoardService {
     }
 
     async deleteTask(board_id: number, id: number) {
-        await this.taskRepository.createQueryBuilder("task")
+        const task = await this.taskRepository.createQueryBuilder("task")
             .leftJoin("task.group", "group")
             .leftJoin("group.board", "board")
-            .softDelete().where("task.id = :id AND board.id = :board_id", { id, board_id })
-            .execute()
+            .where("task.id = :id AND board.id = :board_id", { id, board_id })
+            .getOne()
+
+        if (!task) { return }
+        if (!task.archived) {
+            throw new Error("Task is not archived yet")
+        }
+        await this.taskRepository.softRemove(task)
     }
 
     async getBoardColumnsAndTasks(board_id: number) {
@@ -561,7 +568,7 @@ export default class BoardService {
     async getArchivedLists(board_id: number) {
         return await this.groupRepository.createQueryBuilder("group")
             .leftJoin("group.board", "board")
-            .where("board.id = :board_id", { board_id })
+            .where("board.id = :board_id AND group.archived", { board_id })
             .getMany()
     }
 

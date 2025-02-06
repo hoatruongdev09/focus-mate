@@ -155,9 +155,11 @@ export const updateTask = async (req: Request, res: Response) => {
 export const deleteTask = async (req: Request, res: Response) => {
     try {
         const { board_id, id } = req.params
+        console.log(`delete task: ${board_id} ${id}`)
         await boardService.deleteTask(+board_id, +id)
         res.status(200).json("oke")
     } catch (error) {
+        console.error(error)
         res.status(500).json(error)
     }
 }
@@ -210,8 +212,9 @@ export const archiveOrUnarchiveTask = async (req: Request, res: Response) => {
 export const archiveOrUnarchiveColumn = async (req: Request, res: Response) => {
     try {
         const { board_id, id } = req.params
+        console.log(`archive column ${board_id} ${id}`)
         const column = await boardService.getGroup(+board_id, +id);
-        if (column.archived) {
+        if (!column.archived) {
             await boardActivityService.createNewActivity(req.user_id, + board_id, ActivityType.ARCHIVE_COLUMN, null, +id)
             res.status(200).json(await boardService.archiveColumn(+board_id, +id))
         }
@@ -273,5 +276,12 @@ export const getArchivedCards = async (req: Request, res: Response) => {
 }
 
 export const getArchivedLists = async (req: Request, res: Response) => {
-
+    try {
+        const { board_id } = req.params
+        const cards = await boardService.getArchivedLists(+board_id)
+        res.status(200).json(cards)
+    } catch (error) {
+        console.error(error)
+        res.status(500).json(error)
+    }
 }

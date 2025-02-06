@@ -29,7 +29,7 @@ const ChangeBackgroundMenu = (props: Props) => {
     }
 
     return (
-        <div className={`absolute inset-0 transition-all duration-100 overflow-y-scroll ${isShow ? "opacity-100 -translate-x-0" : "opacity-0 translate-x-96"} `}>
+        <div className={`absolute inset-0 transition-all duration-100 overflow-y-scroll ${isShow ? "opacity-100 -translate-x-0 z-10" : "opacity-0 translate-x-96 z-0"} `}>
             {
                 isLoadingThemes ? <div className="w-full">Loading</div> :
                     <div className="w-full flex flex-col">

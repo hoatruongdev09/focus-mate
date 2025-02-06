@@ -22,24 +22,22 @@ const ArchivedItemsMenu = (props: Props) => {
     const { isShow } = props
     const [menuType, setMenuType] = useState<MenuType>(MenuType.Cards)
     const board = useSelector((state: AppRootState) => state.boardView.board)
-    if (!board) { return <></> }
+    if (!board) { return null }
 
-
-    const { data: items, isLoading, isError, error } = useGetArchivedItemsQuery({ board_id: board!.id, type: menuType })
+    const { data: items, isLoading, isError, error } = useGetArchivedItemsQuery({
+        board_id: board.id,
+        type: menuType
+    })
 
     const handleChangeList = () => {
-        switch (menuType) {
-            case MenuType.Cards:
-                setMenuType(MenuType.Lists)
-                break
-            case MenuType.Lists:
-                setMenuType(MenuType.Cards)
-                break
-        }
+        setMenuType((prev) => (prev === MenuType.Cards ? MenuType.Lists : MenuType.Cards))
     }
 
+    const tasks = menuType === MenuType.Cards ? (items as Task[]) ?? [] : []
+    const groups = menuType === MenuType.Lists ? (items as Group[]) ?? [] : []
+
     return (
-        <div className={`absolute inset-0 transition-all duration-100 ${isShow ? "opacity-100 -translate-x-0" : "opacity-0 translate-x-96"} `}>
+        <div className={`absolute inset-0 transition-all duration-100 ${isShow ? "opacity-100 -translate-x-0 z-10" : "opacity-0 translate-x-96 z-0"} `}>
             <div className="w-full h-full flex flex-col px-4">
                 <div className="flex gap-2 justify-between mt-2">
                     <input
@@ -64,11 +62,11 @@ const ArchivedItemsMenu = (props: Props) => {
 
                     <ArchivedCardsView
                         isShow={menuType == MenuType.Cards}
-                        tasks={items as Task[]}
+                        tasks={tasks}
                     />
                     <ArchivedListsView
                         isShow={menuType == MenuType.Lists}
-                        groups={items as Group[]}
+                        groups={groups}
                     />
                 </div>
 

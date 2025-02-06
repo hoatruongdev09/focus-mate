@@ -1,5 +1,9 @@
-import { EyeIcon } from "@heroicons/react/24/outline"
+import { useCallback } from "react"
 import { Group } from "../../../types/board-type"
+import ArchivedList from "./archived-list"
+import { useArchiveOrUnarchiveColumnMutation, useDeleteColumnMutation } from "../../../store/services/board-service"
+import { useSelector } from "react-redux"
+import { AppRootState } from "../../../store/store"
 
 interface Props {
     isShow: boolean
@@ -7,32 +11,36 @@ interface Props {
 }
 
 const ArchivedListsView = (props: Props) => {
-    const { isShow } = props
+    const { isShow, groups } = props
+    const board = useSelector((state: AppRootState) => state.boardView.board)
+    const [archiveColumn] = useArchiveOrUnarchiveColumnMutation()
+    const [deleteColumn] = useDeleteColumnMutation()
+
+    const handleDeleteGroup = useCallback((group: Group) => {
+        if (!board) { return }
+        deleteColumn({ board_id: board.id, column_id: group.id })
+    }, [deleteColumn, board])
+
+    const handleRestoreGroup = useCallback((group: Group) => {
+        if (!board) { return }
+        archiveColumn({ board_id: board.id, column_id: group.id })
+    }, [archiveColumn, board])
 
     return (
         <div
-            className={`absolute inset-0 overflow-y-scroll flex flex-col items-center mt-2 gap-2 ${isShow ? 'opacity-100' : 'opacity-0'} transition-opacity duration-100`}
+            className={`absolute inset-0 overflow-y-scroll flex flex-col items-center mt-2 gap-2 ${isShow ? 'opacity-100 z-10' : 'opacity-0 z-0'} transition-opacity duration-100`}
         >
-            <div className="flex w-72 flex-col">
-                <div className="h-8 rounded-t-lg bg-blue-500 border-t border-l border-r"></div>
-                <div className="flex flex-col gap-2 p-2 bg-white rounded-b-lg border-b border-l border-r">
+            {
+                groups.map(g => (
+                    <ArchivedList
+                        key={`archived-group-${g.id}`}
+                        group={g}
+                        onDelete={handleDeleteGroup}
+                        onRestore={handleRestoreGroup}
+                    />
+                ))
+            }
 
-                    <p>[api] for moving note between list askdf lasjdnf</p>
-                    <div className="flex gap-2">
-                        <EyeIcon className="size-3" />
-                    </div>
-                </div>
-            </div>
-            <div className="flex w-72 flex-col">
-                <div className="h-8 rounded-t-lg bg-blue-500 border-t border-l border-r"></div>
-                <div className="flex flex-col gap-2 p-2 bg-white rounded-b-lg border-b border-l border-r">
-
-                    <p>[api] for moving note between list askdf lasjdnf</p>
-                    <div className="flex gap-2">
-                        <EyeIcon className="size-3" />
-                    </div>
-                </div>
-            </div>
         </div>
     )
 }

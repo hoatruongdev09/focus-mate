@@ -4,7 +4,6 @@ import TaskDescription from "./task-description";
 import TaskActivity from "./task-activity";
 import TaskFunctions from "./task-functions";
 import TaskActions from "./task-actions";
-import { PhotoIcon } from "@heroicons/react/16/solid";
 import ButtonXClose from "../../commons/button-x-close";
 import { ArchiveBoxIcon } from "@heroicons/react/24/solid";
 

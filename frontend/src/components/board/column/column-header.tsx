@@ -79,6 +79,7 @@ function ColumnHeader(props: Props) {
     }, [setShowCreateTaskInput])
 
     const handleArchiveColumn = useCallback(() => {
+        console.log(`archive columns`)
         archiveColumn({ board_id: column.board_id, column_id: column.id })
     }, [column, archiveColumn])
 

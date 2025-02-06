@@ -59,7 +59,7 @@ const BoardInfoMenu = (props: Props) => {
     }, [descriptionContent, setDescriptionContent, board, dispatch, setOnFocus, textEditorRef, updateBoard])
 
     return (
-        <div className={`absolute inset-0 transition-all duration-100 overflow-y-scroll ${isShow ? "opacity-100 -translate-x-0" : "opacity-0 translate-x-96"} `}>
+        <div className={`absolute inset-0 transition-all duration-100 overflow-y-scroll ${isShow ? "opacity-100 -translate-x-0 z-10" : "opacity-0 translate-x-96 z-0"}`}>
             <div className="w-full flex flex-col px-4 mt-2 gap-2">
                 <div className="flex gap-2 items-center">
                     <UserIcon className="size-5 text-zinc-800" />
