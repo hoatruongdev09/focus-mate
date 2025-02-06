@@ -1,16 +1,13 @@
 import { Request, Response } from 'express'
 import BoardService from '../services/board.service'
 import UpdateGroupDto from '../dto/board/update-group.dto'
-import CreateGroupDto from '../dto/board/create-group.dto'
 import CreateTaskDto from '../dto/board/create-task.dto'
 import UpdateTaskDto from '../dto/board/update-task.dto'
-import BoardActivityService from '../services/board-activity.service'
-import { ActivityType } from '../enums/activity-type'
-import BoardThemeService from '../services/board-theme.service'
 import UpdateBoardDto from '../dto/board/update-board.dto'
+import { AchieveGroupEventData, AchieveTaskEventData, AddGroupEventData, AddTaskEventData, BoardActivityEvent, CreateBoardEventData } from '../defines/board-activity-type'
+import { defaultObserver } from '../utils/observer'
 
 const boardService = new BoardService()
-const boardActivityService = new BoardActivityService()
 
 
 export const getBoards = async (req: Request, res: Response) => {
@@ -28,7 +25,10 @@ export const createBoard = async (req: Request, res: Response) => {
     const { user_id } = req
     try {
         const board = await boardService.createBoard(user_id, req.body)
-        boardActivityService.createNewActivity(req.user_id, board.id, ActivityType.CREATE_BOARD)
+        const eventData: CreateBoardEventData = {
+            user_id, board
+        }
+        defaultObserver.publish(BoardActivityEvent.CreateBoard, eventData)
         res.status(200).json(board)
     } catch (err) {
         console.error(err)
@@ -75,9 +75,14 @@ export const updateBoard = async (req: Request, res: Response) => {
 
 export const addGroup = async (req: Request, res: Response) => {
     try {
+        const { user_id } = req
         const { board_id } = req.params
         const group = await boardService.createGroup(+board_id, req.body)
-        boardActivityService.createNewActivity(req.user_id, +board_id, ActivityType.CREATE_GROUP, null, group.id)
+        const eventData: AddGroupEventData = {
+            user_id,
+            group
+        }
+        defaultObserver.publish(BoardActivityEvent.AddList, eventData)
         res.status(200).json(group)
     } catch (e) {
         res.status(500).json(e)
@@ -118,11 +123,16 @@ export const deleteGroup = async (req: Request, res: Response) => {
 
 export const createTask = async (req: Request, res: Response) => {
     try {
+        const { user_id } = req
         const { board_id, id } = req.params
         const data: CreateTaskDto = req.body
-        const newTask = await boardService.addTask(+board_id, +id, data)
-        boardActivityService.createNewActivity(req.user_id, +board_id, ActivityType.CREATE_TASK, newTask.id)
-        res.status(200).json(newTask)
+        const task = await boardService.addTask(+board_id, +id, data)
+        const eventData: AddTaskEventData = {
+            user_id,
+            task
+        }
+        defaultObserver.publish(BoardActivityEvent.AddTask, eventData)
+        res.status(200).json(task)
     } catch (e) {
         console.error(e)
         res.status(500).json(e)
@@ -192,14 +202,21 @@ export const reorderGroup = async (req: Request, res: Response) => {
 
 export const archiveOrUnarchiveTask = async (req: Request, res: Response) => {
     try {
+        const { user_id } = req
         const { board_id, group_id, task_id } = req.params
         const task = await boardService.getTask(+board_id, +group_id, +task_id)
+        const eventData: AchieveTaskEventData = {
+            user_id,
+            board_id: +board_id,
+            task_id: +task_id,
+            group_id: +group_id,
+        }
         if (task.archived) {
-            await boardActivityService.createNewActivity(req.user_id, +board_id, ActivityType.UNARCHIVE_TASK, +task_id, +group_id);
+            defaultObserver.publish(BoardActivityEvent.UnarchiveTask, eventData)
             res.status(200).json(await boardService.unarchiveTask(+board_id, +group_id, +task_id))
         }
         else {
-            await boardActivityService.createNewActivity(req.user_id, +board_id, ActivityType.ARCHIVE_TASK, +task_id, +group_id);
+            defaultObserver.publish(BoardActivityEvent.ArchiveTask, eventData)
             res.status(200).json(await boardService.archiveTask(+board_id, +group_id, +task_id))
         }
     } catch (error) {
@@ -211,15 +228,20 @@ export const archiveOrUnarchiveTask = async (req: Request, res: Response) => {
 
 export const archiveOrUnarchiveColumn = async (req: Request, res: Response) => {
     try {
+        const { user_id } = req
         const { board_id, id } = req.params
-        console.log(`archive column ${board_id} ${id}`)
         const column = await boardService.getGroup(+board_id, +id);
+        const eventData: AchieveGroupEventData = {
+            user_id,
+            board_id: +board_id,
+            group_id: +id
+        }
         if (!column.archived) {
-            await boardActivityService.createNewActivity(req.user_id, + board_id, ActivityType.ARCHIVE_COLUMN, null, +id)
+            defaultObserver.publish(BoardActivityEvent.ArchiveColumn, eventData)
             res.status(200).json(await boardService.archiveColumn(+board_id, +id))
         }
         else {
-            await boardActivityService.createNewActivity(req.user_id, + board_id, ActivityType.UNARCHIVE_COLUMN, null, +id)
+            defaultObserver.publish(BoardActivityEvent.UnarchiveColumn, eventData)
             res.status(200).json(await boardService.unarchiveColumn(+board_id, +id))
         }
     } catch (error) {

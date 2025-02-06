@@ -11,6 +11,8 @@ import User from "../entities/user.entity";
 import CreateBoardDto from "../dto/board/create-board.dto";
 import UserComment from "../entities/user-comment.entity";
 import UpdateBoardDto from "../dto/board/update-board.dto";
+import { defaultObserver } from "../utils/observer";
+import { BoardActivityEvent, CreateBoardEventData } from "../defines/board-activity-type";
 
 
 export default class BoardService {
@@ -79,6 +81,7 @@ export default class BoardService {
         newBoard.owner = { id: user_id } as User
 
         return await this.boardRepository.save(newBoard)
+
     }
     async unarchiveTask(board_id: number, group_id: number, task_id: number) {
         const task = await this.taskRepository.findOne({

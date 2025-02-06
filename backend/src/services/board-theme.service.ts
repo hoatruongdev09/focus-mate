@@ -4,7 +4,9 @@ import dataSource from "../db/data-source";
 import loadBoardThemeData from "../scripts/board-theme-data-loader";
 import Board from "../entities/board.entity";
 
+
 export default class BoardThemeService {
+
     private boardThemeRepository: Repository<BoardTheme>
     private boardRepository: Repository<Board>
 
@@ -19,10 +21,25 @@ export default class BoardThemeService {
             while (!dataSource.isInitialized) {
                 await new Promise(resolve => setTimeout(resolve, 100))
             }
-            const existedThemes = await this.boardThemeRepository.find()
-            if (existedThemes.length > 0) { return }
             const data = await loadBoardThemeData()
-            await this.boardThemeRepository.insert(data)
+            const existThemes = await this.boardThemeRepository
+                .createQueryBuilder("board_theme")
+                .select("board_theme.id")
+                .getMany()
+            const themeIds = existThemes.map(t => t.id)
+            const shouldInsertConfig = data.filter(c => !themeIds.includes(c.id))
+            const shouldUpdateConfig = data.filter(c => themeIds.includes(c.id))
+            await this.boardThemeRepository.insert(shouldInsertConfig)
+            const promises = []
+            for (let config of shouldUpdateConfig) {
+                promises.push(this.boardThemeRepository.createQueryBuilder()
+                    .update(BoardTheme)
+                    .set({ bg_type: config.bg_type, bg_value: config.bg_value })
+                    .where("id =:id", { id: config.id })
+                    .execute()
+                )
+            }
+            await Promise.all(promises)
         } catch (err) {
             console.error(err)
         }
