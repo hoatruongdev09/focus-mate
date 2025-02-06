@@ -27,7 +27,7 @@ const ArchivedCard = (props: Props) => {
     }
 
     return (
-        <div className="flex w-72 flex-col">
+        <div className="flex w-full flex-col">
             <div
                 onClick={handleViewCard}
                 className="flex flex-col shadow-md rounded-lg hover:cursor-pointer"

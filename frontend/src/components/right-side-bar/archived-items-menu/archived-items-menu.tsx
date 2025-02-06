@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { Group, Task } from "../../../types/board-type"
 import ArchivedCardsView from "./archived-card-view"
 import ArchivedListsView from "./archived-list-view"
@@ -22,6 +22,9 @@ const ArchivedItemsMenu = (props: Props) => {
     const { isShow } = props
     const [menuType, setMenuType] = useState<MenuType>(MenuType.Cards)
     const board = useSelector((state: AppRootState) => state.boardView.board)
+
+    const [searchValue, setSearchValue] = useState<string>("")
+
     if (!board) { return null }
 
     const { data: items, isLoading, isError, error } = useGetArchivedItemsQuery({
@@ -33,8 +36,24 @@ const ArchivedItemsMenu = (props: Props) => {
         setMenuType((prev) => (prev === MenuType.Cards ? MenuType.Lists : MenuType.Cards))
     }
 
-    const tasks = menuType === MenuType.Cards ? (items as Task[]) ?? [] : []
-    const groups = menuType === MenuType.Lists ? (items as Group[]) ?? [] : []
+    const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchValue(e.target.value)
+    }, [setSearchValue])
+
+    const tasks = useMemo(() => {
+        const casted = menuType === MenuType.Cards ? (items as Task[]) ?? [] : []
+        if (searchValue === "") {
+            return casted
+        }
+        return casted.filter(c => c.title.includes(searchValue))
+    }, [menuType, items, searchValue])
+    const groups = useMemo(() => {
+        const casted = menuType === MenuType.Lists ? (items as Group[]) ?? [] : []
+        if (searchValue == "") {
+            return casted
+        }
+        return casted.filter(c => c.name.includes(searchValue))
+    }, [menuType, items, searchValue])
 
     return (
         <div className={`absolute inset-0 transition-all duration-100 ${isShow ? "opacity-100 -translate-x-0 z-10" : "opacity-0 translate-x-96 z-0"} `}>
@@ -43,6 +62,8 @@ const ArchivedItemsMenu = (props: Props) => {
                     <input
                         className="flex-1 border px-1 py-2 rounded"
                         placeholder="Search archive..."
+                        value={searchValue}
+                        onChange={handleSearch}
                     />
                     <button
                         onClick={handleChangeList}
@@ -52,6 +73,7 @@ const ArchivedItemsMenu = (props: Props) => {
                         }
                     </button>
                 </div>
+                <div className="h-px w-full bg-zinc-300 mt-2" />
                 <div className="flex-1 relative">
                     {
                         isLoading && <></>
