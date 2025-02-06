@@ -1,15 +1,13 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { Group, Task } from "../../../types/board-type"
+import { List, Card } from "../../../types/board-type"
 import ArchivedCardsView from "./archived-card-view"
 import ArchivedListsView from "./archived-list-view"
 import { useGetArchivedItemsQuery } from "../../../store/services/board-service"
 import { useSelector } from "react-redux"
 import { AppRootState } from "../../../store/store"
 
-interface Props {
-    isShow: boolean
-}
+
 
 enum MenuType {
     Cards = "cards",
@@ -18,8 +16,7 @@ enum MenuType {
 
 
 
-const ArchivedItemsMenu = (props: Props) => {
-    const { isShow } = props
+const ArchivedItemsMenu = () => {
     const [menuType, setMenuType] = useState<MenuType>(MenuType.Cards)
     const board = useSelector((state: AppRootState) => state.boardView.board)
 
@@ -41,14 +38,14 @@ const ArchivedItemsMenu = (props: Props) => {
     }, [setSearchValue])
 
     const tasks = useMemo(() => {
-        const casted = menuType === MenuType.Cards ? (items as Task[]) ?? [] : []
+        const casted = menuType === MenuType.Cards ? (items as Card[]) ?? [] : []
         if (searchValue === "") {
             return casted
         }
         return casted.filter(c => c.title.includes(searchValue))
     }, [menuType, items, searchValue])
     const groups = useMemo(() => {
-        const casted = menuType === MenuType.Lists ? (items as Group[]) ?? [] : []
+        const casted = menuType === MenuType.Lists ? (items as List[]) ?? [] : []
         if (searchValue == "") {
             return casted
         }
@@ -56,44 +53,43 @@ const ArchivedItemsMenu = (props: Props) => {
     }, [menuType, items, searchValue])
 
     return (
-        <div className={`absolute inset-0 transition-all duration-100 ${isShow ? "opacity-100 -translate-x-0 z-10" : "opacity-0 translate-x-96 z-0"} `}>
-            <div className="w-full h-full flex flex-col px-4">
-                <div className="flex gap-2 justify-between mt-2">
-                    <input
-                        className="flex-1 border px-1 py-2 rounded"
-                        placeholder="Search archive..."
-                        value={searchValue}
-                        onChange={handleSearch}
-                    />
-                    <button
-                        onClick={handleChangeList}
-                        className="bg-zinc-100 hover:bg-zinc-200 rounded px-2 text-sm font-semibold">
-                        {
-                            menuType == MenuType.Cards ? "Switch to lists" : "Switch to cards"
-                        }
-                    </button>
-                </div>
-                <div className="h-px w-full bg-zinc-300 mt-2" />
-                <div className="flex-1 relative">
+        <div className="w-full h-full flex flex-col px-4">
+            <div className="flex gap-2 justify-between mt-2">
+                <input
+                    className="flex-1 border px-1 py-2 rounded"
+                    placeholder="Search archive..."
+                    value={searchValue}
+                    onChange={handleSearch}
+                />
+                <button
+                    onClick={handleChangeList}
+                    className="bg-zinc-100 hover:bg-zinc-200 rounded px-2 text-sm font-semibold">
                     {
-                        isLoading && <></>
+                        menuType == MenuType.Cards ? "Switch to lists" : "Switch to cards"
                     }
-                    {
-                        isError && <>{JSON.stringify(error)}</>
-                    }
-
-                    <ArchivedCardsView
-                        isShow={menuType == MenuType.Cards}
-                        tasks={tasks}
-                    />
-                    <ArchivedListsView
-                        isShow={menuType == MenuType.Lists}
-                        groups={groups}
-                    />
-                </div>
-
+                </button>
             </div>
+            <div className="h-px w-full bg-zinc-300 mt-2" />
+            <div className="flex-1 relative">
+                {
+                    isLoading && <></>
+                }
+                {
+                    isError && <>{JSON.stringify(error)}</>
+                }
+
+                <ArchivedCardsView
+                    isShow={menuType == MenuType.Cards}
+                    tasks={tasks}
+                />
+                <ArchivedListsView
+                    isShow={menuType == MenuType.Lists}
+                    groups={groups}
+                />
+            </div>
+
         </div>
+
     )
 
 }

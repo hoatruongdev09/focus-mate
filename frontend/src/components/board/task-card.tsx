@@ -1,14 +1,14 @@
 import { useCallback, useMemo, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { CoverType, Task, TaskLayoutType } from "../../types/board-type";
+import { CoverType, Card, CardLayoutType } from "../../types/board-type";
 import { DraggingItem } from "../../types/draging-item";
 import { useDispatch } from "react-redux";
 import { setViewingTask } from "../../store/slices/board-slice";
 import { PencilIcon } from "@heroicons/react/16/solid";
 
 interface Props {
-    task: Task
+    task: Card
 }
 
 
@@ -49,7 +49,7 @@ function TaskCard(props: Props) {
             ref={setNodeRef}
             style={{
                 ...style,
-                backgroundColor: isDragging ? "#fecdd3" : (hasCover && task.layout_type == TaskLayoutType.Large ? task.cover_value : "#f4f4f5"),
+                backgroundColor: isDragging ? "#fecdd3" : (hasCover && task.layout_type == CardLayoutType.Large ? task.cover_value : "#f4f4f5"),
             }}
             {...attributes}
             {...listeners}
@@ -59,10 +59,10 @@ function TaskCard(props: Props) {
             onMouseLeave={handleMouseLeave}
         >
             {
-                hasCover && task.layout_type == TaskLayoutType.Large && <div className="h-10" />
+                hasCover && task.layout_type == CardLayoutType.Large && <div className="h-10" />
             }
             {
-                hasCover && task.layout_type == TaskLayoutType.Normal && <div
+                hasCover && task.layout_type == CardLayoutType.Normal && <div
                     style={{
                         backgroundColor: !isDragging ? task.cover_value : "transparent",
                     }}

@@ -1,7 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useMemo, useRef } from "react";
-import { Group, Task } from "../../../types/board-type";
+import { List, Card } from "../../../types/board-type";
 import { DraggingItem } from "../../../types/draging-item";
 import ColumnTaskContainer from "./column-task-container";
 import NewTaskCreator from "./new-task-creator";
@@ -10,9 +10,9 @@ import ColumnHeader from "./column-header";
 interface Props {
     isOverlay?: boolean
     targetHeight?: number
-    column: Group
+    column: List
     setRef?: (id: number, node: HTMLElement) => void
-    tasks: Task[]
+    tasks: Card[]
 }
 
 

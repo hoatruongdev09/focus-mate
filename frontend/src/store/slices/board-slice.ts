@@ -1,18 +1,18 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Board, Group, Task } from "../../types/board-type";
+import { Board, List, Card } from "../../types/board-type";
 
 interface BoardTaskData {
-    task: Task
+    task: Card
     nextTimeUpdate: number
 }
 
 interface BoardViewSliceData {
     board: Board | null,
-    columns: Group[]
+    columns: List[]
     tasks: BoardTaskData[]
-    draggingColumn: Group | null
-    draggingTask: Task | null
-    viewingTask: Task | null
+    draggingColumn: List | null
+    draggingTask: Card | null
+    viewingTask: Card | null
 }
 
 const initialState: BoardViewSliceData = {
@@ -31,26 +31,26 @@ export const boardViewSlice = createSlice({
         setBoard: (state, action: PayloadAction<Board | null>) => {
             state.board = action.payload
         },
-        setColumns: (state, action: PayloadAction<Group[]>) => {
+        setColumns: (state, action: PayloadAction<List[]>) => {
             state.columns = action.payload
         },
         setTasks: (state, action: PayloadAction<BoardTaskData[]>) => {
             state.tasks = action.payload
         },
-        setDraggingColumn: (state, action: PayloadAction<Group | null>) => {
+        setDraggingColumn: (state, action: PayloadAction<List | null>) => {
             state.draggingColumn = action.payload
         },
-        setDraggingTask: (state, action: PayloadAction<Task | null>) => {
+        setDraggingTask: (state, action: PayloadAction<Card | null>) => {
             state.draggingTask = action.payload
         },
-        setViewingTask: (state, action: PayloadAction<Task | null>) => {
+        setViewingTask: (state, action: PayloadAction<Card | null>) => {
             state.viewingTask = action.payload
         },
         changeTaskGroup: (state, action: PayloadAction<{ id: number, groupId: number }>) => {
             const index = state.tasks.findIndex(t => t.task.id === action.payload.id)
             if (index == -1) { return }
             if (state.tasks[index].nextTimeUpdate > Date.now()) { return }
-            state.tasks[index].task.group_id = action.payload.groupId
+            state.tasks[index].task.list_id = action.payload.groupId
             state.tasks[index].nextTimeUpdate = Date.now() + 500
         },
     }

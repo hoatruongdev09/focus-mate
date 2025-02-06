@@ -3,95 +3,123 @@ import BoardActivity from "../entities/board-activity.entity";
 import dataSource from "../db/data-source";
 
 import { defaultObserver } from "../utils/observer";
-import { AchieveGroupEventData, AchieveTaskEventData, AddGroupEventData, AddTaskEventData, BoardActivityEvent, CreateBoardEventData } from "../defines/board-activity-type";
+import {
+    AchieveListEventData,
+    AchieveCardEventData,
+    AddListEventData,
+    AddCardEventData,
+    BoardActivityEvent,
+    CreateBoardEventData
+} from "../defines/board-activity-type";
 import { ActivityType } from "../enums/activity-type";
 
-export default class BoardActivityService {
+export class BoardActivityService {
     private boardActivityRepository: Repository<BoardActivity>
 
     constructor() {
         this.boardActivityRepository = dataSource.getRepository(BoardActivity)
 
-        defaultObserver.register(BoardActivityEvent.CreateBoard, this.onCreateBoard)
-        defaultObserver.register(BoardActivityEvent.AddList, this.onAddList)
-        defaultObserver.register(BoardActivityEvent.AddTask, this.onAddTask)
-        defaultObserver.register(BoardActivityEvent.UnarchiveTask, this.onUnarchiveTask);
-        defaultObserver.register(BoardActivityEvent.ArchiveTask, this.onArchiveTask)
-        defaultObserver.register(BoardActivityEvent.UnarchiveColumn, this.onUnarchiveColumn)
-        defaultObserver.register(BoardActivityEvent.ArchiveColumn, this.onArchiveColumn)
+        defaultObserver.register(BoardActivityEvent.CreateBoard, (data: any) => this.onCreateBoard(data))
+        defaultObserver.register(BoardActivityEvent.AddList, (data: any) => this.onAddList(data))
+        defaultObserver.register(BoardActivityEvent.AddCard, (data: any) => this.onAddCard(data))
+        defaultObserver.register(BoardActivityEvent.UnarchiveCard, (data: any) => this.onUnarchiveCard(data))
+        defaultObserver.register(BoardActivityEvent.ArchiveCard, (data: any) => this.onArchiveCard(data))
+        defaultObserver.register(BoardActivityEvent.UnarchiveList, (data: any) => this.onUnarchiveList(data))
+        defaultObserver.register(BoardActivityEvent.ArchiveList, (data: any) => this.onArchiveList(data))
     }
 
-    onArchiveColumn(data: AchieveGroupEventData) {
-        const { board_id, group_id, user_id } = data
-        const activity: BoardActivity = new BoardActivity()
-        activity.user_id = user_id
-        activity.group_id = group_id
-        activity.board_id = board_id
-        activity.action = ActivityType.ARCHIVE_COLUMN
-        this.boardActivityRepository.save(activity)
+    getBoardActivityRepository() {
+        if (!this.boardActivityRepository) {
+            this.boardActivityRepository = dataSource.getRepository(BoardActivity)
+        }
+        return this.boardActivityRepository
     }
 
-    onUnarchiveColumn(data: AchieveGroupEventData) {
-        const { board_id, group_id, user_id } = data
+    onArchiveList(data: AchieveListEventData) {
+        const { board_id, list_id, customer_id } = data
         const activity: BoardActivity = new BoardActivity()
-        activity.user_id = user_id
-        activity.group_id = group_id
+        activity.owner_id = customer_id
+        activity.list_id = list_id
         activity.board_id = board_id
-        activity.action = ActivityType.UNARCHIVE_COLUMN
-        this.boardActivityRepository.save(activity)
+        activity.action = ActivityType.ARCHIVE_LIST
+
+        this.getBoardActivityRepository().save(activity)
     }
 
-    onArchiveTask(data: AchieveTaskEventData) {
-        const { board_id, group_id, task_id, user_id } = data
+    onUnarchiveList(data: AchieveListEventData) {
+        const { board_id, list_id, customer_id } = data
         const activity: BoardActivity = new BoardActivity()
-        activity.user_id = user_id
-        activity.group_id = group_id
-        activity.task_id = task_id
+        activity.owner_id = customer_id
+        activity.list_id = list_id
         activity.board_id = board_id
-        activity.action = ActivityType.ARCHIVE_TASK
-        this.boardActivityRepository.save(activity)
+        activity.action = ActivityType.UNARCHIVE_LIST
+        this.getBoardActivityRepository().save(activity)
     }
 
-    onUnarchiveTask(data: AchieveTaskEventData) {
-        const { board_id, group_id, task_id, user_id } = data
+    onArchiveCard(data: AchieveCardEventData) {
+        const { board_id, list_id, card_id, customer_id } = data
         const activity: BoardActivity = new BoardActivity()
-        activity.user_id = user_id
-        activity.group_id = group_id
-        activity.task_id = task_id
+        activity.owner_id = customer_id
+        activity.list_id = list_id
+        activity.card_id = card_id
         activity.board_id = board_id
-        activity.action = ActivityType.UNARCHIVE_TASK
-        this.boardActivityRepository.save(activity)
+        activity.action = ActivityType.ARCHIVE_CARD
+        this.getBoardActivityRepository().save(activity)
+    }
+
+    onUnarchiveCard(data: AchieveCardEventData) {
+        const { board_id, list_id, card_id, customer_id } = data
+        const activity: BoardActivity = new BoardActivity()
+        activity.owner_id = customer_id
+        activity.list_id = list_id
+        activity.card_id = card_id
+        activity.board_id = board_id
+        activity.action = ActivityType.UNARCHIVE_CARD
+        this.getBoardActivityRepository().save(activity)
     }
 
     onCreateBoard(data: CreateBoardEventData) {
-        const { board, user_id } = data
+        const { board, customer_id } = data
         const activity: BoardActivity = new BoardActivity()
-        activity.user_id = user_id
+        activity.owner_id = customer_id
         activity.board_id = board.id
         activity.action = ActivityType.CREATE_BOARD
-        this.boardActivityRepository.save(activity)
+        this.getBoardActivityRepository().save(activity)
     }
 
-    onAddList(data: AddGroupEventData) {
-        const { user_id, group } = data
+    onAddList(data: AddListEventData) {
+        const { customer_id, list } = data
         const activity: BoardActivity = new BoardActivity()
-        activity.user_id = user_id
-        activity.group_id = group.id
-        activity.board_id = group.board_id
-        activity.action = ActivityType.CREATE_GROUP
-        this.boardActivityRepository.save(activity)
+        activity.owner_id = customer_id
+        activity.list_id = list.id
+        activity.board_id = list.board_id
+        activity.action = ActivityType.CREATE_LIST
+        this.getBoardActivityRepository().save(activity)
     }
 
-    onAddTask(data: AddTaskEventData) {
-        const { user_id, task } = data
+    onAddCard(data: AddCardEventData) {
+        const { customer_id, card } = data
         const activity: BoardActivity = new BoardActivity()
-        activity.user_id = user_id
-        activity.board_id = task.group.board.id
-        activity.task_id = task.id
-        activity.group_id = task.group_id
-        activity.action = ActivityType.CREATE_TASK
-        this.boardActivityRepository.save(activity)
+        activity.owner_id = customer_id
+        activity.board_id = card.list.board_id
+        activity.card_id = card.id
+        activity.list_id = card.list_id
+        activity.action = ActivityType.CREATE_CARD
+        this.getBoardActivityRepository().save(activity)
     }
 
-
+    async getBoardActivities(board_id: number) {
+        const activities = await this.boardActivityRepository
+            .createQueryBuilder("board_activity")
+            .leftJoinAndSelect("board_activity.board", "board")
+            .leftJoinAndSelect("board_activity.card", "card")
+            .leftJoinAndSelect("board_activity.list", "list")
+            .select(["board_activity.*"])
+            .where("board_activity.board_id = :board_id", { board_id })
+            .getQuery()
+        console.log(activities)
+        return activities
+    }
 }
+
+export const boardActivityService = new BoardActivityService()

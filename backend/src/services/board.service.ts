@@ -1,53 +1,51 @@
 import { In, Repository } from "typeorm";
 import dataSource from "../db/data-source";
-import { Task } from "../entities/task.entity";
-import { Group } from "../entities/column.entity";
-import CreateGroupDto from "../dto/board/create-group.dto";
-import UpdateGroupDto from "../dto/board/update-group.dto";
-import CreateTaskDto from "../dto/board/create-task.dto";
-import UpdateTaskDto from "../dto/board/update-task.dto";
+import { Card } from "../entities/card.entity";
+import { List } from "../entities/list.entity";
+import CreateListDto from "../dto/board/create-list.dto";
+import UpdateListDto from "../dto/board/update-list.dto";
+import CreateCardDto from "../dto/board/create-card.dto";
+import UpdateCardDto from "../dto/board/update-card.dto";
 import Board from "../entities/board.entity";
-import User from "../entities/user.entity";
+import Customer from "../entities/customer.entity";
 import CreateBoardDto from "../dto/board/create-board.dto";
 import UserComment from "../entities/user-comment.entity";
 import UpdateBoardDto from "../dto/board/update-board.dto";
-import { defaultObserver } from "../utils/observer";
-import { BoardActivityEvent, CreateBoardEventData } from "../defines/board-activity-type";
 
 
-export default class BoardService {
-    private taskRepository: Repository<Task>
-    private groupRepository: Repository<Group>
+export class BoardService {
+    private cardRepository: Repository<Card>
+    private listRepository: Repository<List>
     private boardRepository: Repository<Board>
     private userCommentRepository: Repository<UserComment>
 
     constructor() {
-        this.taskRepository = dataSource.getRepository(Task)
-        this.groupRepository = dataSource.getRepository(Group)
+        this.cardRepository = dataSource.getRepository(Card)
+        this.listRepository = dataSource.getRepository(List)
         this.boardRepository = dataSource.getRepository(Board)
         this.userCommentRepository = dataSource.getRepository(UserComment)
     }
 
-    async getBoards(user_id: number): Promise<Board[]> {
+    async getBoards(customer_id: number): Promise<Board[]> {
         return await this.boardRepository.createQueryBuilder("board")
-            .leftJoinAndSelect("board.owner", "user")
+            .leftJoinAndSelect("board.owner", "customer")
             .leftJoinAndSelect("board.theme", "board_theme")
-            .where("user.id = :user_id", { user_id })
+            .where("customer.id = :customer_id", { customer_id })
             .getMany()
     }
 
-    async getBoard(board_id: number, user_id: number): Promise<Board> {
+    async getBoard(board_id: number, customer_id: number): Promise<Board> {
         return await this.boardRepository.createQueryBuilder("board")
-            .leftJoinAndSelect("board.owner", "user")
+            .leftJoinAndSelect("board.owner", "customer")
             .leftJoinAndSelect("board.theme", "board_theme")
-            .where("user.id = :user_id AND board.id =:board_id", { user_id, board_id })
+            .where("customer.id = :customer_id AND board.id =:board_id", { customer_id, board_id })
             .getOne()
     }
 
-    async updateBoard(board_id: number, user_id: number, data: UpdateBoardDto): Promise<Board> {
+    async updateBoard(board_id: number, customer_id: number, data: UpdateBoardDto): Promise<Board> {
         const board = await this.boardRepository.createQueryBuilder("board")
-            .leftJoinAndSelect("board.owner", "user")
-            .where("user.id =:user_id AND board.id =:board_id", { user_id, board_id })
+            .leftJoinAndSelect("board.owner", "customer")
+            .where("customer.id =:customer_id AND board.id =:board_id", { customer_id, board_id })
             .getOne()
 
         if (!board) {
@@ -61,12 +59,12 @@ export default class BoardService {
 
     }
 
-    async createBoard(user_id: number, data: CreateBoardDto): Promise<Board> {
+    async createBoard(customer_id: number, data: CreateBoardDto): Promise<Board> {
         const { title, description } = data
         const existBoard = await this.boardRepository.findOne({
             where: {
                 owner: {
-                    id: user_id
+                    id: customer_id
                 },
                 name: title
             }
@@ -78,127 +76,128 @@ export default class BoardService {
         const newBoard = new Board()
         newBoard.name = title
         newBoard.description = description
-        newBoard.owner = { id: user_id } as User
+        newBoard.owner = { id: customer_id } as Customer
 
         return await this.boardRepository.save(newBoard)
 
     }
-    async unarchiveTask(board_id: number, group_id: number, task_id: number) {
-        const task = await this.taskRepository.findOne({
+    async unarchiveCard(board_id: number, list_id: number, card_id: number) {
+        const card = await this.cardRepository.findOne({
             where: {
-                id: task_id,
-                group: {
-                    id: group_id,
+                id: card_id,
+                list: {
+                    id: list_id,
                     board: {
                         id: board_id
                     }
                 }
             }
         })
-        if (!task) {
-            throw new Error("Task not foud")
+        if (!card) {
+            throw new Error("Card not foud")
         }
-        task.archived = false;
-        return await this.taskRepository.save(task)
+        card.archived = false;
+        return await this.cardRepository.save(card)
     }
-    async archiveTask(board_id: number, group_id: number, task_id: number) {
-        const task = await this.taskRepository.findOne({
+    async archiveCard(board_id: number, list_id: number, card_id: number) {
+        const card = await this.cardRepository.findOne({
             where: {
-                id: task_id,
-                group: {
-                    id: group_id,
+                id: card_id,
+                list: {
+                    id: list_id,
                     board: {
                         id: board_id
                     }
                 }
             }
         })
-        if (!task) {
-            throw new Error("Task not foud")
+        if (!card) {
+            throw new Error("Card not foud")
         }
-        task.archived = true;
-        return await this.taskRepository.save(task)
+        card.archived = true;
+        return await this.cardRepository.save(card)
     }
 
 
-    async archiveColumn(board_id: number, column_id: number) {
-        const column = await this.groupRepository.findOne({
+    async archiveList(board_id: number, list_id: number) {
+        const list = await this.listRepository.findOne({
             where: {
-                id: column_id, board: {
+                id: list_id,
+                board: {
                     id: board_id
                 }
             }
         })
-        if (!column) {
-            throw new Error("Column not found")
+        if (!list) {
+            throw new Error("List not found")
         }
-        column.archived = true
-        console.log(`archived columnnnn`)
-        return await this.groupRepository.save(column)
+        list.archived = true
+        return await this.listRepository.save(list)
     }
 
-    async unarchiveColumn(board_id: number, column_id: number) {
-        const column = await this.groupRepository.findOne({
+    async unarchiveList(board_id: number, list_id: number) {
+        const list = await this.listRepository.findOne({
             where: {
-                id: column_id, board: {
+                id: list_id,
+                board: {
                     id: board_id
                 }
             }
         })
-        if (!column) {
-            throw new Error("Column not found")
+        if (!list) {
+            throw new Error("List not found")
         }
-        column.archived = false
-        return await this.groupRepository.save(column)
+        list.archived = false
+        return await this.listRepository.save(list)
     }
 
-    async archiveOrUnarchiveTasksInColumn(board_id: number, column_id: number, archived: boolean) {
-        const affectedTaskIds = await this.taskRepository
-            .createQueryBuilder("task")
-            .leftJoinAndSelect("task.group", "group")
-            .leftJoinAndSelect("group.board", "board")
-            .select(["task.id"])
-            .where("group.id = :column_id AND board.id = :board_id", { column_id, board_id })
+    async archiveOrUnarchiveCardsInList(board_id: number, list_id: number, archived: boolean) {
+        const affectedCardIds = await this.cardRepository
+            .createQueryBuilder("card")
+            .leftJoinAndSelect("card.list", "list")
+            .leftJoinAndSelect("list.board", "board")
+            .select(["card.id"])
+            .where("list.id = :list_id AND board.id = :board_id", { list_id, board_id })
             .getMany()
 
-        if (affectedTaskIds?.length != 0) {
-            await this.taskRepository
-                .createQueryBuilder("task")
+        if (affectedCardIds?.length != 0) {
+            await this.cardRepository
+                .createQueryBuilder("card")
                 .update()
                 .set({ archived: archived })
-                .where("task.id IN(:...ids)", { ids: affectedTaskIds.map(t => t.id) })
+                .where("card.id IN(:...ids)", { ids: affectedCardIds.map(t => t.id) })
                 .execute()
         }
 
 
-        const tasks = await this.taskRepository
-            .createQueryBuilder("task")
-            .leftJoin("task.group", "group")
-            .leftJoin("group.board", "board")
-            .where("group.id = :column_id AND board.id = :board_id", { column_id, board_id })
+        const cards = await this.cardRepository
+            .createQueryBuilder("card")
+            .leftJoin("card.list", "list")
+            .leftJoin("list.board", "board")
+            .where("list.id = :list_id AND board.id = :board_id", { list_id: list_id, board_id })
             .getMany()
 
-        return tasks.map(t => {
-            const { group, ...task } = t
+        return cards.map(t => {
+            const { list, ...card } = t
 
             return {
-                ...task,
-                group_id: group.id,
-                board_id: group.board.id
+                ...card,
+                list_id: list.id,
+                board_id: list.board.id
             }
         })
     }
 
-    async getGroups(board_id: number) {
-        const groups: Group[] = await this.groupRepository
-            .createQueryBuilder("group")
-            .leftJoinAndSelect("group.board", "board")
+    async getLists(board_id: number) {
+        const lists: List[] = await this.listRepository
+            .createQueryBuilder("list")
+            .leftJoinAndSelect("list.board", "board")
             .addSelect(["board.id"])
             .where("board_id = :board_id", { board_id })
             .orderBy("rank", "DESC")
             .getMany()
 
-        return groups.map(g => {
+        return lists.map(g => {
             const { board, ...data } = g
             return {
                 ...data,
@@ -207,15 +206,15 @@ export default class BoardService {
         })
     }
 
-    async getGroup(board_id: number, group_id: number) {
-        return await this.groupRepository.createQueryBuilder("group")
-            .leftJoinAndSelect("group.board", "board")
-            .where("group.id = :group_id AND board.id = :board_id", { group_id, board_id })
+    async getList(board_id: number, list_id: number) {
+        return await this.listRepository.createQueryBuilder("list")
+            .leftJoinAndSelect("list.board", "board")
+            .where("list.id = :list_id AND board.id = :board_id", { list_id, board_id })
             .getOne()
     }
 
-    private async getGroupTopRank(board_id: number) {
-        return await this.groupRepository
+    private async getListTopRank(board_id: number) {
+        return await this.listRepository
             .createQueryBuilder()
             .select()
             .where("board_id = :board_id", { board_id })
@@ -225,14 +224,14 @@ export default class BoardService {
 
     private async findBoard(board_id: number): Promise<Board> {
         return await this.boardRepository.createQueryBuilder("board")
-            .leftJoin("board.owner", "user")
+            .leftJoin("board.owner", "customer")
             .leftJoinAndSelect("board.theme", "board_theme")
             .select()
             .where("board.id =:board_id", { board_id })
             .getOne()
     }
 
-    async createGroup(board_id: number, data: CreateGroupDto) {
+    async createList(board_id: number, data: CreateListDto) {
         const { name, description } = data
 
         const board = await this.findBoard(board_id)
@@ -240,20 +239,20 @@ export default class BoardService {
             throw new Error("Board not found")
         }
 
-        const newGroup = new Group()
+        const newList = new List()
 
-        const topRank = await this.getGroupTopRank(board_id)
-        newGroup.name = name || "Untitled list"
-        newGroup.description = description
-        newGroup.rank = this.findMiddleString(topRank?.rank ?? "", "")
-        newGroup.board = board
-        return await this.groupRepository.save(newGroup)
+        const topRank = await this.getListTopRank(board_id)
+        newList.name = name || "Untitled list"
+        newList.description = description
+        newList.rank = this.findMiddleString(topRank?.rank ?? "", "")
+        newList.board = board
+        return await this.listRepository.save(newList)
     }
 
-    async updateGroup(board_id: number, id: number, data: UpdateGroupDto) {
+    async updateList(board_id: number, id: number, data: UpdateListDto) {
         const { name, description } = data
 
-        const group = await this.groupRepository.findOne({
+        const list = await this.listRepository.findOne({
             where: {
                 id,
                 board: {
@@ -261,48 +260,48 @@ export default class BoardService {
                 }
             }
         })
-        if (group == null) {
-            throw new Error("Group not found")
+        if (list == null) {
+            throw new Error("List not found")
         }
-        group.name = name
-        group.description = description
+        list.name = name
+        list.description = description
 
         const { front_id, behind_id } = data
         if (front_id || behind_id) {
-            const groups = await this.groupRepository
+            const lists = await this.listRepository
                 .createQueryBuilder()
                 .select()
                 .where("id in (:...ids) AND board_id = :board_id", { board_id, ids: [front_id, behind_id].filter(id => id !== null) })
                 .getMany()
-            const frontGroupRank = front_id ? groups.find(g => g.id == front_id).rank : null
-            const behindGroupRank = behind_id ? groups.find(g => g.id == behind_id).rank : null
-            group.rank = this.findMiddleString(frontGroupRank ?? "", behindGroupRank ?? "")
+            const frontListRank = front_id ? lists.find(g => g.id == front_id).rank : null
+            const behindListRank = behind_id ? lists.find(g => g.id == behind_id).rank : null
+            list.rank = this.findMiddleString(frontListRank ?? "", behindListRank ?? "")
         }
 
-        return await this.groupRepository.save(group)
+        return await this.listRepository.save(list)
     }
 
-    async reorderGroup(targetId: number, frontId: number | null, behindId: number | null) {
-        const groups = await this.groupRepository
+    async reorderList(targetId: number, frontId: number | null, behindId: number | null) {
+        const lists = await this.listRepository
             .createQueryBuilder()
             .select()
             .where("id in (:...ids)", { ids: [targetId, frontId, behindId].filter(id => id !== null) })
             .getMany()
-        const targetGroup: Group = groups.find(g => g.id === targetId)
+        const targetList: List = lists.find(g => g.id === targetId)
 
         if (!frontId && !behindId) {
-            return targetGroup
+            return targetList
         }
 
-        const frontGroup: Group | null = frontId ? groups.find(g => g.id === frontId) : null
-        const behindGroup: Group | null = behindId ? groups.find(g => g.id === behindId) : null
+        const frontList: List | null = frontId ? lists.find(g => g.id === frontId) : null
+        const behindList: List | null = behindId ? lists.find(g => g.id === behindId) : null
 
-        targetGroup.rank = this.findMiddleString(frontGroup?.rank ?? "", behindGroup?.rank ?? "")
-        return await this.groupRepository.save(targetGroup)
+        targetList.rank = this.findMiddleString(frontList?.rank ?? "", behindList?.rank ?? "")
+        return await this.listRepository.save(targetList)
     }
 
-    async deleteGroup(board_id: number, id: number) {
-        const group = await this.groupRepository.findOne({
+    async deleteList(board_id: number, id: number) {
+        const list = await this.listRepository.findOne({
             where: {
                 id,
                 board: {
@@ -310,221 +309,222 @@ export default class BoardService {
                 }
             }
         })
-        if (group == null) {
-            throw new Error("Group not found")
+        if (list == null) {
+            throw new Error("list not found")
         }
-        await this.taskRepository
+        await this.cardRepository
             .createQueryBuilder()
             .softDelete()
-            .where("group_id = :id", { id: group.id })
+            .where("list_id = :id", { id: list.id })
             .execute()
-        await this.groupRepository.createQueryBuilder()
+        await this.listRepository.createQueryBuilder()
             .softDelete()
             .where("id = :id AND board_id = :board_id", { id, board_id })
             .execute()
     }
 
-    private async getTaskLowestRankInColumn(columnId: number) {
-        return await this.taskRepository
+    private async getCardLowestRankInList(list_id: number) {
+        return await this.cardRepository
             .createQueryBuilder()
-            .where("group_id = :groupId", { groupId: columnId })
+            .where("list_id = :list_id", { list_id })
             .orderBy("rank")
             .getOne()
     }
 
-    private async getTaskTopRankInColumn(columnId: number) {
-        return await this.taskRepository
+    private async getCardTopRankInList(list_id: number) {
+        return await this.cardRepository
             .createQueryBuilder()
-            .where("group_id = :groupId", { groupId: columnId })
+            .where("list_id = :list_id", { list_id })
             .orderBy("rank", "DESC")
             .getOne()
     }
 
-    private async getTaskLowestRank() {
-        return await this.taskRepository
+    private async getCardLowestRank() {
+        return await this.cardRepository
             .createQueryBuilder()
             .orderBy("rank")
             .getOne()
     }
 
-    private async getTaskTopRank() {
-        return await this.taskRepository
+    private async getCardTopRank() {
+        return await this.cardRepository
             .createQueryBuilder()
             .orderBy("rank", "DESC")
             .getOne()
     }
 
-    async addTask(board_id: number, groupId: number, data: CreateTaskDto) {
+    async addCard(board_id: number, list_id: number, data: CreateCardDto) {
 
-        const group = await this.groupRepository.findOne({
+        const list = await this.listRepository.findOne({
             where: {
-                id: groupId, board: {
+                id: list_id,
+                board: {
                     id: board_id
                 }
             }
         })
 
-        if (group == null) {
-            throw new Error("Group not found")
+        if (list == null) {
+            throw new Error("List not found")
         }
 
 
-        const newTask: Task = new Task()
-        newTask.title = data.title
-        newTask.description = data.description
-        newTask.group = group
-        newTask.priority = data.priority
-        newTask.estimate = data.estimate
-        if (group) {
-            const lowestRank = await this.getTaskLowestRankInColumn(groupId)
-            newTask.rank = this.findMiddleString("", lowestRank?.rank ?? "")
+        const newCard: Card = new Card()
+        newCard.title = data.title
+        newCard.description = data.description
+        newCard.list = list
+        newCard.priority = data.priority
+        newCard.estimate = data.estimate
+        if (list) {
+            const lowestRank = await this.getCardLowestRankInList(list_id)
+            newCard.rank = this.findMiddleString("", lowestRank?.rank ?? "")
         } else {
-            const lowestRank = await this.getTaskLowestRank()
-            newTask.rank = this.findMiddleString("", lowestRank?.rank ?? "")
+            const lowestRank = await this.getCardLowestRank()
+            newCard.rank = this.findMiddleString("", lowestRank?.rank ?? "")
         }
-        return await this.taskRepository.save(newTask)
+        return await this.cardRepository.save(newCard)
     }
 
-    async getTasks(board_id: number) {
+    async getCards(board_id: number) {
 
-        const tasks = await this.taskRepository
-            .createQueryBuilder("task")
-            .leftJoin("task.group", "group")
-            .leftJoin("group.board", "board")
-            .select(["task", "group.id", "board.id"])
+        const cards = await this.cardRepository
+            .createQueryBuilder("card")
+            .leftJoin("card.list", "list")
+            .leftJoin("list.board", "board")
+            .select(["card", "list.id", "board.id"])
             .where("board.id = :board_id", { board_id })
-            .orderBy("task.rank", "DESC")
+            .orderBy("card.rank", "DESC")
             .getMany();
-        return tasks.map(t => {
-            const { group, ...task } = t
+        return cards.map(t => {
+            const { list, ...card } = t
             return {
-                ...task,
-                group_id: group.id,
-                board_id: group.board.id
+                ...card,
+                list_id: list.id,
+                board_id: list.board.id
             }
         })
     }
 
-    private async changeTaskColumn(task: Task, board_id: number, columnId: number) {
-        const group = await this.getGroup(board_id, columnId)
-        if (group == null) { throw new Error("Group not found") }
-        task.group = group
+    private async changeCardList(card: Card, board_id: number, list_id: number) {
+        const list = await this.getList(board_id, list_id)
+        if (list == null) { throw new Error("List not found") }
+        card.list = list
     }
 
 
-    async updateTask(board_id: number, id: number, data: UpdateTaskDto) {
+    async updateCard(board_id: number, card_id: number, data: UpdateCardDto) {
 
-        const task = await this.taskRepository.createQueryBuilder("task")
-            .leftJoinAndSelect("task.group", "group")
-            .leftJoinAndSelect("group.board", "board")
-            .where("board.id = :board_id AND task.id = :id", { board_id, id })
+        const card = await this.cardRepository.createQueryBuilder("card")
+            .leftJoinAndSelect("card.list", "list")
+            .leftJoinAndSelect("list.board", "board")
+            .where("board.id = :board_id AND card.id = :card_id", { board_id, card_id })
             .getOne()
 
-        if (task == null) { throw new Error("Task not found") }
-        task.title = data.title
-        task.description = data.description
-        task.priority = data.priority
-        task.estimate = data.estimate
-        task.cover_type = data.cover_type
-        task.cover_value = data.cover_value
-        task.layout_type = data.layout_type
+        if (card == null) { throw new Error("Card not found") }
+        card.title = data.title
+        card.description = data.description
+        card.priority = data.priority
+        card.estimate = data.estimate
+        card.cover_type = data.cover_type
+        card.cover_value = data.cover_value
+        card.layout_type = data.layout_type
 
-        const isChangeGroup = task.group.id != data.group_id
-        if (isChangeGroup) {
-            await this.changeTaskColumn(task, board_id, data.group_id)
+        const isChangeList = card.list.id != data.list_id
+        if (isChangeList) {
+            await this.changeCardList(card, board_id, data.list_id)
         }
 
         const { front_id, behind_id } = data
         if (!front_id && !behind_id) {
-            if (isChangeGroup) {
-                // user click change group only or an empty column 
-                // -> need to find the top task in that column and place task
-                const topRank = await this.getTaskTopRankInColumn(data.group_id)
+            if (isChangeList) {
+                // user click change list only or an empty column 
+                // -> need to find the top card in that column and place card
+                const topRank = await this.getCardTopRankInList(data.list_id)
                 if (topRank) {
-                    task.rank = this.findMiddleString(topRank?.rank ?? "", "")
+                    card.rank = this.findMiddleString(topRank?.rank ?? "", "")
                 }
             }
 
         } else {
             // user drag into column 
             // -> do like reorder column
-            const tasks = await this.taskRepository
+            const cards = await this.cardRepository
                 .createQueryBuilder()
                 .select()
                 .where("id in (:...ids)", { ids: [front_id, behind_id].filter(id => id !== null) })
                 .getMany()
-            const frontTask = front_id ? tasks.find(t => t.id === front_id) : null
-            const behindTask = behind_id ? tasks.find(t => t.id === behind_id) : null
-            task.rank = this.findMiddleString(frontTask?.rank ?? "", behindTask?.rank ?? "")
+            const frontCard = front_id ? cards.find(t => t.id === front_id) : null
+            const behindCard = behind_id ? cards.find(t => t.id === behind_id) : null
+            card.rank = this.findMiddleString(frontCard?.rank ?? "", behindCard?.rank ?? "")
         }
-        const newTask = await this.taskRepository.save(task)
-        const { title, estimate, priority, description, rank, group } = newTask
+        const newCard = await this.cardRepository.save(card)
+        const { title, estimate, priority, description, rank, list } = newCard
         return {
-            id,
+            id: card_id,
             title,
             estimate,
             priority,
             description,
             rank,
-            group_id: group.id,
-            board_id: group.board.id
+            list_id: list.id,
+            board_id: list.board.id
         }
     }
 
-    async deleteTask(board_id: number, id: number) {
-        const task = await this.taskRepository.createQueryBuilder("task")
-            .leftJoin("task.group", "group")
-            .leftJoin("group.board", "board")
-            .where("task.id = :id AND board.id = :board_id", { id, board_id })
+    async deleteCard(board_id: number, card_id: number) {
+        const card = await this.cardRepository.createQueryBuilder("card")
+            .leftJoin("card.list", "list")
+            .leftJoin("list.board", "board")
+            .where("card.id = :card_id AND board.id = :board_id", { card_id, board_id })
             .getOne()
 
-        if (!task) { return }
-        if (!task.archived) {
-            throw new Error("Task is not archived yet")
+        if (!card) { return }
+        if (!card.archived) {
+            throw new Error("Card is not archived yet")
         }
-        await this.taskRepository.softRemove(task)
+        await this.cardRepository.softRemove(card)
     }
 
-    async getBoardColumnsAndTasks(board_id: number) {
-        const columns = await this.groupRepository.find({
+    async getBoardListsAndCards(board_id: number) {
+        const lists = await this.listRepository.find({
             where: {
                 board: {
                     id: board_id
                 }
             }
         })
-        const tasks = await this.taskRepository.find({
+        const cards = await this.cardRepository.find({
             where: {
-                group: {
-                    id: In([columns.map(col => col.id)])
+                list: {
+                    id: In([lists.map(col => col.id)])
                 }
             }
         })
 
-        return { tasks, columns }
+        return { cards, lists }
     }
 
-    async getTasksInColumn(board_id: number, columnId: number) {
-        const tasks = await this.taskRepository.find({
-            relations: { group: true },
+    async getCardsInList(board_id: number, list_id: number) {
+        const cards = await this.cardRepository.find({
+            relations: { list: true },
             where: {
-                group: {
-                    id: columnId,
+                list: {
+                    id: list_id,
                     board: {
                         id: board_id
                     }
                 }
             }
         })
-        return tasks
+        return cards
     }
 
-    async getTask(board_id: number, column_id: number, task_id: number) {
-        return await this.taskRepository.findOne({
+    async getCard(board_id: number, list_id: number, card_id: number) {
+        return await this.cardRepository.findOne({
             where: {
-                id: task_id,
-                group: {
-                    id: column_id,
+                id: card_id,
+                list: {
+                    id: list_id,
                     board: {
                         id: board_id
                     }
@@ -533,45 +533,49 @@ export default class BoardService {
         })
     }
 
-    async postComment(board_id: number, group_id: number, task_id: number, user_id: number, content: string) {
+    async postComment(board_id: number, list_id: number, card_id: number, customer_id: number, content: string) {
         const comment: UserComment = new UserComment()
         comment.board_id = board_id
-        comment.task_id = task_id
-        comment.group_id = group_id
-        comment.user_id = user_id
+        comment.card_id = card_id
+        comment.list_id = list_id
+        comment.customer_id = customer_id
         comment.content = content
 
-        const { id } = await this.userCommentRepository.save(comment)
+        const { id: comment_id } = await this.userCommentRepository.save(comment)
 
         const result = await this.userCommentRepository.createQueryBuilder("comment")
-            .leftJoinAndSelect("comment.user", "user")
-            .where("comment.board_id = :board_id AND comment.group_id = :group_id AND comment.task_id = :task_id AND comment.id = :comment_id", { board_id, group_id, task_id, comment_id: id })
-            .select(["comment", "user.id", "user.first_name", "user.last_name"])
+            .leftJoinAndSelect("comment.customer", "customer")
+            .where("comment.board_id = :board_id AND comment.list_id = :list_id AND comment.card_id = :card_id AND comment.id = :comment_id",
+                { board_id, list_id, card_id, comment_id }
+            )
+            .select(["comment", "customer.id", "customer.first_name", "customer.last_name"])
             .getOne()
         return result
     }
 
-    async getComments(board_id: number, group_id: number, task_id: number) {
+    async getComments(board_id: number, list_id: number, card_id: number) {
         return await this.userCommentRepository.createQueryBuilder("comment")
-            .leftJoinAndSelect("comment.user", "user")
-            .where("comment.board_id = :board_id AND comment.group_id = :group_id AND comment.task_id = :task_id", { board_id, group_id, task_id })
+            .leftJoinAndSelect("comment.customer", "customer")
+            .where("comment.board_id = :board_id AND comment.list_id = :list_id AND comment.card_id = :card_id",
+                { board_id, list_id, card_id }
+            )
             .orderBy("comment.created_at", "DESC")
-            .select(["comment", "user.id", "user.first_name", "user.last_name"])
+            .select(["comment", "customer.id", "customer.first_name", "customer.last_name"])
             .getMany()
     }
 
     async getArchivedCards(board_id: number) {
-        return await this.taskRepository.createQueryBuilder("task")
-            .leftJoin("task.group", "group")
-            .leftJoin("group.board", "board")
-            .where("task.archived = true AND board.id =:board_id", { board_id })
+        return await this.cardRepository.createQueryBuilder("card")
+            .leftJoin("card.list", "list")
+            .leftJoin("list.board", "board")
+            .where("card.archived = true AND board.id =:board_id", { board_id })
             .getMany()
     }
 
     async getArchivedLists(board_id: number) {
-        return await this.groupRepository.createQueryBuilder("group")
-            .leftJoin("group.board", "board")
-            .where("board.id = :board_id AND group.archived", { board_id })
+        return await this.listRepository.createQueryBuilder("list")
+            .leftJoin("list.board", "board")
+            .where("board.id = :board_id AND list.archived", { board_id })
             .getMany()
     }
 
@@ -603,3 +607,4 @@ export default class BoardService {
     }
 }
 
+export const boardService = new BoardService()

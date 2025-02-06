@@ -1,15 +1,15 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, Generated, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
-import { Group } from "./column.entity"
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { List } from "./list.entity"
 import BoardActivity from "./board-activity.entity"
 import UserComment from "./user-comment.entity"
 
 @Entity()
-export class Task {
+export class Card {
     @PrimaryGeneratedColumn()
     id: number
 
     @Column()
-    group_id: number
+    list_id: number
 
     @Column()
     title: string
@@ -49,13 +49,13 @@ export class Task {
     @DeleteDateColumn()
     deleted_at: Date
 
-    @ManyToOne(() => Group, (group) => group.tasks)
-    @JoinColumn({ name: 'group_id' })
-    group: Group
+    @ManyToOne(() => List, (list) => list.cards)
+    @JoinColumn({ name: 'list_id' })
+    list: List
 
-    @OneToMany(() => BoardActivity, action => action.task, { cascade: true })
+    @OneToMany(() => BoardActivity, action => action.card, { cascade: true })
     activities: BoardActivity[]
 
-    @OneToMany(() => UserComment, comment => comment.task, { cascade: true })
+    @OneToMany(() => UserComment, comment => comment.card, { cascade: true })
     comments: UserComment[]
 }

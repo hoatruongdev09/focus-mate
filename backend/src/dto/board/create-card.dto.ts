@@ -1,4 +1,4 @@
-export default class CreateTaskDto {
+export default class CreateCardDto {
     title: string
     description: string
     priority: number

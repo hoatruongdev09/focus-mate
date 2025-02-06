@@ -1,13 +1,13 @@
 import { useSelector } from "react-redux";
 import ColumnContainer from "./column/column-container";
 import { AppRootState } from "../../store/store";
-import { Group, Task } from "../../types/board-type";
+import { List, Card } from "../../types/board-type";
 import TaskCard from "./task-card";
 
 export function DraggingColumnOverlay({ table, refs }: {
     table: {
-        column: Group;
-        tasks: Task[];
+        column: List;
+        tasks: Card[];
     }[],
     refs: React.MutableRefObject<{
         [id: number]: number;

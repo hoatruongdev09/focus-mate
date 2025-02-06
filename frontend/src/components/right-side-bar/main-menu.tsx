@@ -5,12 +5,11 @@ import { AppRootState } from "../../store/store"
 import { CSSProperties } from "react"
 
 interface Props {
-    isShow: boolean
     onOpenPage: (menu: Menu) => void
 }
 
 const MainMenu = (props: Props) => {
-    const { isShow, onOpenPage } = props
+    const { onOpenPage } = props
     const board = useSelector((state: AppRootState) => state.boardView.board)
     const userData = useSelector((state: AppRootState) => state.user.data)
 
@@ -19,7 +18,7 @@ const MainMenu = (props: Props) => {
     const isAdmin = userData?.id == board?.owner.id
 
     return (
-        <div className={`absolute inset-0 flex flex-col ${isShow ? "opacity-100 -translate-x-0 z-10" : "opacity-0 translate-x-96 z-0"}  transition-all duration-100`}>
+        <>
             <div className="flex flex-col gap-2 mt-1 px-2">
                 <div
                     className="flex items-center gap-3 py-2 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer"
@@ -80,7 +79,7 @@ const MainMenu = (props: Props) => {
                 </div>
 
             </div>
-        </div>
+        </>
     )
 }
 

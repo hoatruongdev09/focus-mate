@@ -4,8 +4,7 @@ import dataSource from "../db/data-source";
 import loadBoardThemeData from "../scripts/board-theme-data-loader";
 import Board from "../entities/board.entity";
 
-
-export default class BoardThemeService {
+export class BoardThemeService {
 
     private boardThemeRepository: Repository<BoardTheme>
     private boardRepository: Repository<Board>
@@ -72,3 +71,5 @@ export default class BoardThemeService {
         return await this.boardRepository.save(board)
     }
 }
+
+export const boardThemeService = new BoardThemeService()

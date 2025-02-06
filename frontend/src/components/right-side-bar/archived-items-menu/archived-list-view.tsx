@@ -1,27 +1,27 @@
 import { useCallback } from "react"
-import { Group } from "../../../types/board-type"
+import { List } from "../../../types/board-type"
 import ArchivedList from "./archived-list"
-import { useArchiveOrUnarchiveColumnMutation, useDeleteColumnMutation } from "../../../store/services/board-service"
+import { useArchiveOrUnarchiveListMutation, useDeleteListMutation } from "../../../store/services/board-service"
 import { useSelector } from "react-redux"
 import { AppRootState } from "../../../store/store"
 
 interface Props {
     isShow: boolean
-    groups: Group[]
+    groups: List[]
 }
 
 const ArchivedListsView = (props: Props) => {
     const { isShow, groups } = props
     const board = useSelector((state: AppRootState) => state.boardView.board)
-    const [archiveColumn] = useArchiveOrUnarchiveColumnMutation()
-    const [deleteColumn] = useDeleteColumnMutation()
+    const [archiveColumn] = useArchiveOrUnarchiveListMutation()
+    const [deleteColumn] = useDeleteListMutation()
 
-    const handleDeleteGroup = useCallback((group: Group) => {
+    const handleDeleteGroup = useCallback((group: List) => {
         if (!board) { return }
         deleteColumn({ board_id: board.id, column_id: group.id })
     }, [deleteColumn, board])
 
-    const handleRestoreGroup = useCallback((group: Group) => {
+    const handleRestoreGroup = useCallback((group: List) => {
         if (!board) { return }
         archiveColumn({ board_id: board.id, column_id: group.id })
     }, [archiveColumn, board])

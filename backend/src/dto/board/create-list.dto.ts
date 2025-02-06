@@ -1,4 +1,4 @@
-export default class CreateGroupDto {
+export default class CreateListDto {
     name: string
     description: string
 }

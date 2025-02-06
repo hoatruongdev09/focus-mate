@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
-import { useArchiveOrUnarchiveTaskMutation, useDeleteTaskMutation } from "../../../store/services/board-service"
-import { Task } from "../../../types/board-type"
+import { useArchiveOrUnarchiveCardMutation, useDeleteCardMutation } from "../../../store/services/board-service"
+import { Card } from "../../../types/board-type"
 import ArchivedCard from "./archived-card"
 import { AppRootState } from "../../../store/store"
 import { useCallback } from "react"
@@ -8,19 +8,19 @@ import { setViewingTask } from "../../../store/slices/board-slice"
 
 interface Props {
     isShow: boolean
-    tasks: Task[] | undefined
+    tasks: Card[] | undefined
 }
 
 const ArchivedCardsView = (props: Props) => {
     const { isShow, tasks } = props
     const dispatch = useDispatch()
 
-    const [archiveOrUnarchiveTask] = useArchiveOrUnarchiveTaskMutation()
-    const [deleteTask] = useDeleteTaskMutation()
+    const [archiveOrUnarchiveTask] = useArchiveOrUnarchiveCardMutation()
+    const [deleteTask] = useDeleteCardMutation()
 
     const { board, viewingTask } = useSelector((state: AppRootState) => state.boardView)
 
-    const handleRestoreTask = useCallback(async (task: Task) => {
+    const handleRestoreTask = useCallback(async (task: Card) => {
         if (!board) { return }
         const isViewingThisTask = task.id === viewingTask?.id
         if (isViewingThisTask) {
@@ -29,19 +29,19 @@ const ArchivedCardsView = (props: Props) => {
                 archived: !task.archived
             }))
         }
-        const { data: newTask } = await archiveOrUnarchiveTask({ board_id: board.id, group_id: task.group_id, task_id: task.id })
+        const { data: newTask } = await archiveOrUnarchiveTask({ board_id: board.id, list_id: task.list_id, card_id: task.id })
         if (isViewingThisTask && newTask) {
             dispatch(setViewingTask(newTask))
         }
     }, [board, viewingTask, archiveOrUnarchiveTask])
 
-    const handleDeleteTask = useCallback(async (task: Task) => {
+    const handleDeleteTask = useCallback(async (task: Card) => {
         if (!board) { return }
         const isViewingThisTask = task.id === viewingTask?.id
         if (isViewingThisTask) {
             dispatch(setViewingTask(null))
         }
-        deleteTask({ task_id: task.id, board_id: board.id })
+        deleteTask({ card_id: task.id, board_id: board.id })
     }, [board, viewingTask, deleteTask])
 
     return (

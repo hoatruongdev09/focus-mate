@@ -1,54 +1,54 @@
 import Board from "../entities/board.entity"
-import { Group } from "../entities/column.entity"
-import { Task } from "../entities/task.entity"
+import { List } from "../entities/list.entity"
+import { Card } from "../entities/card.entity"
 
 export enum BoardActivityEvent {
     CreateBoard = "CreateBoard",
     AddList = "AddList",
-    AddTask = "AddTask",
-    ArchiveTask = "ArchiveTask",
-    UnarchiveTask = "UnarchiveTask",
-    ArchiveColumn = "ArchiveColumn",
-    UnarchiveColumn = "UnarchiveColumn",
-    DeleteTask = "DeleteTask",
-    DeleteGroup = "DeleteGroup"
+    AddCard = "AddCard",
+    ArchiveCard = "ArchiveCard",
+    UnarchiveCard = "UnarchiveCard",
+    ArchiveList = "ArchiveList",
+    UnarchiveList = "UnarchiveList",
+    DeleteCard = "DeleteCard",
+    DeleteList = "DeleteList"
 }
 
 export type CreateBoardEventData = {
-    user_id: number
+    customer_id: number
     board: Board
 }
 
-export type AddGroupEventData = {
-    user_id: number
-    group: Group
+export type AddListEventData = {
+    customer_id: number
+    list: List
 }
 
-export type RemoveGroupEventData = {
-    user_id: number
-    group_id: number
+export type RemoveListEventData = {
+    customer_id: number
+    list_id: number
 }
 
-export type AddTaskEventData = {
-    user_id: number
-    task: Task
+export type AddCardEventData = {
+    customer_id: number
+    card: Card
 }
 
-export type RemoveTaskEventData = {
-    user_id: number
-    group_id: number
-    task_id: number
+export type RemoveCardEventData = {
+    customer_id: number
+    list_id: number
+    card_id: number
 }
 
-export type AchieveTaskEventData = {
-    user_id: number
-    group_id: number
+export type AchieveCardEventData = {
+    customer_id: number
+    list_id: number
     board_id: number
-    task_id: number
+    card_id: number
 }
 
-export type AchieveGroupEventData = {
-    user_id: number
+export type AchieveListEventData = {
+    customer_id: number
     board_id: number
-    group_id: number
+    list_id: number
 }

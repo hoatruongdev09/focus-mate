@@ -3,8 +3,8 @@ import colors from "../../../data/colors"
 import { useDispatch, useSelector } from "react-redux"
 import { AppRootState } from "../../../store/store"
 import { setViewingTask } from "../../../store/slices/board-slice"
-import { CoverType, TaskLayoutType } from "../../../types/board-type"
-import { useUpdateTaskMutation } from "../../../store/services/board-service"
+import { CoverType, CardLayoutType } from "../../../types/board-type"
+import { useUpdateCardMutation } from "../../../store/services/board-service"
 import { useCallback } from "react"
 import useClickOutside from "../../../custom-hooks/use-click-outside"
 
@@ -16,7 +16,7 @@ interface Props {
 const CoverChangeDialog = (props: Props) => {
     const { isActive, hide } = props
     const dispatch = useDispatch()
-    const [updateTask] = useUpdateTaskMutation()
+    const [updateTask] = useUpdateCardMutation()
     const { viewingTask, board } = useSelector((state: AppRootState) => state.boardView)
 
     const handleSelectColor = async (color: string) => {
@@ -84,8 +84,8 @@ const CoverChangeDialog = (props: Props) => {
             <div className="flex gap-2 mt-2">
                 <button
                     style={{ backgroundColor: viewingTask?.cover_type === CoverType.None ? "transparent" : viewingTask?.cover_value }}
-                    className={`flex-1 h-20 rounded relative shadow ${viewingTask?.layout_type == TaskLayoutType.Normal ? "ring ring-black" : ""}`}
-                    onClick={() => handleChangeLayout(TaskLayoutType.Normal)}
+                    className={`flex-1 h-20 rounded relative shadow ${viewingTask?.layout_type == CardLayoutType.Normal ? "ring ring-black" : ""}`}
+                    onClick={() => handleChangeLayout(CardLayoutType.Normal)}
                 >
                     <div className="absolute bottom-0 left-0 right-0 bg-white p-1 h-10 rounded-b flex flex-col justify-between">
                         <div className="bg-gray-300 h-1 w-full rounded"></div>
@@ -102,8 +102,8 @@ const CoverChangeDialog = (props: Props) => {
 
                 <button
                     style={{ backgroundColor: viewingTask?.cover_type === CoverType.None ? "transparent" : viewingTask?.cover_value }}
-                    className={`flex-1 h-20 rounded relative shadow ${viewingTask?.layout_type == TaskLayoutType.Large ? "ring ring-black" : ""}`}
-                    onClick={() => handleChangeLayout(TaskLayoutType.Large)}
+                    className={`flex-1 h-20 rounded relative shadow ${viewingTask?.layout_type == CardLayoutType.Large ? "ring ring-black" : ""}`}
+                    onClick={() => handleChangeLayout(CardLayoutType.Large)}
                 >
                     <div className="absolute bottom-0 left-0 right-0 p-1 h-10 rounded-b flex flex-col justify-between">
                         <div className="bg-gray-800 h-1 w-full rounded"></div>

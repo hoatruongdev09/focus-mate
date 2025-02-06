@@ -7,12 +7,9 @@ import { useCallback, useRef, useState } from "react"
 import { setBoard } from "../../store/slices/board-slice"
 import { useUpdateBoardMutation } from "../../store/services/board-service"
 
-interface Props {
-    isShow: boolean
-}
 
-const BoardInfoMenu = (props: Props) => {
-    const { isShow } = props
+
+const BoardInfoMenu = () => {
     const dispatch = useDispatch()
     const board = useSelector((state: AppRootState) => state.boardView.board)
     const [updateBoard] = useUpdateBoardMutation()
@@ -59,55 +56,54 @@ const BoardInfoMenu = (props: Props) => {
     }, [descriptionContent, setDescriptionContent, board, dispatch, setOnFocus, textEditorRef, updateBoard])
 
     return (
-        <div className={`absolute inset-0 transition-all duration-100 overflow-y-scroll ${isShow ? "opacity-100 -translate-x-0 z-10" : "opacity-0 translate-x-96 z-0"}`}>
-            <div className="w-full flex flex-col px-4 mt-2 gap-2">
-                <div className="flex gap-2 items-center">
-                    <UserIcon className="size-5 text-zinc-800" />
-                    <p className="font-semibold text-zinc-800">Board admins</p>
+        <div className="w-full flex flex-col px-4 mt-2 gap-2">
+            <div className="flex gap-2 items-center">
+                <UserIcon className="size-5 text-zinc-800" />
+                <p className="font-semibold text-zinc-800">Board admins</p>
+            </div>
+            <div className="flex gap-3 items-start">
+                <img
+                    src={`https://avatar.iran.liara.run/public/${board?.owner.id ?? 34}`}
+                    className="size-12"
+                />
+                <div className="flex flex-col">
+                    <p className="font-semibold text-zinc-800">{board?.owner.first_name} {board?.owner.last_name}</p>
+                    <p className="font-semibold text-zinc-800 text-sm">{board?.owner.email}</p>
                 </div>
-                <div className="flex gap-3 items-start">
-                    <img
-                        src={`https://avatar.iran.liara.run/public/${board?.owner.id ?? 34}`}
-                        className="size-12"
-                    />
-                    <div className="flex flex-col">
-                        <p className="font-semibold text-zinc-800">{board?.owner.first_name} {board?.owner.last_name}</p>
-                        <p className="font-semibold text-zinc-800 text-sm">{board?.owner.email}</p>
-                    </div>
-                </div>
+            </div>
 
-                <div className="flex-col gap-2 mt-3">
-                    <div className="flex gap-2 items-start">
-                        <Bars3BottomLeftIcon className="size-5 text-zinc-800" />
-                        <p className="font-semibold text-zinc-800">Description</p>
-                    </div>
-                    <div className="mt-2 flex flex-col gap-2">
-                        <TextEditor
-                            ref={textEditorRef}
-                            value={descriptionContent}
-                            isActive={onFocus}
-                            setIsActive={handleSetOnFocus}
-                            onChange={handleChange}
-                            placeHolder="Add a description to let your teammates know what this board is used for. you'll get bonus points if your add instructions for how to collaborate!"
-                        />
-                        {onFocus && <div className="flex items-center gap-3">
-                            <button
-                                onClick={handleSaveDescription}
-                                className="bg-blue-600 px-2 py-1 rounded text-white font-semibold hover:bg-blue-500"
-                            >
-                                Save
-                            </button>
-                            <button
-                                onClick={handleDiscardDescription}
-                                className="px-2 py-1 rounded text-zinc-800 font-semibold hover:bg-zinc-300"
-                            >
-                                Cancel
-                            </button>
-                        </div>}
-                    </div>
+            <div className="flex-col gap-2 mt-3">
+                <div className="flex gap-2 items-start">
+                    <Bars3BottomLeftIcon className="size-5 text-zinc-800" />
+                    <p className="font-semibold text-zinc-800">Description</p>
+                </div>
+                <div className="mt-2 flex flex-col gap-2">
+                    <TextEditor
+                        ref={textEditorRef}
+                        value={descriptionContent}
+                        isActive={onFocus}
+                        setIsActive={handleSetOnFocus}
+                        onChange={handleChange}
+                        placeHolder="Add a description to let your teammates know what this board is used for. you'll get bonus points if your add instructions for how to collaborate!"
+                    />
+                    {onFocus && <div className="flex items-center gap-3">
+                        <button
+                            onClick={handleSaveDescription}
+                            className="bg-blue-600 px-2 py-1 rounded text-white font-semibold hover:bg-blue-500"
+                        >
+                            Save
+                        </button>
+                        <button
+                            onClick={handleDiscardDescription}
+                            className="px-2 py-1 rounded text-zinc-800 font-semibold hover:bg-zinc-300"
+                        >
+                            Cancel
+                        </button>
+                    </div>}
                 </div>
             </div>
         </div>
+
     )
 }
 

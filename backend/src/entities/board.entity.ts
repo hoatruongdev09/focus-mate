@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import User from "./user.entity";
-import { Group } from "./column.entity";
+import Customer from "./customer.entity";
+import { List } from "./list.entity";
 import BoardActivity from "./board-activity.entity";
 import UserComment from "./user-comment.entity";
 import BoardTheme from "./board-theme.entity";
@@ -34,12 +34,12 @@ export default class Board {
     @DeleteDateColumn()
     deleted_at: Date
 
-    @ManyToOne(() => User, (user) => user.boards)
+    @ManyToOne(() => Customer, (customer_id) => customer_id.boards)
     @JoinColumn({ name: 'owner_id' })
-    owner: User
+    owner: Customer
 
-    @OneToMany(() => Group, (group) => group.board)
-    groups: Group[]
+    @OneToMany(() => List, (list) => list.board)
+    lists: List[]
 
     @OneToMany(() => BoardActivity, (action) => action.board, { cascade: true })
     activities: BoardActivity[]

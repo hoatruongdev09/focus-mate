@@ -1,11 +1,8 @@
 import { Request, Response } from "express";
-import AuthService from "../services/auth.service";
-import CreateUserDto from "../dto/auth/create-user.dto";
-import UserService from "../services/user.service";
+import CreateCustomerDto from "../dto/auth/create-user.dto";
 import { JwtPayload } from "jsonwebtoken";
+import { authService } from "../services/auth.service";
 
-const userService: UserService = new UserService()
-const authService: AuthService = new AuthService(userService)
 
 export const refreshToken = async (req: Request, res: Response) => {
     const { token } = req.body
@@ -20,7 +17,7 @@ export const refreshToken = async (req: Request, res: Response) => {
 }
 
 export const registerEmailPassword = async (req: Request, res: Response) => {
-    const data: CreateUserDto = req.body
+    const data: CreateCustomerDto = req.body
     try {
         const result = await authService.registerEmailPassword(data)
         res.status(200).json(result)

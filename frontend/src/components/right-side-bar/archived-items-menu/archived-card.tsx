@@ -1,12 +1,12 @@
 import { EyeIcon, ArchiveBoxXMarkIcon } from "@heroicons/react/24/outline"
-import { CoverType, Task, TaskLayoutType } from "../../../types/board-type"
+import { CoverType, Card, CardLayoutType } from "../../../types/board-type"
 import { useDispatch } from "react-redux"
 import { setViewingTask } from "../../../store/slices/board-slice"
 
 interface Props {
-    task: Task
-    onDelete?: (task: Task) => void
-    onRestore?: (task: Task) => void
+    task: Card
+    onDelete?: (task: Card) => void
+    onRestore?: (task: Card) => void
 }
 
 const ArchivedCard = (props: Props) => {
@@ -34,16 +34,16 @@ const ArchivedCard = (props: Props) => {
             >
                 {
 
-                    (cover_type != CoverType.None && layout_type == TaskLayoutType.Normal) &&
+                    (cover_type != CoverType.None && layout_type == CardLayoutType.Normal) &&
                     <div
                         style={{ background: cover_value }}
                         className="h-8 rounded-t-lg border-t border-l border-r"
                     />
                 }
                 <div
-                    style={{ background: layout_type == TaskLayoutType.Large ? cover_value : "" }}
+                    style={{ background: layout_type == CardLayoutType.Large ? cover_value : "" }}
                     className={`flex flex-col gap-2 p-2 bg-white rounded-b-lg border-b border-l border-r 
-                            ${(cover_type == CoverType.None || layout_type == TaskLayoutType.Large) ? "border-t rounded-t-lg" : ""}
+                            ${(cover_type == CoverType.None || layout_type == CardLayoutType.Large) ? "border-t rounded-t-lg" : ""}
                         `}
                 >
 

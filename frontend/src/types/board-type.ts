@@ -6,7 +6,7 @@ export enum CoverType {
     Gradient = 2
 }
 
-export enum TaskLayoutType {
+export enum CardLayoutType {
     Normal = 0,
     Large = 1
 }
@@ -38,22 +38,22 @@ export type UpdateBoardData = {
     description: string
 }
 
-export type AddGroupData = {
+export type AddListData = {
     board_id: number
     name: string
     description: string
 }
 
-export type AddTaskData = {
+export type AddCardData = {
     title: string
     description: string
     priority: number
     estimate: number
-    group_id: number
+    list_id: number
     board_id: number
 }
 
-export type Group = {
+export type List = {
     id: number
     name: string
     description: string
@@ -62,21 +62,21 @@ export type Group = {
     board_id: number
 }
 
-export type Task = {
+export type Card = {
     id: number
     title: string
     rank: string
     description: string
     priority: number
     estimate: number
-    group_id: number
+    list_id: number
     archived: boolean
     cover_type: CoverType
     cover_value: string
-    layout_type: TaskLayoutType
+    layout_type: CardLayoutType
 }
 
-export type UpdateTaskData = {
+export type UpdateCardData = {
     id: number
     title: string
     description: string | null
@@ -85,14 +85,14 @@ export type UpdateTaskData = {
     layout_type: number
     priority: number
     estimate: number
-    group_id: number
+    list_id: number
     board_id: number
 
     front_id?: number | null
     behind_id?: number | null
 }
 
-export type UpdateGroupData = {
+export type UpdateListData = {
     id: number
     board_id: number
     name: string
@@ -102,12 +102,12 @@ export type UpdateGroupData = {
     behind_id: number | null
 }
 
-export type TaskComment = {
+export type CardComment = {
     id: number
     user_id: number
     board_id: number
-    group_id: number
-    task_id: number
+    list_id: number
+    card_id: number
     content: string
     created_at: Date
     updated_at: Date

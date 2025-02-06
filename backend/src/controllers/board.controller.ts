@@ -1,19 +1,26 @@
 import { Request, Response } from 'express'
-import BoardService from '../services/board.service'
-import UpdateGroupDto from '../dto/board/update-group.dto'
-import CreateTaskDto from '../dto/board/create-task.dto'
-import UpdateTaskDto from '../dto/board/update-task.dto'
+import UpdateListDto from '../dto/board/update-list.dto'
+import CreateCardDto from '../dto/board/create-card.dto'
+import UpdateCardDto from '../dto/board/update-card.dto'
 import UpdateBoardDto from '../dto/board/update-board.dto'
-import { AchieveGroupEventData, AchieveTaskEventData, AddGroupEventData, AddTaskEventData, BoardActivityEvent, CreateBoardEventData } from '../defines/board-activity-type'
+import {
+    AchieveListEventData,
+    AchieveCardEventData,
+    AddListEventData,
+    AddCardEventData,
+    BoardActivityEvent,
+    CreateBoardEventData
+} from '../defines/board-activity-type'
 import { defaultObserver } from '../utils/observer'
 
-const boardService = new BoardService()
+import { boardService } from '../services/board.service'
+import { boardActivityService } from '../services/board-activity.service'
 
 
 export const getBoards = async (req: Request, res: Response) => {
-    const { user_id } = req
+    const { customer_id } = req
     try {
-        const boards = await boardService.getBoards(user_id)
+        const boards = await boardService.getBoards(customer_id)
         res.status(200).json(boards)
     } catch (err) {
         console.error(err)
@@ -22,11 +29,11 @@ export const getBoards = async (req: Request, res: Response) => {
 }
 
 export const createBoard = async (req: Request, res: Response) => {
-    const { user_id } = req
+    const { customer_id } = req
     try {
-        const board = await boardService.createBoard(user_id, req.body)
+        const board = await boardService.createBoard(customer_id, req.body)
         const eventData: CreateBoardEventData = {
-            user_id, board
+            customer_id, board
         }
         defaultObserver.publish(BoardActivityEvent.CreateBoard, eventData)
         res.status(200).json(board)
@@ -39,7 +46,7 @@ export const createBoard = async (req: Request, res: Response) => {
 export const fetchBoard = async (req: Request, res: Response) => {
     try {
         const { board_id } = req.params
-        const board = await boardService.getBoardColumnsAndTasks(+board_id)
+        const board = await boardService.getBoardListsAndCards(+board_id)
         res.status(200).json(board)
     } catch (error) {
         res.status(500).json(error)
@@ -47,11 +54,11 @@ export const fetchBoard = async (req: Request, res: Response) => {
 }
 
 export const getBoard = async (req: Request, res: Response) => {
-    const { user_id } = req
+    const { customer_id } = req
     const { board_id } = req.params
 
     try {
-        const board = await boardService.getBoard(+board_id, +user_id)
+        const board = await boardService.getBoard(+board_id, +customer_id)
         res.status(200).json(board)
     } catch (err) {
         console.error(err)
@@ -60,11 +67,11 @@ export const getBoard = async (req: Request, res: Response) => {
 }
 
 export const updateBoard = async (req: Request, res: Response) => {
-    const { user_id } = req
+    const { customer_id } = req
     const { board_id } = req.params
     const data: UpdateBoardDto = req.body
     try {
-        const board = await boardService.updateBoard(+board_id, +user_id, data)
+        const board = await boardService.updateBoard(+board_id, +customer_id, data)
         res.status(200).json(board)
     } catch (err) {
         console.error(err)
@@ -73,47 +80,47 @@ export const updateBoard = async (req: Request, res: Response) => {
 }
 
 
-export const addGroup = async (req: Request, res: Response) => {
+export const addList = async (req: Request, res: Response) => {
     try {
-        const { user_id } = req
+        const { customer_id } = req
         const { board_id } = req.params
-        const group = await boardService.createGroup(+board_id, req.body)
-        const eventData: AddGroupEventData = {
-            user_id,
-            group
+        const list = await boardService.createList(+board_id, req.body)
+        const eventData: AddListEventData = {
+            customer_id,
+            list
         }
         defaultObserver.publish(BoardActivityEvent.AddList, eventData)
-        res.status(200).json(group)
+        res.status(200).json(list)
     } catch (e) {
         res.status(500).json(e)
     }
 }
 
-export const updateGroup = async (req: Request, res: Response) => {
+export const updateList = async (req: Request, res: Response) => {
     try {
         const { board_id, id } = req.params
-        const data: UpdateGroupDto = req.body
-        const group = await boardService.updateGroup(+board_id, +id, data)
-        res.status(200).json(group)
+        const data: UpdateListDto = req.body
+        const list = await boardService.updateList(+board_id, +id, data)
+        res.status(200).json(list)
     } catch (e) {
         res.status(500).json(e)
     }
 }
 
-export const getGroups = async (req: Request, res: Response) => {
+export const getLists = async (req: Request, res: Response) => {
     try {
         const { board_id } = req.params
-        const data = await boardService.getGroups(+board_id)
+        const data = await boardService.getLists(+board_id)
         res.status(200).json(data)
     } catch (e) {
         res.status(500).json(e)
     }
 }
 
-export const deleteGroup = async (req: Request, res: Response) => {
+export const deleteList = async (req: Request, res: Response) => {
     try {
         const { board_id, id } = req.params
-        await boardService.deleteGroup(+board_id, +id)
+        await boardService.deleteList(+board_id, +id)
         res.status(200).json("ok")
     } catch (e) {
         console.error(e)
@@ -121,52 +128,51 @@ export const deleteGroup = async (req: Request, res: Response) => {
     }
 }
 
-export const createTask = async (req: Request, res: Response) => {
+export const createCard = async (req: Request, res: Response) => {
     try {
-        const { user_id } = req
-        const { board_id, id } = req.params
-        const data: CreateTaskDto = req.body
-        const task = await boardService.addTask(+board_id, +id, data)
-        const eventData: AddTaskEventData = {
-            user_id,
-            task
+        const { customer_id } = req
+        const { board_id, list_id } = req.params
+        const data: CreateCardDto = req.body
+        const card = await boardService.addCard(+board_id, +list_id, data)
+        const eventData: AddCardEventData = {
+            customer_id,
+            card
         }
-        defaultObserver.publish(BoardActivityEvent.AddTask, eventData)
-        res.status(200).json(task)
+        defaultObserver.publish(BoardActivityEvent.AddCard, eventData)
+        res.status(200).json(card)
     } catch (e) {
         console.error(e)
         res.status(500).json(e)
     }
 }
 
-export const getTasks = async (req: Request, res: Response) => {
+export const getCards = async (req: Request, res: Response) => {
     try {
         const { board_id } = req.params
-        const tasks = await boardService.getTasks(+board_id)
-        res.status(200).json(tasks)
+        const cards = await boardService.getCards(+board_id)
+        res.status(200).json(cards)
     } catch (e) {
         console.error(e)
         res.status(500).json(e)
     }
 }
 
-export const updateTask = async (req: Request, res: Response) => {
+export const updateCard = async (req: Request, res: Response) => {
     try {
         const { board_id, id } = req.params
-        const data: UpdateTaskDto = req.body
-        const updatedTask = await boardService.updateTask(+board_id, +id, data)
-        res.status(200).json(updatedTask)
+        const data: UpdateCardDto = req.body
+        const updatedCard = await boardService.updateCard(+board_id, +id, data)
+        res.status(200).json(updatedCard)
     } catch (e) {
         console.error(e)
         res.status(500).json(e)
     }
 }
 
-export const deleteTask = async (req: Request, res: Response) => {
+export const deleteCard = async (req: Request, res: Response) => {
     try {
         const { board_id, id } = req.params
-        console.log(`delete task: ${board_id} ${id}`)
-        await boardService.deleteTask(+board_id, +id)
+        await boardService.deleteCard(+board_id, +id)
         res.status(200).json("oke")
     } catch (error) {
         console.error(error)
@@ -174,17 +180,17 @@ export const deleteTask = async (req: Request, res: Response) => {
     }
 }
 
-export const getTaskInColumn = async (req: Request, res: Response) => {
+export const getCardInList = async (req: Request, res: Response) => {
     try {
-        const { board_id, id } = req.params
-        const tasks = await boardService.getTasksInColumn(+board_id, +id)
-        res.status(200).json(tasks)
+        const { board_id, list_id } = req.params
+        const cards = await boardService.getCardsInList(+board_id, +list_id)
+        res.status(200).json(cards)
     } catch (error) {
         res.status(500).json(error)
     }
 }
 
-export const reorderGroup = async (req: Request, res: Response) => {
+export const reorderList = async (req: Request, res: Response) => {
     try {
         const { targetId, frontId, behindId }:
             {
@@ -192,32 +198,32 @@ export const reorderGroup = async (req: Request, res: Response) => {
                 frontId: number | null
                 behindId: number | null
             } = req.body
-        const task = await boardService.reorderGroup(targetId, frontId, behindId)
-        res.status(200).json(task)
+        const card = await boardService.reorderList(targetId, frontId, behindId)
+        res.status(200).json(card)
     } catch (error) {
         console.log(error)
         res.status(500).json(error)
     }
 }
 
-export const archiveOrUnarchiveTask = async (req: Request, res: Response) => {
+export const archiveOrUnarchiveCard = async (req: Request, res: Response) => {
     try {
-        const { user_id } = req
-        const { board_id, group_id, task_id } = req.params
-        const task = await boardService.getTask(+board_id, +group_id, +task_id)
-        const eventData: AchieveTaskEventData = {
-            user_id,
+        const { customer_id } = req
+        const { board_id, list_id, card_id } = req.params
+        const card = await boardService.getCard(+board_id, +list_id, +card_id)
+        const eventData: AchieveCardEventData = {
+            customer_id,
             board_id: +board_id,
-            task_id: +task_id,
-            group_id: +group_id,
+            card_id: +card_id,
+            list_id: +list_id,
         }
-        if (task.archived) {
-            defaultObserver.publish(BoardActivityEvent.UnarchiveTask, eventData)
-            res.status(200).json(await boardService.unarchiveTask(+board_id, +group_id, +task_id))
+        if (card.archived) {
+            defaultObserver.publish(BoardActivityEvent.UnarchiveCard, eventData)
+            res.status(200).json(await boardService.unarchiveCard(+board_id, +list_id, +card_id))
         }
         else {
-            defaultObserver.publish(BoardActivityEvent.ArchiveTask, eventData)
-            res.status(200).json(await boardService.archiveTask(+board_id, +group_id, +task_id))
+            defaultObserver.publish(BoardActivityEvent.ArchiveCard, eventData)
+            res.status(200).json(await boardService.archiveCard(+board_id, +list_id, +card_id))
         }
     } catch (error) {
         console.error(error)
@@ -226,23 +232,23 @@ export const archiveOrUnarchiveTask = async (req: Request, res: Response) => {
 }
 
 
-export const archiveOrUnarchiveColumn = async (req: Request, res: Response) => {
+export const archiveOrUnarchiveList = async (req: Request, res: Response) => {
     try {
-        const { user_id } = req
+        const { customer_id } = req
         const { board_id, id } = req.params
-        const column = await boardService.getGroup(+board_id, +id);
-        const eventData: AchieveGroupEventData = {
-            user_id,
+        const list = await boardService.getList(+board_id, +id);
+        const eventData: AchieveListEventData = {
+            customer_id,
             board_id: +board_id,
-            group_id: +id
+            list_id: +id
         }
-        if (!column.archived) {
-            defaultObserver.publish(BoardActivityEvent.ArchiveColumn, eventData)
-            res.status(200).json(await boardService.archiveColumn(+board_id, +id))
+        if (!list.archived) {
+            defaultObserver.publish(BoardActivityEvent.ArchiveList, eventData)
+            res.status(200).json(await boardService.archiveList(+board_id, +id))
         }
         else {
-            defaultObserver.publish(BoardActivityEvent.UnarchiveColumn, eventData)
-            res.status(200).json(await boardService.unarchiveColumn(+board_id, +id))
+            defaultObserver.publish(BoardActivityEvent.UnarchiveList, eventData)
+            res.status(200).json(await boardService.unarchiveList(+board_id, +id))
         }
     } catch (error) {
         console.error(error)
@@ -250,11 +256,11 @@ export const archiveOrUnarchiveColumn = async (req: Request, res: Response) => {
     }
 }
 
-export const archiveOrUnarchiveTasksInColumn = async (req: Request, res: Response) => {
+export const archiveOrUnarchiveCardsInList = async (req: Request, res: Response) => {
     try {
         const { board_id, id } = req.params
         const { action } = req.body
-        await boardService.archiveOrUnarchiveTasksInColumn(+board_id, +id, action)
+        await boardService.archiveOrUnarchiveCardsInList(+board_id, +id, action)
         res.status(200).json({ message: "oke" })
     } catch (error) {
         console.error(error)
@@ -262,11 +268,12 @@ export const archiveOrUnarchiveTasksInColumn = async (req: Request, res: Respons
     }
 }
 
-export const userCommentTask = async (req: Request, res: Response) => {
+export const customerCommentCard = async (req: Request, res: Response) => {
     try {
-        const { board_id, group_id, task_id } = req.params
+        const { board_id, list_id, card_id } = req.params
         const { content } = req.body
-        const comment = await boardService.postComment(+board_id, +group_id, +task_id, req.user_id, content)
+        const { customer_id } = req
+        const comment = await boardService.postComment(+board_id, +list_id, +card_id, customer_id, content)
         res.status(200).json(comment)
     } catch (error) {
         console.error(error)
@@ -274,10 +281,10 @@ export const userCommentTask = async (req: Request, res: Response) => {
     }
 }
 
-export const getTaskComments = async (req: Request, res: Response) => {
+export const getCardComments = async (req: Request, res: Response) => {
     try {
-        const { board_id, group_id, task_id } = req.params
-        const comments = await boardService.getComments(+board_id, +group_id, +task_id)
+        const { board_id, list_id, card_id } = req.params
+        const comments = await boardService.getComments(+board_id, +list_id, +card_id)
         res.status(200).json(comments)
     }
     catch (error) {
@@ -307,3 +314,15 @@ export const getArchivedLists = async (req: Request, res: Response) => {
         res.status(500).json(error)
     }
 }
+
+export const getBoardActivities = async (req: Request, res: Response) => {
+    try {
+        const { board_id } = req.params
+        const activities = await boardActivityService.getBoardActivities(+board_id)
+        res.status(200).json(activities)
+    } catch (error) {
+        console.error(error)
+        res.status(500).json(error)
+    }
+}
+

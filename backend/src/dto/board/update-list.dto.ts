@@ -1,4 +1,4 @@
-export default class UpdateGroupDto {
+export default class UpdateListDto {
     name: string
     description: string
 

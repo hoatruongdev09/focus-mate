@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { AddGroupData, AddTaskData, Board, CreateBoardData, Group, Task, TaskComment, UpdateBoardData, UpdateGroupData, UpdateTaskData } from "../../types/board-type";
+import { AddListData, AddCardData, Board, CreateBoardData, List, Card, CardComment, UpdateBoardData, UpdateListData, UpdateCardData } from "../../types/board-type";
 import { baseQueryWithReauth } from "./base-query-with-reauth";
 
 const getArchivedItemsUrl = ({ board_id, type }: { board_id: number, type: string }): string => {
@@ -17,7 +17,7 @@ const getArchivedItemsUrl = ({ board_id, type }: { board_id: number, type: strin
 export const boardApi = createApi({
     reducerPath: 'boardApi',
     baseQuery: baseQueryWithReauth,
-    tagTypes: ['board', 'columns', 'tasks', 'comments'],
+    tagTypes: ['board', 'columns', 'cards', 'comments'],
     endpoints: (builder) => ({
         getBoards: builder.query<Board[], void>({
             query: () => `/board`,
@@ -42,94 +42,94 @@ export const boardApi = createApi({
             }),
             invalidatesTags: ['board']
         }),
-        getColumns: builder.query<Group[], number>({
-            query: (data) => `/board/${data}/groups`,
+        getLists: builder.query<List[], number>({
+            query: (data) => `/board/${data}/lists`,
             providesTags: ['columns']
         }),
-        getTasks: builder.query<Task[], number>({
-            query: (data) => `/board/${data}/tasks`,
-            providesTags: ['tasks']
+        getCards: builder.query<Card[], number>({
+            query: (data) => `/board/${data}/cards`,
+            providesTags: ['cards']
         }),
-        addColumns: builder.mutation<Group, AddGroupData>({
+        addList: builder.mutation<List, AddListData>({
             query: data => ({
-                url: `/board/${data.board_id}/groups`,
+                url: `/board/${data.board_id}/lists`,
                 method: 'POST',
                 body: data
             }),
             invalidatesTags: ['columns']
         }),
-        deleteColumn: builder.mutation<void, { board_id: number, column_id: number }>({
+        deleteList: builder.mutation<void, { board_id: number, column_id: number }>({
             query: data => ({
-                url: `/board/${data.board_id}/groups/${data.column_id}`,
+                url: `/board/${data.board_id}/lists/${data.column_id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['columns']
         }),
-        addTasks: builder.mutation<Group, AddTaskData>({
+        addCard: builder.mutation<List, AddCardData>({
             query: data => ({
-                url: `/board/${data.board_id}/groups/${data.group_id}/task`,
+                url: `/board/${data.board_id}/lists/${data.list_id}/card`,
                 method: 'POST',
                 body: data
             }),
-            invalidatesTags: ['tasks']
+            invalidatesTags: ['cards']
         }),
-        deleteTask: builder.mutation<void, { board_id: number, task_id: number }>({
+        deleteCard: builder.mutation<void, { board_id: number, card_id: number }>({
             query: data => ({
-                url: `/board/${data.board_id}/tasks/${data.task_id}`,
+                url: `/board/${data.board_id}/cards/${data.card_id}`,
                 method: 'DELETE'
             }),
-            invalidatesTags: ['tasks']
+            invalidatesTags: ['cards']
         }),
-        updateTask: builder.mutation<Task, UpdateTaskData>({
+        updateCard: builder.mutation<Card, UpdateCardData>({
             query: data => ({
-                url: `/board/${data.board_id}/tasks/${data.id}`,
+                url: `/board/${data.board_id}/cards/${data.id}`,
                 method: 'PUT',
                 body: data
             }),
-            invalidatesTags: ['tasks']
+            invalidatesTags: ['cards']
         }),
-        updateColumn: builder.mutation<Group, UpdateGroupData>({
+        updateList: builder.mutation<List, UpdateListData>({
             query: data => ({
-                url: `/board/${data.board_id}/groups/${data.id}`,
+                url: `/board/${data.board_id}/lists/${data.id}`,
                 method: 'PUT',
                 body: data
             }),
             invalidatesTags: ['columns']
         }),
-        archiveOrUnarchiveTask: builder.mutation<Task, { board_id: number, group_id: number, task_id: number }>({
+        archiveOrUnarchiveCard: builder.mutation<Card, { board_id: number, list_id: number, card_id: number }>({
             query: data => ({
-                url: `/board/${data.board_id}/${data.group_id}/tasks/${data.task_id}/archive-or-unarchive`,
+                url: `/board/${data.board_id}/${data.list_id}/cards/${data.card_id}/archive-or-unarchive`,
                 method: 'POST'
             }),
-            invalidatesTags: ['tasks']
+            invalidatesTags: ['cards']
         }),
-        archiveOrUnarchiveColumn: builder.mutation<Group, { board_id: number, column_id: number }>({
+        archiveOrUnarchiveList: builder.mutation<List, { board_id: number, column_id: number }>({
             query: data => ({
-                url: `/board/${data.board_id}/groups/${data.column_id}/archive-or-unarchive`,
+                url: `/board/${data.board_id}/lists/${data.column_id}/archive-or-unarchive`,
                 method: 'POST'
             }),
             invalidatesTags: ['columns']
         }),
-        archiveAllTasksInColumn: builder.mutation<Task[], { board_id: number, column_id: number, action: boolean }>({
+        archiveAllCardsInList: builder.mutation<Card[], { board_id: number, column_id: number, action: boolean }>({
             query: data => ({
-                url: `/board/${data.board_id}/groups/${data.column_id}/archive-or-unarchive-all-task`,
+                url: `/board/${data.board_id}/lists/${data.column_id}/archive-or-unarchive-all-card`,
                 body: { action: data.action },
                 method: 'POST'
             }),
-            invalidatesTags: ['tasks']
+            invalidatesTags: ['cards']
         }),
-        commentTask: builder.mutation<TaskComment, { board_id: number, column_id: number, task_id: number, content: string }>(
+        commentCard: builder.mutation<CardComment, { board_id: number, column_id: number, card_id: number, content: string }>(
             {
                 query: data => ({
-                    url: `/board/${data.board_id}/${data.column_id}/tasks/${data.task_id}/comment`,
+                    url: `/board/${data.board_id}/${data.column_id}/cards/${data.card_id}/comment`,
                     body: { content: data.content },
                     method: 'POST'
                 }),
                 invalidatesTags: ['comments']
             }
         ),
-        getTaskComments: builder.query<TaskComment[], { board_id: number, column_id: number, task_id: number }>({
-            query: data => `/board/${data.board_id}/${data.column_id}/tasks/${data.task_id}/comments`,
+        getCardComments: builder.query<CardComment[], { board_id: number, column_id: number, card_id: number }>({
+            query: data => `/board/${data.board_id}/${data.column_id}/cards/${data.card_id}/comments`,
             providesTags: ['comments']
         }),
         postChangeTheme: builder.mutation<Board, { board_id: number, theme_id: number }>({
@@ -140,15 +140,15 @@ export const boardApi = createApi({
             }),
             invalidatesTags: ['board']
         }),
-        getArchivedItems: builder.query<Task[] | Group[], { board_id: number, type: string }>({
+        getArchivedItems: builder.query<Card[] | List[], { board_id: number, type: string }>({
             query: data => getArchivedItemsUrl(data),
-            providesTags: ['tasks', 'columns']
+            providesTags: ['cards', 'columns']
         }),
-        getArchivedTasks: builder.query<Task[], number>({
+        getArchivedCards: builder.query<Card[], number>({
             query: board_id => `board/${board_id}/archived-cards`,
-            providesTags: ['tasks']
+            providesTags: ['cards']
         }),
-        getArchivedColumns: builder.query<Group[], number>({
+        getArchivedLists: builder.query<List[], number>({
             query: board_id => `board/${board_id}/archived-lists`,
             providesTags: ['columns']
         })
@@ -159,22 +159,22 @@ export const {
     useGetBoardsQuery,
     useCreateBoardMutation,
     useGetBoardQuery,
-    useGetTasksQuery,
-    useGetColumnsQuery,
-    useAddColumnsMutation,
-    useAddTasksMutation,
-    useDeleteColumnMutation,
-    useDeleteTaskMutation,
-    useUpdateTaskMutation,
-    useUpdateColumnMutation,
-    useArchiveOrUnarchiveTaskMutation,
-    useArchiveAllTasksInColumnMutation,
-    useArchiveOrUnarchiveColumnMutation,
-    useCommentTaskMutation,
-    useGetTaskCommentsQuery,
+    useGetCardsQuery,
+    useGetListsQuery,
+    useAddListMutation,
+    useAddCardMutation,
+    useDeleteListMutation,
+    useDeleteCardMutation,
+    useUpdateCardMutation,
+    useUpdateListMutation,
+    useArchiveOrUnarchiveCardMutation,
+    useArchiveAllCardsInListMutation,
+    useArchiveOrUnarchiveListMutation,
+    useCommentCardMutation,
+    useGetCardCommentsQuery,
     usePostChangeThemeMutation,
     useUpdateBoardMutation,
     useGetArchivedItemsQuery,
-    useGetArchivedColumnsQuery,
-    useGetArchivedTasksQuery
+    useGetArchivedListsQuery,
+    useGetArchivedCardsQuery
 } = boardApi

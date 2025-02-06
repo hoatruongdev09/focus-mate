@@ -1,17 +1,17 @@
 import { Bars3BottomLeftIcon } from "@heroicons/react/16/solid"
 import { setViewingTask } from "../../../store/slices/board-slice"
 import { useDispatch, useSelector } from "react-redux"
-import { Task } from "../../../types/board-type"
-import { useUpdateTaskMutation } from "../../../store/services/board-service"
+import { Card } from "../../../types/board-type"
+import { useUpdateCardMutation } from "../../../store/services/board-service"
 import { useCallback, useState } from "react"
 import TextEditor from "../../text-editor/components/text-editor"
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import { AppRootState } from "../../../store/store"
 
-const TaskDescription = ({ task }: { task: Task }) => {
+const TaskDescription = ({ task }: { task: Card }) => {
 
     const dispatch = useDispatch()
-    const [updateTask] = useUpdateTaskMutation()
+    const [updateTask] = useUpdateCardMutation()
     const board = useSelector((state: AppRootState) => state.boardView.board)
     const [content, setContent] = useState(task.description)
     const [onFocus, setOnFocus] = useState(false)

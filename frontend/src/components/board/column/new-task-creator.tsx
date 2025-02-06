@@ -1,16 +1,16 @@
 import { PlusSmallIcon } from "@heroicons/react/20/solid";
 import { useRef, useState, KeyboardEvent, useCallback, ChangeEvent } from "react";
-import { Group } from "../../../types/board-type";
+import { List } from "../../../types/board-type";
 import { XMarkIcon } from "@heroicons/react/24/solid";
-import { useAddTasksMutation } from "../../../store/services/board-service";
+import { useAddCardMutation } from "../../../store/services/board-service";
 
 interface Props {
-    column: Group
+    column: List
 }
 
 function NewTaskCreator(props: Props) {
     const { column } = props
-    const [createTask] = useAddTasksMutation()
+    const [createTask] = useAddCardMutation()
     const [inputValue, setInputValue] = useState('')
     const [showInput, setShowInput] = useState(false)
     const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -29,7 +29,7 @@ function NewTaskCreator(props: Props) {
         setInputValue("")
         await createTask({
             title: value,
-            group_id: column.id,
+            list_id: column.id,
             board_id: column.board_id,
             description: '',
             estimate: 1,

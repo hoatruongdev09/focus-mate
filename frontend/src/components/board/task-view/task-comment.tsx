@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux"
-import { TaskComment as Comment } from "../../../types/board-type"
+import { CardComment as Comment } from "../../../types/board-type"
 import TextEditor from "../../text-editor/components/text-editor"
 import { AppRootState } from "../../../store/store"
 

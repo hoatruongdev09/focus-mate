@@ -1,10 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { JwtPayload } from 'jsonwebtoken'
-import AuthService from "../services/auth.service";
-import UserService from "../services/user.service";
-
-const userService: UserService = new UserService()
-const authService: AuthService = new AuthService(userService)
+import { authService } from "../services/auth.service";
 
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
     const { authorization } = req.headers
@@ -12,7 +8,9 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
         res.status(401).json({ error: "unauthorized" })
         return
     }
+
     const [tag, token] = authorization.split(" ")
+
     if (tag !== 'Bearer') {
         res.status(401).json({ error: "unauthorized" })
         return
@@ -20,8 +18,8 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
         const { id, role } = authService.verifyToken(token) as JwtPayload
-        req.user_id = id
-        req.user_role = role
+        req.customer_id = id
+        req.customer_role = role
         next()
     } catch (error) {
         console.error(error)

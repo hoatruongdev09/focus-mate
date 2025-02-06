@@ -1,13 +1,13 @@
 import { SortableContext } from '@dnd-kit/sortable';
 import { useMemo } from 'react';
 import ColumnContainer from './column/column-container';
-import { Group, Task } from '../../types/board-type';
+import { List, Card } from '../../types/board-type';
 import NewColumnCreator from './new-column-creator';
 
 // ...existing code...
 interface TableItem {
-    column: Group;
-    tasks: Task[];
+    column: List;
+    tasks: Card[];
 }
 
 interface Props {

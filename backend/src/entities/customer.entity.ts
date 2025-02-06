@@ -4,7 +4,7 @@ import BoardActivity from "./board-activity.entity";
 import UserComment from "./user-comment.entity";
 
 @Entity()
-export default class User {
+export default class Customer {
 
     @PrimaryGeneratedColumn()
     id: number
@@ -33,9 +33,9 @@ export default class User {
     @OneToMany(() => Board, (board) => board.owner, { cascade: true })
     boards: Board[]
 
-    @OneToMany(() => BoardActivity, action => action.user, { cascade: true })
+    @OneToMany(() => BoardActivity, action => action.customer, { cascade: true })
     activities: BoardActivity[]
 
-    @OneToMany(() => UserComment, comment => comment.user, { cascade: true })
+    @OneToMany(() => UserComment, comment => comment.customer, { cascade: true })
     comments: UserComment[]
 }

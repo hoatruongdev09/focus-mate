@@ -1,50 +1,50 @@
 import { Repository } from "typeorm";
-import User from "../entities/user.entity";
+import Customer from "../entities/customer.entity";
 import dataSource from "../db/data-source";
-import CreateUserDto from "../dto/auth/create-user.dto";
+import CreateCustomerDto from "../dto/auth/create-user.dto";
 import { hash } from "../utils/password-hash";
 
-export default class UserService {
-    userRepository: Repository<User>
+export class CustomerService {
+    userRepository: Repository<Customer>
 
     constructor() {
-        this.userRepository = dataSource.getRepository(User)
+        this.userRepository = dataSource.getRepository(Customer)
     }
 
-    async createNewUser(data: CreateUserDto) {
+    async createNewUser(data: CreateCustomerDto) {
         const { email, password, first_name, last_name } = data
-        const user: User = new User()
-        user.email = email
-        user.password = await hash(password)
-        user.first_name = first_name
-        user.last_name = last_name
+        const customer: Customer = new Customer()
+        customer.email = email
+        customer.password = await hash(password)
+        customer.first_name = first_name
+        customer.last_name = last_name
 
-        return await this.userRepository.save(user)
+        return await this.userRepository.save(customer)
     }
 
     async findUserByEmail(email: string, includePassword: boolean) {
-        const queryBuilder = this.userRepository.createQueryBuilder("user")
-            .where("user.email = :email", { email })
+        const queryBuilder = this.userRepository.createQueryBuilder("customer")
+            .where("customer.email = :email", { email })
         if (includePassword) {
-            queryBuilder.addSelect("user.password")
+            queryBuilder.addSelect("customer.password")
         }
         return await queryBuilder.getOne()
     }
 
 
-    async getUserData(id: number) {
-        const user = await this.userRepository.findOne({
+    async getData(id: number) {
+        const customer = await this.userRepository.findOne({
             where: { id }
         })
-        if (!user) {
-            throw new Error("user not found")
+        if (!customer) {
+            throw new Error("customer not found")
         }
 
-        return this.extractUserData(user)
+        return this.extractUserData(customer)
 
     }
 
-    extractUserData = (user: User) => {
+    extractUserData = (user: Customer) => {
         const { id, email, first_name, last_name, role } = user
         return {
             id,
@@ -55,3 +55,5 @@ export default class UserService {
         }
     }
 }
+
+export const customerService = new CustomerService()

@@ -10,8 +10,8 @@ import boardThemeRoute from './routes/board-theme.route'
 
 declare module "express-serve-static-core" {
     interface Request {
-        user_id?: number | undefined
-        user_role?: number | undefined
+        customer_id?: number | undefined
+        customer_role?: number | undefined
     }
 }
 

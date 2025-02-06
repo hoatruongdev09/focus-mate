@@ -1,7 +1,7 @@
 import { CheckIcon, ChevronDownIcon, EyeIcon } from "@heroicons/react/16/solid";
 import { WindowIcon } from "@heroicons/react/24/outline";
 import { useDispatch, useSelector } from "react-redux"
-import { useUpdateTaskMutation } from "../../../store/services/board-service"
+import { useUpdateCardMutation } from "../../../store/services/board-service"
 import { AppRootState } from "../../../store/store"
 import { useCallback, useMemo, useState } from "react"
 import { setViewingTask } from "../../../store/slices/board-slice";
@@ -10,7 +10,7 @@ import ColumnMoveDialog from "./column-move-dialog";
 const TaskHeader = () => {
     const dispatch = useDispatch()
     const board = useSelector((state: AppRootState) => state.boardView.board)
-    const [updateTask] = useUpdateTaskMutation()
+    const [updateTask] = useUpdateCardMutation()
     const { viewingTask, columns } = useSelector((state: AppRootState) => state.boardView)
 
     if (!viewingTask) { return (<></>) }
@@ -21,7 +21,7 @@ const TaskHeader = () => {
         wasEditTitle: false
     })
 
-    const taskColumn = useMemo(() => columns.find(c => c.id === viewingTask.group_id), [viewingTask])
+    const taskColumn = useMemo(() => columns.find(c => c.id === viewingTask.list_id), [viewingTask])
 
     const computeHeight = useCallback((e: React.ChangeEvent<HTMLElement>) => {
         e.target.style.height = "32px";

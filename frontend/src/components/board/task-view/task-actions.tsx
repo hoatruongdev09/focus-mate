@@ -1,8 +1,8 @@
 import ColumnMoveDialog from "./column-move-dialog"
 import { useCallback, useState } from "react"
 import ArchiveBoxXMarkIcon from "@heroicons/react/24/outline/ArchiveBoxXMarkIcon"
-import { Task } from "../../../types/board-type"
-import { useArchiveOrUnarchiveTaskMutation, useDeleteTaskMutation } from "../../../store/services/board-service"
+import { Card } from "../../../types/board-type"
+import { useArchiveOrUnarchiveCardMutation, useDeleteCardMutation } from "../../../store/services/board-service"
 import { useDispatch, useSelector } from "react-redux"
 import { setViewingTask } from "../../../store/slices/board-slice"
 import { ArrowLongLeftIcon, ArrowLongRightIcon, MinusIcon } from "@heroicons/react/24/solid"
@@ -10,17 +10,17 @@ import { DocumentDuplicateIcon } from "@heroicons/react/24/outline"
 import { AppRootState } from "../../../store/store"
 
 
-const TaskActions = ({ task }: { task: Task }) => {
+const TaskActions = ({ task }: { task: Card }) => {
     const dispatch = useDispatch()
 
     const [showChangeColumn, setShowChangeColumn] = useState(false)
-    const [archiveOrUnarchiveTask] = useArchiveOrUnarchiveTaskMutation()
-    const [deleteTask] = useDeleteTaskMutation()
+    const [archiveOrUnarchiveTask] = useArchiveOrUnarchiveCardMutation()
+    const [deleteTask] = useDeleteCardMutation()
     const board = useSelector((state: AppRootState) => state.boardView.board)
 
     const handleArchiveClick = useCallback(async () => {
         if (!board) { return }
-        const { data: newTask } = await archiveOrUnarchiveTask({ board_id: board.id, group_id: task.group_id, task_id: task.id })
+        const { data: newTask } = await archiveOrUnarchiveTask({ board_id: board.id, list_id: task.list_id, card_id: task.id })
         if (newTask) {
             dispatch(setViewingTask({
                 ...task,
@@ -31,7 +31,7 @@ const TaskActions = ({ task }: { task: Task }) => {
 
     const handleDeleteClick = useCallback(async () => {
         if (!board) { return }
-        await deleteTask({ task_id: task.id, board_id: board.id })
+        await deleteTask({ card_id: task.id, board_id: board.id })
         dispatch(setViewingTask(null))
     }, [deleteTask, dispatch, setViewingTask, board, task])
 

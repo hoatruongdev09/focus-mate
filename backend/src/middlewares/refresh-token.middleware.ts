@@ -1,10 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import AuthService from "../services/auth.service";
 import { JwtPayload } from "jsonwebtoken";
-import UserService from "../services/user.service";
+import { authService } from "../services/auth.service";
 
-const userService: UserService = new UserService()
-const authService: AuthService = new AuthService(userService)
 
 export const refresh = async (req: Request, res: Response, next: NextFunction) => {
     const { authorization } = req.headers
@@ -25,8 +22,8 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
 
     try {
         const { id, role } = authService.verifyRefreshToken(token) as JwtPayload
-        req.user_id = id
-        req.user_role = role
+        req.customer_id = id
+        req.customer_role = role
         next()
     } catch (error) {
         console.error(`refresh error: `, error)

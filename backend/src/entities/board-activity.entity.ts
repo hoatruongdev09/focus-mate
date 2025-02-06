@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import User from "./user.entity";
-import { Task } from "./task.entity";
-import { Group } from "./column.entity";
+import Customer from "./customer.entity";
+import { Card } from "./card.entity";
+import { List } from "./list.entity";
 import Board from "./board.entity";
 
 @Entity({ name: "board_activity" })
@@ -13,13 +13,13 @@ export default class BoardActivity {
     board_id: number
 
     @Column()
-    user_id: number
+    owner_id: number
 
     @Column({ nullable: true })
-    task_id?: number | null
+    card_id?: number | null
 
     @Column({ nullable: true })
-    group_id?: number | null
+    list_id?: number | null
 
     @Column()
     action: number
@@ -31,15 +31,15 @@ export default class BoardActivity {
     @JoinColumn({ name: "board_id" })
     board: Board
 
-    @ManyToOne(() => User, user => user.activities)
-    @JoinColumn({ name: "user_id" })
-    user: User
+    @ManyToOne(() => Customer, customer_id => customer_id.activities)
+    @JoinColumn({ name: "owner_id" })
+    customer: Customer
 
-    @ManyToOne(() => Task, task => task.activities)
-    @JoinColumn({ name: "task_id" })
-    task?: Task
+    @ManyToOne(() => Card, card => card.activities)
+    @JoinColumn({ name: "card_id" })
+    card?: Card
 
-    @ManyToOne(() => Group, group => group.activities)
-    @JoinColumn({ name: "group_id" })
-    group?: Group
+    @ManyToOne(() => List, list => list.activities)
+    @JoinColumn({ name: "list_id" })
+    list?: List
 }

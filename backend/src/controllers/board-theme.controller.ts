@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
-import BoardThemeService from "../services/board-theme.service";
-
-const boardThemeService = new BoardThemeService()
+import { boardThemeService } from "../services/board-theme.service";
 
 export const getAllThemes = async (req: Request, res: Response) => {
     try {
@@ -11,7 +9,6 @@ export const getAllThemes = async (req: Request, res: Response) => {
         console.error(err)
         res.status(500).json(err)
     }
-
 }
 
 export const changeBoardTheme = async (req: Request, res: Response) => {

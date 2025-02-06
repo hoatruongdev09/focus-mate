@@ -4,6 +4,7 @@ import ChangeBackgroundMenu from "./change-background-menu"
 import Header from "./header"
 import MainMenu from "./main-menu"
 import { useCallback, useState } from "react"
+import MenuSubPage from "./menu-sub-page"
 
 interface Props {
     isShow: boolean
@@ -49,19 +50,21 @@ const RightSideBar = (props: Props) => {
                 onHideClicked={handleHide}
             />
             <div className="flex-1 relative">
-                <MainMenu
-                    isShow={currentMenu == Menu.MainMenu}
-                    onOpenPage={handleOpenPage}
-                />
-                <ChangeBackgroundMenu
-                    isShow={currentMenu == Menu.ChangeBackground}
-                />
-                <BoardInfoMenu
-                    isShow={currentMenu == Menu.AboutThisBoard}
-                />
-                <ArchivedItemsMenu
-                    isShow={currentMenu == Menu.ArchivedItems}
-                />
+                <MenuSubPage isShow={currentMenu == Menu.MainMenu}>
+                    <MainMenu onOpenPage={handleOpenPage} />
+                </MenuSubPage>
+
+                <MenuSubPage isShow={currentMenu == Menu.ChangeBackground}>
+                    <ChangeBackgroundMenu />
+                </MenuSubPage>
+
+                <MenuSubPage isShow={currentMenu == Menu.AboutThisBoard}>
+                    <BoardInfoMenu />
+                </MenuSubPage>
+
+                <MenuSubPage isShow={currentMenu == Menu.ArchivedItems}>
+                    <ArchivedItemsMenu />
+                </MenuSubPage>
             </div>
         </div>
     )

@@ -3,17 +3,17 @@ import { AppRootState } from "../../../store/store"
 import TextEditor, { CustomDescendant, EditorRef } from "../../text-editor/components/text-editor"
 import { useCallback, useRef, useState } from "react"
 import { EditorElement } from "../../text-editor/text-editor-element"
-import { useCommentTaskMutation } from "../../../store/services/board-service"
-import { TaskComment } from "../../../types/board-type"
+import { useCommentCardMutation } from "../../../store/services/board-service"
+import { CardComment } from "../../../types/board-type"
 
 interface Props {
-    onAddComment: (comment: TaskComment) => void
+    onAddComment: (comment: CardComment) => void
 }
 
 const TaskCommentInput = (props: Props) => {
     const { onAddComment } = props
     const user = useSelector((state: AppRootState) => state.user.data)
-    const [postComment] = useCommentTaskMutation()
+    const [postComment] = useCommentCardMutation()
     const { viewingTask, board } = useSelector((state: AppRootState) => state.boardView)
     const [content, setContent] = useState("")
     const [isFocus, setIsFocus] = useState(false)
@@ -57,13 +57,13 @@ const TaskCommentInput = (props: Props) => {
 
     const handleSaveComment = useCallback(async () => {
         if (isContentEmpty || !viewingTask || !board) { return }
-        const { id, group_id } = viewingTask
+        const { id, list_id: group_id } = viewingTask
         clearInput()
         try {
             const { data } = await postComment({
                 board_id: board.id,
                 column_id: group_id,
-                task_id: id,
+                card_id: id,
                 content: content
             })
             if (data) {

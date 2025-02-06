@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux"
 import KanbanBoard from "../components/board/kanban-board"
 import KanbanBoardTitle from "../components/board/kanban-board-title"
 import LeftSideBar from "../components/left-side-bar"
-import { useGetBoardQuery, useGetColumnsQuery, useGetTasksQuery } from "../store/services/board-service"
+import { useGetBoardQuery, useGetListsQuery, useGetCardsQuery } from "../store/services/board-service"
 import { useCallback, useEffect, useState } from "react"
 import { setBoard, setColumns, setTasks } from "../store/slices/board-slice"
 import { hideLoadingScreen, showLoadingScreen } from "../store/slices/app-slice"
@@ -22,8 +22,8 @@ const KanbanBoardPage = () => {
     }
     const selectedBoard = useSelector((state: AppRootState) => state.boardView.board)
     const { data: board, isLoading: isLoadingBoard } = useGetBoardQuery(+board_id)
-    const { data: columns, isLoading: isLoadingColumns } = useGetColumnsQuery(+board_id)
-    const { data: tasks, isLoading: isLoadingTasks } = useGetTasksQuery(+board_id)
+    const { data: columns, isLoading: isLoadingColumns } = useGetListsQuery(+board_id)
+    const { data: tasks, isLoading: isLoadingTasks } = useGetCardsQuery(+board_id)
 
     useEffect(() => {
         if (columns?.length) {

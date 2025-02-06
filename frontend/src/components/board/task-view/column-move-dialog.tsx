@@ -2,8 +2,8 @@ import { XMarkIcon } from "@heroicons/react/16/solid";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppRootState } from "../../../store/store";
-import { useUpdateTaskMutation } from "../../../store/services/board-service";
-import { UpdateTaskData } from "../../../types/board-type";
+import { useUpdateCardMutation } from "../../../store/services/board-service";
+import { UpdateCardData } from "../../../types/board-type";
 import { setViewingTask } from "../../../store/slices/board-slice";
 import useClickOutside from "../../../custom-hooks/use-click-outside";
 
@@ -16,21 +16,21 @@ function ColumnMoveDialog(props: Props) {
     const { isActive, hide } = props
     const dispatch = useDispatch()
     const { viewingTask, columns, tasks, board } = useSelector((state: AppRootState) => state.boardView)
-    const [selectingColumnId, setSelectingColumnId] = useState<number>(viewingTask?.group_id ?? 0)
+    const [selectingColumnId, setSelectingColumnId] = useState<number>(viewingTask?.list_id ?? 0)
 
-    const [updateTask] = useUpdateTaskMutation()
+    const [updateTask] = useUpdateCardMutation()
 
     const currentTaskIndex = tasks.findIndex(t => t.task.id == viewingTask?.id)
     const [selectingPosition, setSelectingPosition] = useState(currentTaskIndex)
 
-    const filteredTasks = useMemo(() => tasks.filter(t => t.task.group_id === selectingColumnId), [tasks, selectingColumnId])
+    const filteredTasks = useMemo(() => tasks.filter(t => t.task.list_id === selectingColumnId), [tasks, selectingColumnId])
 
     const ref = useClickOutside(hide, [], [hide])
 
     const onChangeColumn = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
         const colId: number = +e.target.value
         setSelectingColumnId(colId)
-        if (colId == viewingTask?.group_id) {
+        if (colId == viewingTask?.list_id) {
             setSelectingPosition(currentTaskIndex)
         } else {
             setSelectingPosition(0)
@@ -41,7 +41,7 @@ function ColumnMoveDialog(props: Props) {
         setSelectingPosition(+e.target.value)
     }, [setSelectingPosition])
 
-    const doUpdateTask = useCallback(async (data: UpdateTaskData) => {
+    const doUpdateTask = useCallback(async (data: UpdateCardData) => {
         const { data: updatedTask, error } = await updateTask(data)
         if (updatedTask) {
             dispatch(setViewingTask(updatedTask))
@@ -52,12 +52,12 @@ function ColumnMoveDialog(props: Props) {
     const onMoveTask = useCallback(async () => {
         if (!viewingTask || !board) { return }
 
-        const data: UpdateTaskData = {
+        const data: UpdateCardData = {
             ...viewingTask,
             board_id: board.id
         }
-        if (selectingPosition != currentTaskIndex || selectingColumnId != viewingTask.group_id) {
-            data.group_id = selectingColumnId
+        if (selectingPosition != currentTaskIndex || selectingColumnId != viewingTask.list_id) {
+            data.list_id = selectingColumnId
             if (filteredTasks.length > 0) {
                 const behindTaskId: number | null = selectingPosition >= filteredTasks.length ? null : filteredTasks[selectingPosition].task.id
                 const frontTaskId: number | null = selectingPosition - 1 < 0 ? null : filteredTasks[selectingPosition - 1].task.id
@@ -107,7 +107,7 @@ function ColumnMoveDialog(props: Props) {
                                 {
                                     columns.map(c => (
                                         <option key={`select-col-${c.id}`} value={c.id}>
-                                            {c.name} {c.id == viewingTask?.group_id ? "(current)" : ""}
+                                            {c.name} {c.id == viewingTask?.list_id ? "(current)" : ""}
                                         </option>
                                     ))
                                 }
@@ -127,7 +127,7 @@ function ColumnMoveDialog(props: Props) {
                                                 value={i}
                                                 key={`col-${selectingColumnId}-${i}`}
                                             >
-                                                {i + 1} {selectingColumnId == viewingTask?.group_id && i == currentTaskIndex ? '(current)' : ''}</option>
+                                                {i + 1} {selectingColumnId == viewingTask?.list_id && i == currentTaskIndex ? '(current)' : ''}</option>
                                         )) :
                                         <option value={0}>1</option>
                                 }

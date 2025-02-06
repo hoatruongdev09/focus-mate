@@ -1,6 +1,6 @@
 import { ChangeEvent, useCallback, useRef, useState } from "react";
-import { useAddColumnsMutation } from "../../store/services/board-service";
-import { AddGroupData } from "../../types/board-type";
+import { useAddListMutation } from "../../store/services/board-service";
+import { AddListData } from "../../types/board-type";
 import { PlusSmallIcon } from "@heroicons/react/20/solid";
 import { KeyboardEvent } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import { AppRootState } from "../../store/store";
 
 function NewColumnCreator() {
-    const [requestAddColumn] = useAddColumnsMutation()
+    const [requestAddColumn] = useAddListMutation()
 
     const board = useSelector((state: AppRootState) => state.boardView.board)
     const [inputValue, setInputValue] = useState('')
@@ -28,7 +28,7 @@ function NewColumnCreator() {
         if (!board) { return }
         const value = inputValue
         setInputValue("")
-        const newColumn: AddGroupData = {
+        const newColumn: AddListData = {
             board_id: board?.id,
             name: value,
             description: ''

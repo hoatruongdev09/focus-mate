@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { DraggingItem } from "../../types/draging-item";
-import { useUpdateColumnMutation, useUpdateTaskMutation } from "../../store/services/board-service";
+import { useUpdateListMutation, useUpdateCardMutation } from "../../store/services/board-service";
 import { useCallback, useMemo, useRef } from "react";
 import {
     DndContext,
@@ -21,7 +21,7 @@ import {
     setTasks
 } from "../../store/slices/board-slice";
 import { AppRootState } from "../../store/store";
-import { Group, Task } from "../../types/board-type";
+import { List, Card } from "../../types/board-type";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import ColumnContainer from "./column/column-container";
@@ -31,8 +31,8 @@ import TaskCard from "./task-card";
 function BoardContent() {
     const dispatch = useDispatch()
 
-    const [requestUpdateTask] = useUpdateTaskMutation()
-    const [requestUpdateColumn] = useUpdateColumnMutation()
+    const [requestUpdateTask] = useUpdateCardMutation()
+    const [requestUpdateColumn] = useUpdateListMutation()
 
     const { columns, tasks, draggingColumn, draggingTask, board } = useSelector((state: AppRootState) => state.boardView)
     const renderTasks = useMemo(() => tasks.filter(t => !t.task.archived), [tasks])
@@ -65,7 +65,7 @@ function BoardContent() {
         }
     }, [dispatch]);
 
-    const doReorderColumn = useCallback(async (column: Group, frontId: number | null, behindId: number | null) => {
+    const doReorderColumn = useCallback(async (column: List, frontId: number | null, behindId: number | null) => {
         if (!frontId && !behindId) { return; }
         if (column == null) { return; }
         await requestUpdateColumn({
@@ -75,7 +75,7 @@ function BoardContent() {
         });
     }, [requestUpdateColumn]);
 
-    const doReorderTask = useCallback(async (task: Task, frontTaskId: number | null, behindTaskId: number | null) => {
+    const doReorderTask = useCallback(async (task: Card, frontTaskId: number | null, behindTaskId: number | null) => {
         if (!frontTaskId && !behindTaskId) { return; }
         if (!task || !board) { return; }
         await requestUpdateTask({
@@ -147,8 +147,8 @@ function BoardContent() {
         if (!activeTask) { return; }
         const overTask = renderTasks.find(t => t.task.id === overTaskId);
         if (overTask == null) { return; }
-        if (activeTask.task.group_id == overTask.task.group_id) { return; }
-        dispatch(changeTaskGroup({ id: activeTask.task.id, groupId: overTask.task.group_id }));
+        if (activeTask.task.list_id == overTask.task.list_id) { return; }
+        dispatch(changeTaskGroup({ id: activeTask.task.id, groupId: overTask.task.list_id }));
     }, [renderTasks, dispatch]);
 
     const moveTaskOverColumn = useCallback((activeId: UniqueIdentifier, overId: UniqueIdentifier) => {
@@ -156,7 +156,7 @@ function BoardContent() {
         const task = renderTasks.find(t => t.task.id === id);
         if (!task) { return; }
         const groupId = Number((overId as string).split("_")[1]);
-        if (task.task.group_id == groupId) { return; }
+        if (task.task.list_id == groupId) { return; }
         dispatch(changeTaskGroup({ id: task.task.id, groupId }));
     }, [renderTasks, dispatch]);
 
@@ -204,7 +204,7 @@ function BoardContent() {
                                 column={col}
                                 isOverlay={false}
                                 setRef={setColumnRef}
-                                tasks={renderTasks.map(t => t.task).filter(t => t.group_id == col.id)}
+                                tasks={renderTasks.map(t => t.task).filter(t => t.list_id == col.id)}
                             />
                         )}
                     </SortableContext>
@@ -221,7 +221,7 @@ function BoardContent() {
                                 column={draggingColumn}
                                 isOverlay={true}
                                 targetHeight={columnHeightRef.current[draggingColumn.id]}
-                                tasks={renderTasks.map(t => t.task).filter(t => t.group_id == draggingColumn.id)}
+                                tasks={renderTasks.map(t => t.task).filter(t => t.list_id == draggingColumn.id)}
                             />
                         }
                         {

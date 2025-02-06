@@ -1,9 +1,9 @@
 import { SortableContext } from "@dnd-kit/sortable";
-import { Task } from "../../../types/board-type";
+import { Card } from "../../../types/board-type";
 import TaskCard from "../task-card";
 
 interface Props {
-    tasks: Task[],
+    tasks: Card[],
     taskIds: string[]
 }
 

@@ -1,22 +1,22 @@
-import { Group, UpdateGroupData } from "../../../types/board-type";
+import { List, UpdateListData } from "../../../types/board-type";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useAddTasksMutation, useArchiveAllTasksInColumnMutation, useArchiveOrUnarchiveColumnMutation, useUpdateColumnMutation } from "../../../store/services/board-service";
+import { useAddCardMutation, useArchiveAllCardsInListMutation, useArchiveOrUnarchiveListMutation, useUpdateListMutation } from "../../../store/services/board-service";
 import ColumnContextMenu from "./context-menu.tsx/column-context-menu";
 import { HashtagIcon } from "@heroicons/react/24/solid";
 import InputTaskCreator from "./input-task-creator";
 
 interface Props {
-    column: Group
+    column: List
     taskCount: number
 }
 
 function ColumnHeader(props: Props) {
     const { column } = props
     const [columnName, setColumnName] = useState(column.name)
-    const [updateColumn] = useUpdateColumnMutation()
-    const [archiveColumn] = useArchiveOrUnarchiveColumnMutation()
-    const [archiveTasksInColumn] = useArchiveAllTasksInColumnMutation()
-    const [createTask] = useAddTasksMutation()
+    const [updateColumn] = useUpdateListMutation()
+    const [archiveColumn] = useArchiveOrUnarchiveListMutation()
+    const [archiveTasksInColumn] = useArchiveAllCardsInListMutation()
+    const [createTask] = useAddCardMutation()
 
     const [showCreateTaskInput, setShowCreateTaskInput] = useState(false)
     const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -49,7 +49,7 @@ function ColumnHeader(props: Props) {
 
     const handleInputBlur = useCallback(async (e: React.FocusEvent<HTMLTextAreaElement>) => {
         if (column.name === columnName) { return }
-        const updateData: UpdateGroupData = {
+        const updateData: UpdateListData = {
             ...column,
             name: columnName,
             front_id: null,
@@ -66,7 +66,7 @@ function ColumnHeader(props: Props) {
         setShowCreateTaskInput(false)
         await createTask({
             title: str,
-            group_id: column.id,
+            list_id: column.id,
             board_id: column.board_id,
             description: '',
             estimate: 1,

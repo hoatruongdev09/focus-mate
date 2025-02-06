@@ -1,18 +1,18 @@
 import { ListBulletIcon } from "@heroicons/react/16/solid"
 import TaskComment from "./task-comment"
 import TaskCommentInput from "./task-comment-input"
-import { Task, TaskComment as Comment } from "../../../types/board-type"
+import { Card, CardComment as Comment } from "../../../types/board-type"
 import { useSelector } from "react-redux"
 import { AppRootState } from "../../../store/store"
-import { useGetTaskCommentsQuery } from "../../../store/services/board-service"
+import { useGetCardCommentsQuery } from "../../../store/services/board-service"
 import { useCallback, useEffect, useState } from "react"
 
 interface Props {
-    task: Task
+    task: Card
 }
 
 const TaskActivity = (props: Props) => {
-    const { id, group_id } = props.task
+    const { id, list_id: group_id } = props.task
     const board = useSelector((state: AppRootState) => state.boardView.board)
     if (!board) { return <></> }
     const [taskComments, setTaskComments] = useState<Comment[]>([])
@@ -20,7 +20,7 @@ const TaskActivity = (props: Props) => {
         data: comments,
         isError: isLoadingCommentsError,
         isSuccess: isLoadingCommentsSuccess
-    } = useGetTaskCommentsQuery({ board_id: board.id, column_id: group_id, task_id: id })
+    } = useGetCardCommentsQuery({ board_id: board.id, column_id: group_id, card_id: id })
 
     useEffect(() => {
         if (isLoadingCommentsSuccess) {

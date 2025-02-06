@@ -1,10 +1,10 @@
 import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline"
-import { Group } from "../../../types/board-type"
+import { List } from "../../../types/board-type"
 
 interface Props {
-    group: Group
-    onDelete?: (group: Group) => void
-    onRestore?: (group: Group) => void
+    group: List
+    onDelete?: (group: List) => void
+    onRestore?: (group: List) => void
 }
 const ArchivedList = (props: Props) => {
     const { group, onDelete, onRestore } = props

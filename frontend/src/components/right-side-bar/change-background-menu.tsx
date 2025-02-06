@@ -7,12 +7,8 @@ import { setBoard } from "../../store/slices/board-slice"
 import { usePostChangeThemeMutation } from "../../store/services/board-service"
 
 
-interface Props {
-    isShow: boolean
-}
 
-const ChangeBackgroundMenu = (props: Props) => {
-    const { isShow } = props
+const ChangeBackgroundMenu = () => {
     const dispatch = useDispatch()
     const board = useSelector((state: AppRootState) => state.boardView.board)
     const { data: themes, isLoading: isLoadingThemes } = useGetThemesQuery()
@@ -29,28 +25,27 @@ const ChangeBackgroundMenu = (props: Props) => {
     }
 
     return (
-        <div className={`absolute inset-0 transition-all duration-100 overflow-y-scroll ${isShow ? "opacity-100 -translate-x-0 z-10" : "opacity-0 translate-x-96 z-0"} `}>
-            {
-                isLoadingThemes ? <div className="w-full">Loading</div> :
-                    <div className="w-full flex flex-col">
-                        <div className="flex flex-wrap gap-2 items-center mt-2 px-4">
-                            {
-                                themes?.map(theme => (
-                                    <button key={`theme-${theme.id}`}
-                                        style={{ backgroundColor: theme.bg_value }}
-                                        className="h-16 w-16 rounded flex flex-col items-center justify-center hover:border"
-                                        onClick={() => selectTheme(theme)}
-                                    >
 
-                                        {theme.id == board?.theme_id && <CheckIcon className="size-5" />}
+        isLoadingThemes ? <div className="w-full">Loading</div> :
+            <div className="w-full flex flex-col">
+                <div className="flex flex-wrap gap-2 items-center mt-2 px-4">
+                    {
+                        themes?.map(theme => (
+                            <button key={`theme-${theme.id}`}
+                                style={{ backgroundColor: theme.bg_value }}
+                                className="h-16 w-16 rounded flex flex-col items-center justify-center hover:border"
+                                onClick={() => selectTheme(theme)}
+                            >
 
-                                    </button>
-                                ))
-                            }
-                        </div>
-                    </div>
-            }
-        </div>
+                                {theme.id == board?.theme_id && <CheckIcon className="size-5" />}
+
+                            </button>
+                        ))
+                    }
+                </div>
+            </div>
+
+
     )
 }
 
