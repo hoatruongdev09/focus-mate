@@ -32,7 +32,7 @@ const MainMenu = (props: Props) => {
                 </div>
 
                 <div
-
+                    onClick={() => onOpenPage(Menu.Activity)}
                     className="flex items-center gap-3 py-2 px-2 rounded hover:bg-zinc-200 hover:cursor-pointer">
                     <ListBulletIcon className="size-5 text-zinc-700" />
                     <div className="flex flex-col text-zinc-900">

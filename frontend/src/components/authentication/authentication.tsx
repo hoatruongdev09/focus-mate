@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import LoginDialog from "./login-dialog";
 import UserInfoDialog from "./user-info-dialog";
 import { useGetMyInfoQuery } from "../../store/services/user-service";
+import UserAvatar from "../user-avatar";
 
 const Authentication = () => {
     const [showUserInfo, setShowUserInfo] = useState(false)
@@ -35,8 +36,8 @@ const Authentication = () => {
                 className=""
                 onClick={handleUserIconClick}
             >
-                <img
-                    src={`https://avatar.iran.liara.run/public/${user?.id ?? 34}`}
+                <UserAvatar
+                    user_id={user?.id ?? 34}
                     className="w-7 h-7"
                 />
 

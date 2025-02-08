@@ -5,6 +5,7 @@ import Header from "./header"
 import MainMenu from "./main-menu"
 import { useCallback, useState } from "react"
 import MenuSubPage from "./menu-sub-page"
+import ActivityMenu from "./activity-menu/activity-menu"
 
 interface Props {
     isShow: boolean
@@ -64,6 +65,10 @@ const RightSideBar = (props: Props) => {
 
                 <MenuSubPage isShow={currentMenu == Menu.ArchivedItems}>
                     <ArchivedItemsMenu />
+                </MenuSubPage>
+
+                <MenuSubPage isShow={currentMenu == Menu.Activity}>
+                    <ActivityMenu />
                 </MenuSubPage>
             </div>
         </div>
