@@ -33,7 +33,7 @@ export default class BoardActivity {
 
     @ManyToOne(() => Customer, customer_id => customer_id.activities)
     @JoinColumn({ name: "owner_id" })
-    customer: Customer
+    actor: Customer
 
     @ManyToOne(() => Card, card => card.activities)
     @JoinColumn({ name: "card_id" })

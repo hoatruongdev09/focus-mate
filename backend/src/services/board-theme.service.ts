@@ -12,13 +12,12 @@ export class BoardThemeService {
     constructor() {
         this.boardThemeRepository = dataSource.getRepository(BoardTheme)
         this.boardRepository = dataSource.getRepository(Board)
-        this.initBoard()
     }
 
-    private async initBoard() {
+    async initBoard() {
         try {
-            while (!dataSource.isInitialized) {
-                await new Promise(resolve => setTimeout(resolve, 100))
+            if (!dataSource.isInitialized) {
+                await dataSource.initialize()
             }
             const data = await loadBoardThemeData()
             const existThemes = await this.boardThemeRepository
@@ -73,3 +72,4 @@ export class BoardThemeService {
 }
 
 export const boardThemeService = new BoardThemeService()
+boardThemeService.initBoard()

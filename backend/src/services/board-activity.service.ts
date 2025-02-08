@@ -111,14 +111,19 @@ export class BoardActivityService {
     async getBoardActivities(board_id: number) {
         const activities = await this.boardActivityRepository
             .createQueryBuilder("board_activity")
-            .leftJoinAndSelect("board_activity.board", "board")
+            .leftJoin("board_activity.board", "board")
             .leftJoinAndSelect("board_activity.card", "card")
-            .leftJoinAndSelect("board_activity.list", "list")
-            .select(["board_activity.*"])
+            .leftJoin("board_activity.list", "list")
+            .leftJoin("board_activity.actor", "user")
+            .addSelect(["list.name", "board.name", "board.description", "user.first_name", "user.last_name"])
             .where("board_activity.board_id = :board_id", { board_id })
-            .getQuery()
-        console.log(activities)
-        return activities
+            .orderBy("board_activity.created_at", "DESC")
+            .getMany()
+        return activities.map(activity => ({
+            ...activity,
+            list_name: activity.list?.name || null, // Flatten `list.name`
+            list: undefined as unknown as never, // Remove original `list` object
+        }));
     }
 }
 

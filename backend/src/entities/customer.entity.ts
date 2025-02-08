@@ -33,7 +33,7 @@ export default class Customer {
     @OneToMany(() => Board, (board) => board.owner, { cascade: true })
     boards: Board[]
 
-    @OneToMany(() => BoardActivity, action => action.customer, { cascade: true })
+    @OneToMany(() => BoardActivity, action => action.actor, { cascade: true })
     activities: BoardActivity[]
 
     @OneToMany(() => UserComment, comment => comment.customer, { cascade: true })
