@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux"
 import { AppRootState } from "../../../store/store"
 import { useGetActivitiesQuery } from "../../../store/services/board-service"
-import UserAvatar from "../../user-avatar"
 import ActivityItem from "./activity-item"
 
 const ActivityMenu = () => {

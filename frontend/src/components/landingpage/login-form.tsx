@@ -2,15 +2,10 @@ import EyeIcon from "@heroicons/react/24/outline/EyeIcon"
 import { EyeSlashIcon } from "@heroicons/react/24/outline"
 import React, { useCallback, useState } from "react"
 import { useLoginEmailPasswordMutation } from "../../store/services/auth-service"
+import { useNavigate } from "react-router-dom"
 
-interface Props {
-    onRegisterClick: () => void
-    onLoginSuccess: () => void
-}
-
-const LoginForm = (props: Props) => {
-
-    const { onRegisterClick, onLoginSuccess } = props
+const LoginForm = () => {
+    const navigate = useNavigate()
     const [loginEmailPassword] = useLoginEmailPasswordMutation()
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -29,15 +24,21 @@ const LoginForm = (props: Props) => {
         setShowPassword(!showPassword)
     }, [showPassword, setShowPassword])
 
+
+
+    const handleRegister = useCallback(() => {
+    }, [])
+
+
     const handleLogin = useCallback(async (e: React.PointerEvent<HTMLButtonElement>) => {
         e.preventDefault()
         try {
-            await loginEmailPassword({ email, password })
-            onLoginSuccess()
+            const data = await loginEmailPassword({ email, password })
+            navigate(`/u/${data.data?.user.username}`)
         } catch (err) {
             console.error(err)
         }
-    }, [email, password, setEmail, setPassword, onLoginSuccess])
+    }, [email, password, setEmail, setPassword, navigate])
 
     return (
         <form>

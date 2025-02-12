@@ -1,7 +1,6 @@
 import { XMarkIcon } from "@heroicons/react/24/outline"
 import { ChangeEvent, useCallback, useState } from "react"
 import { useCreateBoardMutation } from "../../store/services/board-service"
-import { CreateBoardData } from "../../types/board-type"
 
 interface Props {
     onCloseClick: () => void

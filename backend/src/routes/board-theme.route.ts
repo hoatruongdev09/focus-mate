@@ -2,9 +2,9 @@ import { Router } from "express";
 import { auth } from "../middlewares/authenticate.middleware";
 import * as boardThemeController from "../controllers/board-theme.controller";
 
-const route = Router()
+const boardThemeRoute = Router()
 
-route.get('/', auth, boardThemeController.getAllThemes)
-route.post('/:board_id/change', auth, boardThemeController.changeBoardTheme)
+boardThemeRoute.get('/', auth, boardThemeController.getAllThemes)
+boardThemeRoute.post('/:board_id/change', auth, boardThemeController.changeBoardTheme)
 
-export default route
+export default boardThemeRoute

@@ -18,6 +18,7 @@ export class CustomerService {
         customer.password = await hash(password)
         customer.first_name = first_name
         customer.last_name = last_name
+        customer.username = `${first_name}_${last_name}`
 
         return await this.userRepository.save(customer)
     }
@@ -40,19 +41,8 @@ export class CustomerService {
             throw new Error("customer not found")
         }
 
-        return this.extractUserData(customer)
+        return customer
 
-    }
-
-    extractUserData = (user: Customer) => {
-        const { id, email, first_name, last_name, role } = user
-        return {
-            id,
-            email,
-            first_name,
-            last_name,
-            role
-        }
     }
 }
 

@@ -121,8 +121,8 @@ export class BoardActivityService {
             .getMany()
         return activities.map(activity => ({
             ...activity,
-            list_name: activity.list?.name || null, // Flatten `list.name`
-            list: undefined as unknown as never, // Remove original `list` object
+            list_name: activity.list?.name || null,
+            list: undefined as unknown as never,
         }));
     }
 }

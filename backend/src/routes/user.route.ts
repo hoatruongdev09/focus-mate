@@ -2,8 +2,8 @@ import { Router } from "express";
 import { auth } from "../middlewares/authenticate.middleware";
 import * as customerController from "../controllers/user.controller";
 
-const route = Router()
+const userRoute = Router()
 
-route.get('/my-info', auth, customerController.getCustomerInfo)
+userRoute.get('/my-info', auth, customerController.getCustomerInfo)
 
-export default route
+export default userRoute

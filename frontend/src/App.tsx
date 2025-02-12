@@ -15,9 +15,11 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<LandingPage />} />
-            <Route path="u" element={<PrivateOutlet />}>
+            <Route path="u/:user_id" element={<PrivateOutlet />}>
+
               <Route index element={<Workspace />} />
               <Route path="board/:board_id" element={<KanbanBoardPage />} />
+
             </Route>
           </Route>
         </Routes>

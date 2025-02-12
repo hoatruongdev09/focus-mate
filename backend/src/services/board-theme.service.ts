@@ -16,9 +16,6 @@ export class BoardThemeService {
 
     async initBoard() {
         try {
-            if (!dataSource.isInitialized) {
-                await dataSource.initialize()
-            }
             const data = await loadBoardThemeData()
             const existThemes = await this.boardThemeRepository
                 .createQueryBuilder("board_theme")
@@ -72,4 +69,3 @@ export class BoardThemeService {
 }
 
 export const boardThemeService = new BoardThemeService()
-boardThemeService.initBoard()

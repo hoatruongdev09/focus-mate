@@ -4,6 +4,7 @@ import { List } from "./list.entity";
 import BoardActivity from "./board-activity.entity";
 import UserComment from "./user-comment.entity";
 import BoardTheme from "./board-theme.entity";
+import Workspace from "./workspace.entity";
 
 @Entity()
 export default class Board {
@@ -24,6 +25,9 @@ export default class Board {
 
     @Column({ default: 1 })
     theme_id: number
+
+    @Column()
+    workspace_id: number
 
     @CreateDateColumn()
     created_at: Date
@@ -50,6 +54,10 @@ export default class Board {
     @ManyToOne(() => BoardTheme, (bg) => bg.boards)
     @JoinColumn({ name: "theme_id" })
     theme: BoardTheme
+
+    @ManyToOne(() => Workspace, (p) => p.boards)
+    @JoinColumn({ name: "workspace_id" })
+    workspace: Workspace
 }
 
 

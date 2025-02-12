@@ -3,21 +3,15 @@ import { useGetMyInfoQuery } from "../store/services/user-service"
 import GoogleIcon from "../Icon/google-icon"
 import DiscordIcon from "../Icon/discord-icon"
 import LoginForm from "../components/landingpage/login-form"
-import { useNavigate } from "react-router-dom"
 
 const LandingPage = () => {
-    const { data: user } = useGetMyInfoQuery()
-    const navigate = useNavigate()
-    const location = useLocation()
-    if (user) {
-        return (<Navigate to={'/u'} state={{ from: location }} />)
-    }
+    const { data: user, isLoading, isError } = useGetMyInfoQuery()
 
-    const handleRegister = () => {
-    }
-    const handleLoginSuccess = () => {
-        console.log("login success")
-        navigate('/u')
+    const location = useLocation()
+
+    if (user) {
+        console.log('user: ', user)
+        return (<Navigate to={`/u/${user.username}`} state={{ from: location }} />)
     }
 
     return (
@@ -37,10 +31,7 @@ const LandingPage = () => {
                         <div className="flex flex-col justify-between flex-1">
 
 
-                            <LoginForm
-                                onRegisterClick={handleRegister}
-                                onLoginSuccess={handleLoginSuccess}
-                            />
+                            <LoginForm />
 
 
                             <div className="flex flex-col gap-3">

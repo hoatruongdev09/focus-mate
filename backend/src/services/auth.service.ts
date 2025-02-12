@@ -3,15 +3,18 @@ import CreateCustomerDto from "../dto/auth/create-user.dto";
 import { compare, hash } from "../utils/password-hash";
 import jwt from 'jsonwebtoken'
 import { CustomerService, customerService } from "./user.service";
+import { workspaceService, WorkspaceService } from "./workspace.service";
 
 const tokenSecret = process.env.JWT_TOKEN_SECRET
 const refreshTokenSecret = process.env.JWT_REFRESH_TOKEN_SECRET
 
 export class AuthService {
     customerService: CustomerService
+    workspaceService: WorkspaceService
 
-    constructor(customerService: CustomerService) {
+    constructor(customerService: CustomerService, workspaceService: WorkspaceService) {
         this.customerService = customerService
+        this.workspaceService = workspaceService
     }
 
     async refreshToken(user_id: number) {
@@ -32,14 +35,13 @@ export class AuthService {
             throw new Error("email or password not match")
         }
 
-        const userData = this.customerService.extractUserData(user)
         const accessToken = this.generateToken(user.id, user.role, tokenSecret, '24h')
         const refreshToken = this.generateToken(user.id, user.role, refreshTokenSecret, 60 * 60 * 24 * 30)
 
         return {
             access_token: accessToken,
             refresh_token: refreshToken,
-            user: userData
+            user
         }
     }
 
@@ -50,15 +52,15 @@ export class AuthService {
             throw new Error("user is exist")
         }
         const user: Customer = await this.customerService.createNewUser(data)
+        await this.workspaceService.createBoard(user.id, `${user.first_name} ${user.last_name}'s workspace`, '')
 
-        const userData = this.customerService.extractUserData(user)
         const accessToken = this.generateToken(user.id, user.role, tokenSecret, '24h')
         const refreshToken = this.generateToken(user.id, user.role, refreshTokenSecret, 60 * 60 * 24 * 30)
 
         return {
             access_token: accessToken,
             refresh_token: refreshToken,
-            user: userData
+            user
         }
     }
 
@@ -79,4 +81,4 @@ export class AuthService {
 
 }
 
-export const authService: AuthService = new AuthService(customerService)
+export const authService: AuthService = new AuthService(customerService, workspaceService)

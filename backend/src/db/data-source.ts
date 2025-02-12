@@ -3,6 +3,7 @@ import { DataSource, DataSourceOptions } from "typeorm";
 
 config()
 
+export let isDatasourceInitializing = false;
 
 export const dataSourceOptions: DataSourceOptions = {
     type: "postgres",
@@ -17,6 +18,6 @@ export const dataSourceOptions: DataSourceOptions = {
 }
 
 const dataSource = new DataSource(dataSourceOptions)
-dataSource.initialize()
+
 
 export default dataSource

@@ -12,4 +12,7 @@ module.exports = {
     },
   },
   plugins: [],
+  corePlugins: {
+    transform: true
+  }
 }

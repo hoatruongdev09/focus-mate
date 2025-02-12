@@ -7,6 +7,9 @@ import boardRoute from './routes/board.route'
 import authRoute from './routes/auth.route'
 import userRoute from './routes/user.route'
 import boardThemeRoute from './routes/board-theme.route'
+import dataSource from "./db/data-source";
+import { boardThemeService } from "./services/board-theme.service";
+import workspaceRoute from "./routes/workspace.route";
 
 declare module "express-serve-static-core" {
     interface Request {
@@ -14,6 +17,9 @@ declare module "express-serve-static-core" {
         customer_role?: number | undefined
     }
 }
+dataSource.initialize().then(async () => {
+    await boardThemeService.initBoard()
+}).catch((err) => console.error(err))
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -30,6 +36,7 @@ app.use("/auth", authRoute)
 app.use("/board", boardRoute)
 app.use("/board-theme", boardThemeRoute)
 app.use("/user", userRoute)
+app.use("/workspace", workspaceRoute)
 
 
 

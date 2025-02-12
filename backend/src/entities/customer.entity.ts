@@ -2,12 +2,20 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import Board from "./board.entity";
 import BoardActivity from "./board-activity.entity";
 import UserComment from "./user-comment.entity";
+import WorkspaceMember from "./workspace-member.entity";
+import Workspace from "./workspace.entity";
 
 @Entity()
 export default class Customer {
 
     @PrimaryGeneratedColumn()
     id: number
+
+    @Column({
+        unique: true,
+        nullable: false
+    })
+    username: string
 
     @Column({
         unique: true,
@@ -38,4 +46,7 @@ export default class Customer {
 
     @OneToMany(() => UserComment, comment => comment.customer, { cascade: true })
     comments: UserComment[]
+
+    @OneToMany(() => WorkspaceMember, member => member.user)
+    workspaces: Workspace[]
 }
