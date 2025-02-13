@@ -3,18 +3,22 @@ import Workspace from "../entities/workspace.entity";
 import dataSource from "../db/data-source";
 import WorkspaceMember from "../entities/workspace-member.entity";
 import WorkspaceRole from "../enums/workspace-role";
+import Board from "../entities/board.entity";
+import CreateBoardDto from "../dto/board/create-board.dto";
 
 
 export class WorkspaceService {
     private workspaceRepository: Repository<Workspace>
     private workspaceMemberRepository: Repository<WorkspaceMember>
+    private boardRepository: Repository<Board>
 
     constructor() {
         this.workspaceRepository = dataSource.getRepository(Workspace)
         this.workspaceMemberRepository = dataSource.getRepository(WorkspaceMember)
+        this.boardRepository = dataSource.getRepository(Board)
     }
 
-    async createBoard(user_id: number, name: string, description: string) {
+    async createWorkspace(user_id: number, name: string, description: string) {
         const workspace = new Workspace()
         workspace.name = name
         workspace.description = description
@@ -29,27 +33,6 @@ export class WorkspaceService {
 
         return await this.getWorkspace(newWorkspace.id)
     }
-
-    async getBoardsInWorkspace(workspace_id: number) {
-        const workspace = await this.workspaceRepository.createQueryBuilder("workspace")
-            .leftJoinAndSelect("workspace.boards", "board")
-            .where("workspace.id =:workspace_id", { workspace_id })
-            .getOne()
-        if (!workspace) {
-            throw new Error("Workspace not found")
-        }
-        return workspace.boards
-    }
-
-    async getJoinedWorkspaces(user_id: number) {
-        return await this.workspaceRepository.createQueryBuilder("workspace")
-            .leftJoinAndSelect("workspace.members", "workspace_member")
-            .leftJoinAndSelect("workspace_member.user", "user")
-            .where("user.id =:user_id", { user_id })
-            .getMany()
-    }
-
-
     async getWorkspace(id: number) {
         return await this.workspaceRepository
             .createQueryBuilder("workspace")
@@ -59,7 +42,50 @@ export class WorkspaceService {
             .getOne()
     }
 
+    async getBoardsInWorkspace(workspace_id: number, customer_id: number) {
+        const boards = await this.boardRepository.createQueryBuilder("board")
+            .leftJoin("board.workspace", "workspace")
+            .leftJoinAndSelect("board.owner", "customer")
+            .leftJoinAndSelect("board.theme", "board_theme")
+            .where("workspace.id = :workspace_id", { workspace_id })
+            .orderBy("board.created_at")
+            .getMany()
+        return boards
+    }
 
+    async getWorkspaces(user_id: number) {
+        return await this.workspaceRepository.createQueryBuilder("workspace")
+            .leftJoinAndSelect("workspace.members", "workspace_member")
+            .leftJoinAndSelect("workspace_member.user", "user")
+            .where("user.id =:user_id", { user_id })
+            .orderBy({
+                "workspace_member.role": "DESC",
+                "workspace.name": "ASC"
+            })
+            .getMany()
+    }
+
+    async addBoard(customer_id: number, workspace_id: number, data: CreateBoardDto) {
+        const { title, description } = data
+
+        let board = await this.boardRepository.createQueryBuilder("board")
+            .leftJoin("board.workspace", "workspace")
+            .leftJoin("board.owner", "user")
+            .where("workspace.id = :workspace_id AND user.id = :customer_id and board.name = :title", { workspace_id, customer_id, title })
+            .getOne()
+
+        if (board) {
+            throw new Error("Title is exist")
+        }
+
+        board = new Board()
+        board.name = title
+        board.description = description
+        board.owner_id = customer_id
+        board.workspace_id = workspace_id
+
+        return await this.boardRepository.save(board)
+    }
 }
 
 export const workspaceService: WorkspaceService = new WorkspaceService()

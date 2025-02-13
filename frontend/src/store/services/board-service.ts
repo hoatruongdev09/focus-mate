@@ -24,12 +24,16 @@ export const boardApi = createApi({
             query: () => `/board`,
             providesTags: ['board']
         }),
+        getWorkspaceBoards: builder.query<Board[], number>({
+            query: (workspace_id) => `workspace/${workspace_id}/boards`,
+            providesTags: ['board']
+        }),
         getBoard: builder.query<Board, number>({
             query: (data) => `/board/${data}`
         }),
         createBoard: builder.mutation<Board, CreateBoardData>({
             query: data => ({
-                url: '/board',
+                url: `/workspace/${data.workspace_id}/boards`,
                 method: 'POST',
                 body: data
             }),
@@ -182,5 +186,6 @@ export const {
     useGetArchivedItemsQuery,
     useGetArchivedListsQuery,
     useGetArchivedCardsQuery,
-    useGetActivitiesQuery
+    useGetActivitiesQuery,
+    useGetWorkspaceBoardsQuery
 } = boardApi

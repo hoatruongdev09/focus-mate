@@ -69,6 +69,7 @@ export class BoardService {
                 name: title
             }
         })
+
         if (existBoard) {
             throw new Error("Title is exist")
         }

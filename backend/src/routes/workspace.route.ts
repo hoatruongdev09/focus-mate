@@ -6,5 +6,6 @@ const workspaceRoute = Router()
 
 workspaceRoute.get('/', auth, workspaceController.getWorkspaces)
 workspaceRoute.get('/:workspace_id/boards', auth, workspaceController.getBoards)
+workspaceRoute.post('/:workspace_id/boards', auth, workspaceController.addBoard)
 
 export default workspaceRoute

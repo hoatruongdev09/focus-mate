@@ -4,7 +4,7 @@ import { workspaceService } from "../services/workspace.service";
 export const getWorkspaces = async (req: Request, res: Response) => {
     const { customer_id } = req
     try {
-        const workspaces = await workspaceService.getJoinedWorkspaces(customer_id)
+        const workspaces = await workspaceService.getWorkspaces(customer_id)
         res.status(200).json(workspaces)
     } catch (err) {
         console.error(err)
@@ -14,12 +14,26 @@ export const getWorkspaces = async (req: Request, res: Response) => {
 
 export const getBoards = async (req: Request, res: Response) => {
     const { workspace_id } = req.params
-
+    const { customer_id } = req
     try {
-        const boards = await workspaceService.getBoardsInWorkspace(+workspace_id)
+        const boards = await workspaceService.getBoardsInWorkspace(+workspace_id, customer_id)
         res.status(200).json(boards)
     } catch (err) {
         console.error(err)
         res.status(500).json(err)
     }
+}
+
+export const addBoard = async (req: Request, res: Response) => {
+    const { workspace_id } = req.params
+    const { customer_id } = req
+
+    try {
+        const board = await workspaceService.addBoard(customer_id, +workspace_id, req.body)
+        res.status(200).json(board)
+    } catch (err) {
+        console.error(err)
+        res.status(500).json(err)
+    }
+
 }

@@ -1,8 +1,13 @@
-import { useCallback, useState } from "react"
+import { createContext, useCallback, useContext, useState } from "react"
 import Modal from "../components/modal"
 import CreateNewBoard from "../components/workspace/create-new-board"
 import LeftBar from "../components/workspace/left-bar"
-import WorkspaceBoardPage from "../components/workspace/workspace-board-page"
+import { Outlet } from "react-router-dom"
+
+export const WorkspaceContext = createContext({
+    isShowCreateBoard: false,
+    handleShowCreateBoard: () => { }
+})
 
 const Workspace = () => {
     const [isShowCreateBoard, setIsShowCreateBoard] = useState(false)
@@ -16,13 +21,10 @@ const Workspace = () => {
     }, [setIsShowCreateBoard])
 
     return (
-        <>
+        <WorkspaceContext.Provider value={{ isShowCreateBoard, handleShowCreateBoard }}>
             <div className="fixed left-0 right-0 top-10 bottom-0 flex gap-5 justify-center">
                 <LeftBar />
-
-                <WorkspaceBoardPage
-                    handleShowCreateBoard={handleShowCreateBoard}
-                />
+                <Outlet />
             </div>
 
             <Modal isShow={isShowCreateBoard} onBgClick={handleHideCreateBoard}>
@@ -30,7 +32,7 @@ const Workspace = () => {
                     onCloseClick={handleHideCreateBoard}
                 />
             </Modal>
-        </>
+        </WorkspaceContext.Provider>
     )
 }
 export default Workspace

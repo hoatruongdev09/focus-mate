@@ -9,6 +9,7 @@ import { userSlice } from "./slices/user-slice";
 import { userApi } from "./services/user-service";
 import { boardThemeApi } from "./services/board-theme-service";
 import { workspaceApi } from "./services/workspace-service";
+import { workspaceViewSlice } from "./slices/workspace-slice";
 
 export const store = configureStore({
     reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
         boardView: boardViewSlice.reducer,
         auth: authSlice.reducer,
         user: userSlice.reducer,
+        workspaceView: workspaceViewSlice.reducer,
         [userApi.reducerPath]: userApi.reducer,
         [boardApi.reducerPath]: boardApi.reducer,
         [authApi.reducerPath]: authApi.reducer,

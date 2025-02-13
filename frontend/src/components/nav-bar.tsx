@@ -16,9 +16,10 @@ function NavBar() {
 
     useEffect(() => {
         if (location) {
-            console.log(`location: `, location.pathname)
-            if (!location.pathname.includes("/board")) {
+            if (!location.pathname.includes("/b/")) {
                 setBgStyle(defaultStyle)
+                setFgStyle(defaultStyle);
+                console.log(`location: `, location.pathname)
                 return
             }
         }

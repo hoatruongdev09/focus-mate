@@ -1,6 +1,8 @@
 import { XMarkIcon } from "@heroicons/react/24/outline"
 import { ChangeEvent, useCallback, useState } from "react"
 import { useCreateBoardMutation } from "../../store/services/board-service"
+import { useSelector } from "react-redux"
+import { AppRootState } from "../../store/store"
 
 interface Props {
     onCloseClick: () => void
@@ -14,7 +16,7 @@ interface BoardState {
 
 const CreateNewBoard = (props: Props) => {
     const { onCloseClick } = props
-
+    const currentWorkspace = useSelector((state: AppRootState) => state.workspaceView.currentWorkspace)
     const [createBoard] = useCreateBoardMutation()
 
     const [boardState, setBoardState] = useState<BoardState>({
@@ -24,8 +26,9 @@ const CreateNewBoard = (props: Props) => {
     })
 
     const handleCreateBoard = useCallback(async () => {
+        if (!currentWorkspace) { return }
         try {
-            await createBoard(boardState)
+            await createBoard({ ...boardState, workspace_id: currentWorkspace.id })
             setBoardState({
                 title: "",
                 description: "",

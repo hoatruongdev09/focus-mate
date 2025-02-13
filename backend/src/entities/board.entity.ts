@@ -10,6 +10,8 @@ import Workspace from "./workspace.entity";
 export default class Board {
     @PrimaryGeneratedColumn()
     id: number
+    @Column()
+    owner_id: number
 
     @Column({
         unique: true,

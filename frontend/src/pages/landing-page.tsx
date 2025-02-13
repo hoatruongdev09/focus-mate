@@ -11,7 +11,7 @@ const LandingPage = () => {
 
     if (user) {
         console.log('user: ', user)
-        return (<Navigate to={`/u/${user.username}`} state={{ from: location }} />)
+        return (<Navigate to={`/${user.username}/w`} state={{ from: location }} />)
     }
 
     return (

@@ -29,6 +29,7 @@ export type Board = {
 }
 
 export type CreateBoardData = {
+    workspace_id: number
     title: string,
     description: string
 }
