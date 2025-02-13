@@ -1,12 +1,11 @@
 import { NavLink } from "react-router-dom"
 import { useGetWorkspaceBoardsQuery } from "../../store/services/board-service"
-import { Workspace, WorkspaceRole } from "../../types/workspace"
-import { WorkspaceContext } from "../../pages/workspace"
+import { Workspace } from "../../types/workspace"
+import { HomeContext } from "../../layouts/home-layout"
 import { useContext } from "react"
-import { useDispatch, useSelector } from "react-redux"
 import { setCurrentWorkspace } from "../../store/slices/workspace-slice"
-import { AppRootState } from "../../store/store"
-import { Board } from "../../types/board-type"
+import BoardLinkItem from "./board-link-item"
+import { useDispatch } from "react-redux"
 
 interface Props {
     workspace: Workspace
@@ -16,25 +15,18 @@ const WorkspaceItem = (props: Props) => {
     const dispatch = useDispatch()
     const { workspace } = props
     const { data, isLoading } = useGetWorkspaceBoardsQuery(workspace.id)
-    const { handleShowCreateBoard } = useContext(WorkspaceContext)
+    const { handleShowCreateBoard } = useContext(HomeContext)
 
-    const { first_name, last_name } = workspace.members.find(m => m.role == WorkspaceRole.Owner)!.user
+    if (isLoading) {
+        return <>Loading</>
+    }
 
     const onAddNewWorkspace = () => {
         dispatch(setCurrentWorkspace(workspace))
         handleShowCreateBoard()
     }
 
-    const BoardLinkItem = ({ board }: { board: Board }) => {
-        const bgStyle: React.CSSProperties | undefined = board.theme ? { background: board.theme.bg_value } : undefined
-        return (
-            <div
-                style={bgStyle}
-                className="h-24 w-48 bg-opacity-65 rounded cursor-pointer hover:bg-opacity-100">
-                <p className="p-2 font-bold ">{board.name}</p>
-            </div>
-        )
-    }
+
 
     return (
         <div className="flex flex-col gap-3">
@@ -59,7 +51,7 @@ const WorkspaceItem = (props: Props) => {
                 {
                     data && data.map(b => (
                         <NavLink
-                            to={`/${first_name}_${last_name}/b/${b.id}`}
+                            to={`/workspace/board/${b.id}`}
                             key={`board-link-${b.id}`}
                         >
                             <BoardLinkItem board={b} />

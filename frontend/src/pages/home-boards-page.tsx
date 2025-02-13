@@ -1,21 +1,14 @@
-import { useContext } from "react"
-import { useGetBoardsQuery } from "../store/services/board-service"
-import { NavLink } from "react-router-dom"
 import { useGetWorkspacesQuery } from "../store/services/workspace-service"
-import { WorkspaceContext } from "./workspace"
 import WorkspaceItem from "../components/workspace-boards/workspace-item"
 
 
-interface Props {
-
-}
-
-const WorkspaceBoardPage = (props: Props) => {
+const HomeBoardsPage = () => {
     const { data: workspaces, isLoading: isLoadingWorkspaces } = useGetWorkspacesQuery()
 
     if (isLoadingWorkspaces) {
-        return <></>
+        return <>Loading</>
     }
+
     return (
         <>
             <div className="flex-1 py-10 pr-10 xl:flex-none xl:w-[50%] xl:pr-0">
@@ -38,4 +31,4 @@ const WorkspaceBoardPage = (props: Props) => {
     )
 }
 
-export default WorkspaceBoardPage
+export default HomeBoardsPage

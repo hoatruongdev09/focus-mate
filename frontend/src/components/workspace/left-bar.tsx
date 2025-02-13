@@ -1,7 +1,7 @@
 import { ChevronDownIcon, DocumentTextIcon, UsersIcon } from "@heroicons/react/24/outline"
 import { ReactNode, useEffect, useState } from "react"
 import { useGetWorkspacesQuery } from "../../store/services/workspace-service"
-import { useLocation } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 
 const LeftBar = () => {
     const location = useLocation()
@@ -15,7 +15,7 @@ const LeftBar = () => {
 
     useEffect(() => {
         if (!workspaces) { return }
-        setExpandedWs(workspaces.map((w) => true))
+        setExpandedWs(workspaces.map((w) => false))
     }, [workspaces])
 
     if (isFetchingWorkspaces) {
@@ -35,7 +35,7 @@ const LeftBar = () => {
         <div className="w-72 py-10 flex flex-col px-2">
             <ul>
                 <ListItem
-                    isActive={location.pathname.endsWith('/w/boards')}
+                    isActive={location.pathname.endsWith('/home/boards')}
                     className="rounded">
                     <div className="py-2 rounded-md px-2 flex gap-2 items-center">
                         <div className="p-0.5"><DocumentTextIcon className="size-5" /></div>
@@ -72,10 +72,13 @@ const LeftBar = () => {
                                 <ListItem
                                     className="rounded my-1"
                                 >
-                                    <div className="flex items-center pl-10 py-2 gap-4">
+                                    <Link
+                                        className="flex items-center pl-10 py-2 gap-4"
+                                        to={`w/${w.id}`}
+                                    >
                                         <DocumentTextIcon className="size-4" />
                                         <span className="text-sm">Boards</span>
-                                    </div>
+                                    </Link>
                                 </ListItem>
                                 <ListItem className="rounded my-1">
                                     <div className="flex items-center pl-10 py-2 gap-4">

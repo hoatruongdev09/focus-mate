@@ -5,13 +5,13 @@ import DiscordIcon from "../Icon/discord-icon"
 import LoginForm from "../components/landingpage/login-form"
 
 const LandingPage = () => {
-    const { data: user, isLoading, isError } = useGetMyInfoQuery()
+    const { data: user } = useGetMyInfoQuery()
 
     const location = useLocation()
 
     if (user) {
         console.log('user: ', user)
-        return (<Navigate to={`/${user.username}/w`} state={{ from: location }} />)
+        return (<Navigate to={`/${user.username}/home`} state={{ from: location }} />)
     }
 
     return (

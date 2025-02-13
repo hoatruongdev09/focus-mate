@@ -10,10 +10,15 @@ export const workspaceApi = createApi({
         getWorkspaces: builder.query<Workspace[], void>({
             query: () => `/workspace`,
             providesTags: ["workspace"]
+        }),
+        getWorkspace: builder.query<Workspace, number>({
+            query: (workspace_id) => `/workspace/${workspace_id}`,
+            providesTags: ["workspace"]
         })
     })
 })
 
 export const {
-    useGetWorkspacesQuery
+    useGetWorkspacesQuery,
+    useGetWorkspaceQuery
 } = workspaceApi

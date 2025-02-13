@@ -1,6 +1,18 @@
 import { Request, Response } from "express";
 import { workspaceService } from "../services/workspace.service";
 
+export const getWorkspace = async (req: Request, res: Response) => {
+    const { workspace_id } = req.params
+    const { customer_id } = req
+    try {
+        const workspaces = await workspaceService.getWorkspace(+workspace_id)
+        res.status(200).json(workspaces)
+    } catch (err) {
+        console.error(err)
+        res.status(500).json(err)
+    }
+}
+
 export const getWorkspaces = async (req: Request, res: Response) => {
     const { customer_id } = req
     try {

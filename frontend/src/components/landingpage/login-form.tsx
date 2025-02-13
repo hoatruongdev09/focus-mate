@@ -34,7 +34,9 @@ const LoginForm = () => {
         e.preventDefault()
         try {
             const data = await loginEmailPassword({ email, password })
-            navigate(`/u/${data.data?.user.username}`)
+            if (data.data) {
+                navigate(`/${data.data.user.username}/w`)
+            }
         } catch (err) {
             console.error(err)
         }

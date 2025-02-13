@@ -1,10 +1,10 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import KanbanBoardPage from "./pages/kanban-board";
-import PrivateOutlet from "./pages/private-outlet";
+import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
+import KanbanBoardPage from "./pages/kanban-board-page";
+import PrivateOutlet from "./layouts/private-layout";
 import LandingPage from "./pages/landing-page";
-import WorkspaceBoardPage from "./pages/workspace-boards";
-import Workspace from "./pages/workspace";
-import Layout from "./pages/layout";
+import HomeBoardsPage from "./pages/home-boards-page";
+import HomeLayout from "./layouts/home-layout";
+import HomeWorkspaceBoardsPage from "./pages/home-workspace-boards-page";
 
 function App() {
 
@@ -12,19 +12,17 @@ function App() {
 
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout />}>
+        <Route path="/" element={<Outlet />}>
           <Route index element={<LandingPage />} />
 
-          <Route path=":user_id" element={<PrivateOutlet />} >
-            <Route index element={<Navigate to="w" replace />} />
+          <Route path="home" element={<HomeLayout />} >
+            <Route index element={<Navigate to="boards" replace />} />
+            <Route path="boards" element={<HomeBoardsPage />} />
+            <Route path="w/:workspace_id" element={<HomeWorkspaceBoardsPage />} />
+          </Route>
 
-            <Route path="w" element={<Workspace />} >
-              <Route index element={<Navigate to="boards" replace />} />
-              <Route path="boards" element={<WorkspaceBoardPage />} />
-            </Route>
-
-
-            <Route path="b/:board_id" element={<KanbanBoardPage />} />
+          <Route path="workspace" element={<PrivateOutlet />}>
+            <Route path="board/:board_id" element={<KanbanBoardPage />} />
           </Route>
 
 

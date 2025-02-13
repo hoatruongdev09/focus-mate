@@ -27,6 +27,7 @@ const CreateNewBoard = (props: Props) => {
 
     const handleCreateBoard = useCallback(async () => {
         if (!currentWorkspace) { return }
+        console.log("hey")
         try {
             await createBoard({ ...boardState, workspace_id: currentWorkspace.id })
             setBoardState({
