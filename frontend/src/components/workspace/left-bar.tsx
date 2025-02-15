@@ -1,11 +1,13 @@
 import { ChevronDownIcon, DocumentTextIcon, UsersIcon } from "@heroicons/react/24/outline"
 import { ReactNode, useEffect, useState } from "react"
 import { useGetWorkspacesQuery } from "../../store/services/workspace-service"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useParams } from "react-router-dom"
 
 const LeftBar = () => {
     const location = useLocation()
     const [expandedWs, setExpandedWs] = useState<boolean[]>([])
+    const { workspace_short_name } = useParams()
+
     const {
         data: workspaces,
         isLoading: isFetchingWorkspaces,
@@ -24,6 +26,10 @@ const LeftBar = () => {
 
 
 
+    const workspaceShortName: string | null = workspace_short_name && location.pathname.startsWith('/home/w') ?
+        workspace_short_name :
+        null
+
 
     const handleMyWorkSpaceClicked = (index: number) => {
         const ws = [...expandedWs]
@@ -37,10 +43,13 @@ const LeftBar = () => {
                 <ListItem
                     isActive={location.pathname.endsWith('/home/boards')}
                     className="rounded">
-                    <div className="py-2 rounded-md px-2 flex gap-2 items-center">
+                    <Link
+                        to={{ pathname: '/home/boards' }}
+                        className="py-2 rounded-md px-2 flex gap-2 items-center"
+                    >
                         <div className="p-0.5"><DocumentTextIcon className="size-5" /></div>
                         <p className="text-sm font-semibold">Boards</p>
-                    </div>
+                    </Link>
                 </ListItem>
             </ul>
             <div className="h-px bg-zinc-600 rounded mt-3" />
@@ -63,18 +72,22 @@ const LeftBar = () => {
                                         </div>
                                         <span className="font-semibold text-zinc-800">{w.name}</span>
                                     </div>
-                                    <ChevronDownIcon
-                                        className={`size-5 ${expandedWs[index] ? "rotate-180" : "rotate-0"} transition-transform duration-150`}
-                                    />
+                                    {
+
+                                        workspaceShortName !== w.short_name ? <ChevronDownIcon
+                                            className={`size-5 ${expandedWs[index] || workspaceShortName === w.short_name ? "rotate-180" : "rotate-0"} transition-transform duration-150`}
+                                        /> : <></>
+                                    }
                                 </div>
                             </ListItem>
-                            <ul className={`mt-2 ${expandedWs[index] ? "block" : "hidden"}`}>
+                            <ul className={`mt-2 ${expandedWs[index] || workspaceShortName === w.short_name ? "block" : "hidden"}`}>
                                 <ListItem
+                                    isActive={workspaceShortName === w.short_name}
                                     className="rounded my-1"
                                 >
                                     <Link
                                         className="flex items-center pl-10 py-2 gap-4"
-                                        to={`w/${w.id}`}
+                                        to={`w/${w.short_name}`}
                                     >
                                         <DocumentTextIcon className="size-4" />
                                         <span className="text-sm">Boards</span>

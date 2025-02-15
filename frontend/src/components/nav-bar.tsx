@@ -15,14 +15,14 @@ function NavBar() {
     const [fgStyle, setFgStyle] = useState<React.CSSProperties | undefined>(defaultStyle)
 
     useEffect(() => {
-        if (location) {
-            if (!location.pathname.startsWith("/workspace/board")) {
-                setBgStyle(defaultStyle)
-                setFgStyle(defaultStyle);
-                console.log(`location: `, location.pathname)
-                return
-            }
-        }
+        // if (location) {
+        //     if (!location.pathname.startsWith("/workspace/board")) {
+        //         setBgStyle(defaultStyle)
+        //         setFgStyle(defaultStyle);
+        //         console.log(`location: `, location.pathname)
+        //         return
+        //     }
+        // }
         applyBgStyle()
         applyFgStyle()
     }, [board, location])

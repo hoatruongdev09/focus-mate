@@ -28,6 +28,10 @@ export const boardApi = createApi({
             query: (workspace_id) => `workspace/${workspace_id}/boards`,
             providesTags: ['board']
         }),
+        getWorkspaceBoardsByShortName: builder.query<Board[], string>({
+            query: (short_name) => `workspace/short-name/${short_name}/boards`,
+            providesTags: ['board']
+        }),
         getBoard: builder.query<Board, number>({
             query: (data) => `/board/${data}`
         }),
@@ -187,5 +191,6 @@ export const {
     useGetArchivedListsQuery,
     useGetArchivedCardsQuery,
     useGetActivitiesQuery,
-    useGetWorkspaceBoardsQuery
+    useGetWorkspaceBoardsQuery,
+    useGetWorkspaceBoardsByShortNameQuery
 } = boardApi

@@ -1,14 +1,16 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { Board } from "../../types/board-type";
 import { EllipsisHorizontalIcon } from "@heroicons/react/16/solid";
+import { useContext } from "react";
+import { WorkspaceBoardContext } from "../../layouts/workspace-layout";
 
 interface Props {
     board: Board
-    showSideBar: () => void
 }
 
 function KanbanBoardTitle(props: Props) {
-    const { board, showSideBar } = props
+    const { board } = props
+    const { handleSetShowRightBar } = useContext(WorkspaceBoardContext)
 
     let bgStyle: React.CSSProperties | undefined = undefined
     console.log("board theme: ", board)
@@ -18,12 +20,16 @@ function KanbanBoardTitle(props: Props) {
         bgStyle = { background: "#fff" }
     }
 
+    const showRightBar = () => {
+        handleSetShowRightBar(true)
+    }
+
     return (
         <div
             style={bgStyle}
             className="
                         w-full border border-t-0 border-l-0 border-gray-300
-                        border-opacity-50 flex h-12 justify-between px-2 transition-all duration-300
+                        border-opacity-50 flex h-14 justify-between px-2 transition-all duration-300
                     "
         >
             <div className="flex gap-2 justify-center items-center ml-2">
@@ -36,7 +42,7 @@ function KanbanBoardTitle(props: Props) {
                 </button>
                 <button
                     className="p-1 hover:bg-zinc-600 hover:bg-opacity-35 rounded"
-                    onClick={showSideBar}
+                    onClick={showRightBar}
                 >
                     <EllipsisHorizontalIcon className="size-6 text-white" />
                 </button>

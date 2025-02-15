@@ -3,15 +3,11 @@ import BoardInfoMenu from "./board-info-menu"
 import ChangeBackgroundMenu from "./change-background-menu"
 import Header from "./header"
 import MainMenu from "./main-menu"
-import { useCallback, useState } from "react"
+import { useCallback, useContext, useState } from "react"
 import MenuSubPage from "./menu-sub-page"
 import ActivityMenu from "./activity-menu/activity-menu"
+import { WorkspaceBoardContext } from "../../layouts/workspace-layout"
 
-interface Props {
-    isShow: boolean
-    hide: () => void
-
-}
 
 export enum Menu {
     MainMenu = "Menu",
@@ -22,15 +18,15 @@ export enum Menu {
     ChangeBackground = "Change background"
 }
 
-const RightSideBar = (props: Props) => {
-    const { isShow, hide } = props
+const RightSideBar = () => {
+    const { showRightBar, handleSetShowRightBar } = useContext(WorkspaceBoardContext)
 
     const [currentMenu, setCurrentMenu] = useState<Menu>(Menu.MainMenu)
 
-    const handleHide = useCallback(() => {
-        hide()
+    const handleHide = () => {
+        handleSetShowRightBar(false)
         setCurrentMenu(Menu.MainMenu)
-    }, [setCurrentMenu, hide])
+    }
 
     const handleBackClick = useCallback(() => {
         if (currentMenu == Menu.MainMenu) { return }
@@ -42,7 +38,7 @@ const RightSideBar = (props: Props) => {
     }, [setCurrentMenu])
 
     return (
-        <div className={`absolute ${isShow ? "translate-x-0" : "translate-x-96"}  top-0 right-0 bottom-0 w-96 bg-white py-2 flex flex-col z-10 shadow-lg border transition-transform duration-150`}>
+        <div className={`absolute ${showRightBar ? "translate-x-0" : "translate-x-96"}  top-0 right-0 bottom-0 w-96 bg-white py-2 flex flex-col z-10 shadow-lg border transition-transform duration-150`}>
 
 
             <Header

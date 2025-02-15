@@ -1,11 +1,11 @@
-import { NavLink } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { useGetWorkspaceBoardsQuery } from "../../store/services/board-service"
 import { Workspace } from "../../types/workspace"
-import { HomeContext } from "../../layouts/home-layout"
 import { useContext } from "react"
 import { setCurrentWorkspace } from "../../store/slices/workspace-slice"
 import BoardLinkItem from "./board-link-item"
 import { useDispatch } from "react-redux"
+import { setShowCreateBoardModal } from "../../store/slices/app-slice"
 
 interface Props {
     workspace: Workspace
@@ -15,7 +15,6 @@ const WorkspaceItem = (props: Props) => {
     const dispatch = useDispatch()
     const { workspace } = props
     const { data, isLoading } = useGetWorkspaceBoardsQuery(workspace.id)
-    const { handleShowCreateBoard } = useContext(HomeContext)
 
     if (isLoading) {
         return <>Loading</>
@@ -23,7 +22,7 @@ const WorkspaceItem = (props: Props) => {
 
     const onAddNewWorkspace = () => {
         dispatch(setCurrentWorkspace(workspace))
-        handleShowCreateBoard()
+        dispatch(setShowCreateBoardModal(true))
     }
 
 
@@ -50,12 +49,12 @@ const WorkspaceItem = (props: Props) => {
             <div className="flex gap-2 flex-wrap items-center ">
                 {
                     data && data.map(b => (
-                        <NavLink
-                            to={`/workspace/board/${b.id}`}
+                        <Link
+                            to={`/w/${workspace.short_name}/${b.id}`}
                             key={`board-link-${b.id}`}
                         >
                             <BoardLinkItem board={b} />
-                        </NavLink>
+                        </Link>
                     ))
                 }
                 <button

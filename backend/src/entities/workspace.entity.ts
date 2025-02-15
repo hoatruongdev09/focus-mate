@@ -7,6 +7,9 @@ export default class Workspace {
     @PrimaryGeneratedColumn()
     id: number
 
+    @Column({ unique: true })
+    short_name: string
+
     @Column()
     name: string
 

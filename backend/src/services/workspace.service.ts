@@ -5,6 +5,7 @@ import WorkspaceMember from "../entities/workspace-member.entity";
 import WorkspaceRole from "../enums/workspace-role";
 import Board from "../entities/board.entity";
 import CreateBoardDto from "../dto/board/create-board.dto";
+import UpdateWorkspaceDto from "../dto/workspace/update-workspace-dto";
 
 
 export class WorkspaceService {
@@ -34,12 +35,42 @@ export class WorkspaceService {
         return await this.getWorkspace(newWorkspace.id)
     }
     async getWorkspace(id: number) {
-        return await this.workspaceRepository
+        return this.workspaceRepository
             .createQueryBuilder("workspace")
             .leftJoinAndSelect("workspace.members", "workspace_member")
             .leftJoinAndSelect("workspace_member.user", "user")
             .where("workspace.id = :id", { id })
             .getOne()
+    }
+
+    async getByShortName(short_name: string) {
+        return this.workspaceRepository
+            .createQueryBuilder("workspace")
+            .where("workspace.short_name = :short_name", { short_name })
+            .getOne()
+    }
+
+    async updateWorkspace(workspace_id: number, data: UpdateWorkspaceDto) {
+        const workspace = await this.getWorkspace(workspace_id)
+        if (!workspace) {
+            throw new Error("Work space not found")
+        }
+        if (workspace.short_name != data.short_name) {
+            const workspaceWithShortName = await this.getByShortName(data.short_name)
+            if (workspaceWithShortName) {
+                throw new Error("Short name is already taken")
+            }
+        }
+
+        const { name, short_name, description } = data
+
+        await this.workspaceRepository.createQueryBuilder()
+            .update({
+                name, short_name, description
+            }).where("id =:id", { id: workspace.id })
+            .execute()
+
+        return await this.getWorkspace(workspace_id)
     }
 
     async getBoardsInWorkspace(workspace_id: number, customer_id: number) {
@@ -48,6 +79,17 @@ export class WorkspaceService {
             .leftJoinAndSelect("board.owner", "customer")
             .leftJoinAndSelect("board.theme", "board_theme")
             .where("workspace.id = :workspace_id", { workspace_id })
+            .orderBy("board.created_at")
+            .getMany()
+        return boards
+    }
+
+    async getBoardsInWorkspaceByShortname(short_name: string, customer_id: number) {
+        const boards = await this.boardRepository.createQueryBuilder("board")
+            .leftJoin("board.workspace", "workspace")
+            .leftJoinAndSelect("board.owner", "customer")
+            .leftJoinAndSelect("board.theme", "board_theme")
+            .where("workspace.short_name = :short_name", { short_name })
             .orderBy("board.created_at")
             .getMany()
         return boards
@@ -86,6 +128,8 @@ export class WorkspaceService {
 
         return await this.boardRepository.save(board)
     }
+
+
 }
 
 export const workspaceService: WorkspaceService = new WorkspaceService()

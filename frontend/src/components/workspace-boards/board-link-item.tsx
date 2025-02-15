@@ -5,7 +5,7 @@ const BoardLinkItem = ({ board }: { board: Board }) => {
     return (
         <div
             style={bgStyle}
-            className="h-24 w-48 bg-opacity-65 rounded cursor-pointer hover:bg-opacity-100">
+            className="h-24 w-48 bg-opacity-65 rounded cursor-pointer hover:bg-opacity-100 text-white">
             <p className="p-2 font-bold ">{board.name}</p>
         </div>
     )
