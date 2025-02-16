@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import { useArchiveOrUnarchiveCardMutation, useDeleteCardMutation } from "../../../store/services/board-service"
-import { Card } from "../../../types/board-type"
+import { Card } from "../../../types/board.type"
 import ArchivedCard from "./archived-card"
 import { AppRootState } from "../../../store/store"
 import { useCallback } from "react"

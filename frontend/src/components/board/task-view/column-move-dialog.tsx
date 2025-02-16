@@ -3,7 +3,7 @@ import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppRootState } from "../../../store/store";
 import { useUpdateCardMutation } from "../../../store/services/board-service";
-import { UpdateCardData } from "../../../types/board-type";
+import { UpdateCardData } from "../../../types/board.type";
 import { setViewingTask } from "../../../store/slices/board-slice";
 import useClickOutside from "../../../custom-hooks/use-click-outside";
 

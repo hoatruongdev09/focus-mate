@@ -1,4 +1,4 @@
-import { BoardActivity } from "../../../types/board-activity"
+import { BoardActivity } from "../../../types/board-activity.type"
 import UserAvatar from "../../user-avatar"
 
 interface Props {

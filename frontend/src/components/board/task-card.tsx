@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { CoverType, Card, CardLayoutType } from "../../types/board-type";
-import { DraggingItem } from "../../types/draging-item";
+import { CoverType, Card, CardLayoutType } from "../../types/board.type";
+import { DraggingItem } from "../../types/draging-item.type";
 import { useDispatch } from "react-redux";
 import { setViewingTask } from "../../store/slices/board-slice";
 import { PencilIcon } from "@heroicons/react/16/solid";

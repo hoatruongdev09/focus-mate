@@ -1,7 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react"
 import { baseQueryWithReauth } from "./base-query-with-reauth";
-import { Workspace } from "../../types/workspace";
-import { UpdateWorkspaceData } from "../../types/update-workspace-data";
+import { Workspace } from "../../types/workspace.type";
+import { UpdateWorkspaceData } from "../../types/update-workspace-data.type";
 
 export const workspaceApi = createApi({
     reducerPath: 'workspaceApi',

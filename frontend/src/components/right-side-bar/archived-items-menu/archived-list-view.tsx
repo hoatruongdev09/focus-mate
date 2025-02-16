@@ -1,5 +1,5 @@
 import { useCallback } from "react"
-import { List } from "../../../types/board-type"
+import { List } from "../../../types/board.type"
 import ArchivedList from "./archived-list"
 import { useArchiveOrUnarchiveListMutation, useDeleteListMutation } from "../../../store/services/board-service"
 import { useSelector } from "react-redux"

@@ -1,6 +1,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { List, Card } from "../../../types/board-type"
+import { List, Card } from "../../../types/board.type"
 import ArchivedCardsView from "./archived-card-view"
 import ArchivedListsView from "./archived-list-view"
 import { useGetArchivedItemsQuery } from "../../../store/services/board-service"

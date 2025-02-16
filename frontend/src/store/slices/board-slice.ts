@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Board, List, Card } from "../../types/board-type";
+import { Board, List, Card } from "../../types/board.type";
 
 interface BoardTaskData {
     task: Card

@@ -1,5 +1,5 @@
 import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline"
-import { List } from "../../../types/board-type"
+import { List } from "../../../types/board.type"
 
 interface Props {
     group: List

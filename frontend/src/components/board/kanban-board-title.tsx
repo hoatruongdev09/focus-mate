@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
-import { Board } from "../../types/board-type";
+import { Board } from "../../types/board.type";
 import { EllipsisHorizontalIcon } from "@heroicons/react/16/solid";
 import { useContext } from "react";
 import { WorkspaceBoardContext } from "../../layouts/workspace-layout";

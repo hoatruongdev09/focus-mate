@@ -10,13 +10,10 @@ import boardThemeRoute from './routes/board-theme.route'
 import dataSource from "./db/data-source";
 import { boardThemeService } from "./services/board-theme.service";
 import workspaceRoute from "./routes/workspace.route";
+import resultResponse from "./middlewares/result-response.middleware";
 
-declare module "express-serve-static-core" {
-    interface Request {
-        customer_id?: number | undefined
-        customer_role?: number | undefined
-    }
-}
+
+
 dataSource.initialize().then(async () => {
     await boardThemeService.initBoard()
 }).catch((err) => console.error(err))
@@ -37,6 +34,8 @@ app.use("/board", boardRoute)
 app.use("/board-theme", boardThemeRoute)
 app.use("/user", userRoute)
 app.use("/workspace", workspaceRoute)
+
+app.use(resultResponse)
 
 
 

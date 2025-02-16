@@ -1,4 +1,4 @@
-import { UserData } from "./auth-type"
+import { UserData } from "./auth.type"
 
 export enum CoverType {
     None = 0,

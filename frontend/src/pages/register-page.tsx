@@ -16,7 +16,8 @@ const RegisterPage = () => {
     const [validateEmail, {
         isLoading: isValidatingEmail,
         isError: isValidateEmailError,
-        error: validateEmailError
+        error: validateEmailError,
+        data: validateEmailData
     }] = useValidateEmailMutation()
 
     const [registerEmail, {
@@ -79,9 +80,9 @@ const RegisterPage = () => {
 
     const handleRegister = async () => {
         try {
-            const data = await registerEmail(formState)
-            if (data.data) {
-                navigate(`/${data.data.user.username}/w`)
+            const result = await registerEmail(formState)
+            if (result.data) {
+                navigate(`/${result.data.data.user.username}/w`)
             }
 
         } catch (error) {
@@ -96,7 +97,9 @@ const RegisterPage = () => {
                 return
             }
             const result = await validateEmail(formState.email)
-            setIsEmailValid(result.data?.isValid || false)
+            if (result.data) {
+                setIsEmailValid(result.data.data)
+            }
         } catch (error) {
             console.error(error)
         }
@@ -113,9 +116,17 @@ const RegisterPage = () => {
                     <p className="text-2xl font-extrabold text-center leading-none">Sign up an account</p>
                     <form className="flex flex-col gap-4 py-2 px-1">
                         <div className="flex flex-col gap-1">
-                            <label className="text-sm font-semibold">
-                                Email <span className="text-red-600">*</span>
-                            </label>
+                            <div className="flex items-center justify-between">
+
+                                <label className="text-sm font-semibold">
+                                    Email <span className="text-red-600">*</span>
+                                </label>
+
+                                {
+                                    validateEmailData && !validateEmailData.status &&
+                                    <p className="text-red-600 text-sm text-end">{validateEmailData.message}</p>
+                                }
+                            </div>
                             <input
                                 disabled={isValidatingEmail || isEmailValid || isRegistering}
                                 className="flex-1 bg-white border border-zinc-800 px-2 rounded py-1"
@@ -125,7 +136,6 @@ const RegisterPage = () => {
                                 onChange={handleSetField}
                                 placeholder="Enter your email"
                             />
-                            <p>{JSON.stringify(validateEmailError)}</p>
                         </div>
                         {
                             isEmailValid && <>

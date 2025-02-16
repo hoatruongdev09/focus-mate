@@ -1,7 +1,7 @@
 import ColumnMoveDialog from "./column-move-dialog"
 import { useCallback, useState } from "react"
 import ArchiveBoxXMarkIcon from "@heroicons/react/24/outline/ArchiveBoxXMarkIcon"
-import { Card } from "../../../types/board-type"
+import { Card } from "../../../types/board.type"
 import { useArchiveOrUnarchiveCardMutation, useDeleteCardMutation } from "../../../store/services/board-service"
 import { useDispatch, useSelector } from "react-redux"
 import { setViewingTask } from "../../../store/slices/board-slice"

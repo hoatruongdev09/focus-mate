@@ -1,6 +1,6 @@
 import { PlusSmallIcon } from "@heroicons/react/20/solid";
 import { useRef, useState, KeyboardEvent, useCallback, ChangeEvent } from "react";
-import { List } from "../../../types/board-type";
+import { List } from "../../../types/board.type";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { useAddCardMutation } from "../../../store/services/board-service";
 

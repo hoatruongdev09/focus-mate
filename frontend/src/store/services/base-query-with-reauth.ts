@@ -1,7 +1,7 @@
 import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { AppRootState } from "../store";
 import { removeAuthData, setAuthData } from "../slices/auth-slice";
-import { AuthResult } from "../../types/auth-type";
+import { AuthResult } from "../../types/auth.type";
 
 export const baseQuery = fetchBaseQuery({
     baseUrl: `http://localhost:3000`,

@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "./base-query-with-reauth";
-import { BoardTheme } from "../../types/board-type";
+import { BoardTheme } from "../../types/board.type";
 
 export const boardThemeApi = createApi({
     reducerPath: 'boardThemeApi',

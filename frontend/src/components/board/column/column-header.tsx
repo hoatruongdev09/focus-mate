@@ -1,4 +1,4 @@
-import { List, UpdateListData } from "../../../types/board-type";
+import { List, UpdateListData } from "../../../types/board.type";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAddCardMutation, useArchiveAllCardsInListMutation, useArchiveOrUnarchiveListMutation, useUpdateListMutation } from "../../../store/services/board-service";
 import ColumnContextMenu from "./context-menu.tsx/column-context-menu";

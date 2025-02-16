@@ -8,10 +8,16 @@ import { useNavigate } from "react-router-dom";
 
 const AuthContext = ({ children }: { children: ReactNode }) => {
     const navigate = useNavigate();
-    const { data: user, isLoading: isLoadMyUserInfo, isError: isErrorLoadUserData, error: loadUserDataError } = useGetMyInfoQuery()
+    const {
+        data: user,
+        isLoading: isLoadMyUserInfo,
+        isError: isErrorLoadUserData,
+        error: loadUserDataError
+    } = useGetMyInfoQuery()
+
     const refresh_token = useSelector((state: AppRootState) => state.auth.refresh_token)
+
     if (isLoadMyUserInfo) {
-        console.log("is loading")
         return (
             <LoadingPage />
         )
@@ -23,8 +29,13 @@ const AuthContext = ({ children }: { children: ReactNode }) => {
             </>
         )
     }
-    console.error("heyhey ", loadUserDataError)
-    const [refreshToken, { isLoading: isRefreshToken, isError: isErrorRefreshToken, error }] = useRefreshTokenMutation()
+
+    const [refreshToken, {
+        isLoading: isRefreshToken,
+        isError: isErrorRefreshToken,
+        error }
+    ] = useRefreshTokenMutation()
+
     useEffect(() => {
         if (!refresh_token || !refreshToken) { return }
         refreshToken({ refresh_token })

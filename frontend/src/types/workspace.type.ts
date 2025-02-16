@@ -1,4 +1,4 @@
-import { UserData } from "./auth-type"
+import { UserData } from "./auth.type"
 
 export enum WorkspaceRole {
     Guest = 0,

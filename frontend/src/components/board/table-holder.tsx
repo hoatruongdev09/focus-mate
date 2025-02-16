@@ -1,7 +1,7 @@
 import { SortableContext } from '@dnd-kit/sortable';
 import { useMemo } from 'react';
 import ColumnContainer from './column/column-container';
-import { List, Card } from '../../types/board-type';
+import { List, Card } from '../../types/board.type';
 import NewColumnCreator from './new-column-creator';
 
 // ...existing code...

@@ -30,7 +30,7 @@ const LoginForm = () => {
         try {
             const data = await loginEmailPassword({ email, password })
             if (data.data) {
-                navigate(`/${data.data.user.username}/w`)
+                navigate(`/${data.data.data.user.username}/w`)
             }
         } catch (err) {
             console.error(err)

@@ -1,4 +1,4 @@
-import { Card } from "./board-type";
+import { Card } from "./board.type";
 
 export type BoardActivity = {
     id: number

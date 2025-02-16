@@ -9,7 +9,15 @@
         "noImplicitAny": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
+        "types": [
+            "node",
+            "express"
+        ]
     },
+    "include": [
+        "src",
+        "src/types/express.d.ts"
+    ],
     "lib": [
         "es2015"
     ]

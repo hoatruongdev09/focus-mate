@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { UserData } from "../../types/auth-type"
+import { UserData } from "../../types/auth.type"
 import { authApi } from "../services/auth-service"
 
 interface AuthState {
@@ -37,7 +37,7 @@ export const authSlice = createSlice({
     extraReducers: (builder) => {
         builder.addMatcher(
             authApi.endpoints.loginEmailPassword.matchFulfilled, (state, { payload }) => {
-                const { access_token, refresh_token } = payload
+                const { access_token, refresh_token } = payload.data
                 state.token = access_token
                 state.refresh_token = refresh_token
 
@@ -46,7 +46,7 @@ export const authSlice = createSlice({
             }
         ).addMatcher(
             authApi.endpoints.refreshToken.matchFulfilled, (state, { payload }) => {
-                const { access_token, refresh_token } = payload
+                const { access_token, refresh_token } = payload.data
                 state.token = access_token
                 state.refresh_token = refresh_token
 
@@ -56,7 +56,7 @@ export const authSlice = createSlice({
         ).addMatcher(
             authApi.endpoints.registerEmailPassword.matchFulfilled,
             (state, { payload }) => {
-                const { access_token, refresh_token } = payload
+                const { access_token, refresh_token } = payload.data
                 state.token = access_token
                 state.refresh_token = refresh_token
 

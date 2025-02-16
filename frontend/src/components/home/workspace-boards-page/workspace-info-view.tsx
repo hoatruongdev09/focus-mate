@@ -1,5 +1,5 @@
 import { PencilIcon, LockClosedIcon } from "@heroicons/react/24/outline"
-import { Workspace } from "../../../types/workspace"
+import { Workspace } from "../../../types/workspace.type"
 import { useContext } from "react"
 import { HomeWorkspaceContext } from "../../../pages/home-workspace-boards-page"
 

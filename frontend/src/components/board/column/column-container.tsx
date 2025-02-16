@@ -1,8 +1,8 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useMemo, useRef } from "react";
-import { List, Card } from "../../../types/board-type";
-import { DraggingItem } from "../../../types/draging-item";
+import { List, Card } from "../../../types/board.type";
+import { DraggingItem } from "../../../types/draging-item.type";
 import ColumnTaskContainer from "./column-task-container";
 import NewTaskCreator from "./new-task-creator";
 import ColumnHeader from "./column-header";

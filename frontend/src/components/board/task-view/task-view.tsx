@@ -1,4 +1,4 @@
-import { CoverType, Card } from "../../../types/board-type";
+import { CoverType, Card } from "../../../types/board.type";
 import TaskHeader from "./task-header";
 import TaskDescription from "./task-description";
 import TaskActivity from "./task-activity";

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { UserData } from "../../types/auth-type";
+import { UserData } from "../../types/auth.type";
 import { userApi } from '../services/user-service'
 interface UserState {
     data?: UserData | undefined

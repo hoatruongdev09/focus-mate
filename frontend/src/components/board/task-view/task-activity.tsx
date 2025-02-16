@@ -1,7 +1,7 @@
 import { ListBulletIcon } from "@heroicons/react/16/solid"
 import TaskComment from "./task-comment"
 import TaskCommentInput from "./task-comment-input"
-import { Card, CardComment as Comment } from "../../../types/board-type"
+import { Card, CardComment as Comment } from "../../../types/board.type"
 import { useSelector } from "react-redux"
 import { AppRootState } from "../../../store/store"
 import { useGetCardCommentsQuery } from "../../../store/services/board-service"

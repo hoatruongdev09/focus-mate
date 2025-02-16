@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import { useGetWorkspaceBoardsQuery } from "../../store/services/board-service"
-import { Workspace } from "../../types/workspace"
+import { Workspace } from "../../types/workspace.type"
 import { useContext } from "react"
 import { setCurrentWorkspace } from "../../store/slices/workspace-slice"
 import BoardLinkItem from "./board-link-item"

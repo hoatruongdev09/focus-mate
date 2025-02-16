@@ -1,4 +1,4 @@
-import { Board } from "../../types/board-type"
+import { Board } from "../../types/board.type"
 
 const BoardLinkItem = ({ board }: { board: Board }) => {
     const bgStyle: React.CSSProperties | undefined = board.theme ? { background: board.theme.bg_value } : undefined

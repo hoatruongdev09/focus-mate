@@ -3,8 +3,8 @@ import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, UserIcon } from "@heroicon
 import { Link, useLocation, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppRootState } from "../store/store";
-import { Workspace } from "../types/workspace";
-import { Board } from "../types/board-type";
+import { Workspace } from "../types/workspace.type";
+import { Board } from "../types/board.type";
 import { setCurrentWorkspace } from "../store/slices/workspace-slice";
 import { setShowCreateBoardModal } from "../store/slices/app-slice";
 

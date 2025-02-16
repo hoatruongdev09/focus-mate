@@ -1,7 +1,7 @@
 import { useContext, useState } from "react"
-import { Workspace } from "../../../types/workspace"
+import { Workspace } from "../../../types/workspace.type"
 import { HomeWorkspaceContext } from "../../../pages/home-workspace-boards-page"
-import { UpdateWorkspaceData } from "../../../types/update-workspace-data"
+import { UpdateWorkspaceData } from "../../../types/update-workspace-data.type"
 import { useUpdateWorkspaceMutation } from "../../../store/services/workspace-service"
 
 

@@ -1,5 +1,5 @@
 import { EyeIcon, ArchiveBoxXMarkIcon } from "@heroicons/react/24/outline"
-import { CoverType, Card, CardLayoutType } from "../../../types/board-type"
+import { CoverType, Card, CardLayoutType } from "../../../types/board.type"
 import { useDispatch } from "react-redux"
 import { setViewingTask } from "../../../store/slices/board-slice"
 

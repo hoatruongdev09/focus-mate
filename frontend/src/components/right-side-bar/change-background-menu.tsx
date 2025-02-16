@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { AppRootState } from "../../store/store"
 import { useGetThemesQuery } from "../../store/services/board-theme-service"
 import { CheckIcon } from "@heroicons/react/24/outline"
-import { BoardTheme } from "../../types/board-type"
+import { BoardTheme } from "../../types/board.type"
 import { setBoard } from "../../store/slices/board-slice"
 import { usePostChangeThemeMutation } from "../../store/services/board-service"
 

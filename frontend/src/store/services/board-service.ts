@@ -1,7 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { AddListData, AddCardData, Board, CreateBoardData, List, Card, CardComment, UpdateBoardData, UpdateListData, UpdateCardData } from "../../types/board-type";
+import { AddListData, AddCardData, Board, CreateBoardData, List, Card, CardComment, UpdateBoardData, UpdateListData, UpdateCardData } from "../../types/board.type";
 import { baseQueryWithReauth } from "./base-query-with-reauth";
-import { BoardActivity } from "../../types/board-activity";
+import { BoardActivity } from "../../types/board-activity.type";
 
 const getArchivedItemsUrl = ({ board_id, type }: { board_id: number, type: string }): string => {
     console.log(`get archive link: ${type}`)

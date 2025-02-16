@@ -4,7 +4,7 @@ import TextEditor, { CustomDescendant, EditorRef } from "../../text-editor/compo
 import { useCallback, useRef, useState } from "react"
 import { EditorElement } from "../../text-editor/text-editor-element"
 import { useCommentCardMutation } from "../../../store/services/board-service"
-import { CardComment } from "../../../types/board-type"
+import { CardComment } from "../../../types/board.type"
 
 interface Props {
     onAddComment: (comment: CardComment) => void

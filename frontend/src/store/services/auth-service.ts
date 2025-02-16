@@ -1,18 +1,19 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { AuthResult } from "../../types/auth-type";
+import { AuthResult } from "../../types/auth.type";
+import { ServerResponse } from "../../types/server-response.type";
 
 export const authApi = createApi({
     reducerPath: 'authApi',
     baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000/auth' }),
     endpoints: (builder) => ({
-        loginEmailPassword: builder.mutation<AuthResult, { email: string, password: string }>({
+        loginEmailPassword: builder.mutation<ServerResponse<AuthResult>, { email: string, password: string }>({
             query: data => ({
                 url: `/login-email-password`,
                 method: 'POST',
                 body: data
             })
         }),
-        refreshToken: builder.mutation<AuthResult, { refresh_token: string }>({
+        refreshToken: builder.mutation<ServerResponse<AuthResult>, { refresh_token: string }>({
             query: data => ({
                 url: `/refresh_token`,
                 method: 'POST',
@@ -21,14 +22,14 @@ export const authApi = createApi({
                 }
             })
         }),
-        validateEmail: builder.mutation<{ isValid: boolean }, string>({
+        validateEmail: builder.mutation<ServerResponse<boolean>, string>({
             query: (email) => ({
                 url: `/validate-email`,
                 method: 'POST',
                 body: { email }
             })
         }),
-        registerEmailPassword: builder.mutation<AuthResult, { email: string, password: string, firstName: string, lastName: string }>({
+        registerEmailPassword: builder.mutation<ServerResponse<AuthResult>, { email: string, password: string, firstName: string, lastName: string }>({
             query: data => ({
                 url: '/register-email-password',
                 method: 'POST',

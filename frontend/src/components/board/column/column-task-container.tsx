@@ -1,5 +1,5 @@
 import { SortableContext } from "@dnd-kit/sortable";
-import { Card } from "../../../types/board-type";
+import { Card } from "../../../types/board.type";
 import TaskCard from "../task-card";
 
 interface Props {

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { DraggingItem } from "../../types/draging-item";
+import { DraggingItem } from "../../types/draging-item.type";
 import { useUpdateListMutation, useUpdateCardMutation } from "../../store/services/board-service";
 import { useCallback, useMemo, useRef } from "react";
 import {
@@ -21,7 +21,7 @@ import {
     setTasks
 } from "../../store/slices/board-slice";
 import { AppRootState } from "../../store/store";
-import { List, Card } from "../../types/board-type";
+import { List, Card } from "../../types/board.type";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import ColumnContainer from "./column/column-container";

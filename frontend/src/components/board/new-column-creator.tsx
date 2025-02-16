@@ -1,6 +1,6 @@
 import { ChangeEvent, useCallback, useRef, useState } from "react";
 import { useAddListMutation } from "../../store/services/board-service";
-import { AddListData } from "../../types/board-type";
+import { AddListData } from "../../types/board.type";
 import { PlusSmallIcon } from "@heroicons/react/20/solid";
 import { KeyboardEvent } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
