@@ -19,9 +19,10 @@ export class WorkspaceService {
         this.boardRepository = dataSource.getRepository(Board)
     }
 
-    async createWorkspace(user_id: number, name: string, description: string) {
+    async createWorkspace(user_id: number, short_name: string, name: string, description: string) {
         const workspace = new Workspace()
         workspace.name = name
+        workspace.short_name = short_name
         workspace.description = description
 
         const newWorkspace = await this.workspaceRepository.save(workspace)

@@ -6,6 +6,6 @@ const authRoute = Router()
 authRoute.post('/refresh-token', authController.refreshToken)
 authRoute.post('/register-email-password', authController.registerEmailPassword)
 authRoute.post('/login-email-password', authController.loginEmailPassword)
-
+authRoute.post('/validate-email', authController.validateEmail)
 
 export default authRoute

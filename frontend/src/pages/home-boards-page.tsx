@@ -11,7 +11,7 @@ const HomeBoardsPage = () => {
 
     return (
         <>
-            <div className="flex-1 py-10 pr-10 xl:flex-none xl:w-[50%] xl:pr-0">
+            <div className="flex-1 py-10 px-10 pr-10 xl:flex-none xl:w-[50%] xl:pr-0">
                 <div className="flex">
                     <p className="text-xl font-extrabold leading-none">Your workspaces:</p>
                 </div>

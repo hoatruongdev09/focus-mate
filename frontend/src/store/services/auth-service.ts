@@ -20,8 +20,29 @@ export const authApi = createApi({
                     "authorization": `Refresh ${data}`
                 }
             })
+        }),
+        validateEmail: builder.mutation<{ isValid: boolean }, string>({
+            query: (email) => ({
+                url: `/validate-email`,
+                method: 'POST',
+                body: { email }
+            })
+        }),
+        registerEmailPassword: builder.mutation<AuthResult, { email: string, password: string, firstName: string, lastName: string }>({
+            query: data => ({
+                url: '/register-email-password',
+                method: 'POST',
+                body: data
+            })
         })
     })
 })
 
-export const { useLoginEmailPasswordMutation, useRefreshTokenMutation } = authApi    
+
+
+export const {
+    useLoginEmailPasswordMutation,
+    useRefreshTokenMutation,
+    useValidateEmailMutation,
+    useRegisterEmailPasswordMutation
+} = authApi    

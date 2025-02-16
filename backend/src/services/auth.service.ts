@@ -52,7 +52,7 @@ export class AuthService {
             throw new Error("user is exist")
         }
         const user: Customer = await this.customerService.createNewUser(data)
-        await this.workspaceService.createWorkspace(user.id, `${user.first_name} ${user.last_name}'s workspace`, '')
+        await this.workspaceService.createWorkspace(user.id, user.username, `${user.username}'s workspace`, '')
 
         const accessToken = this.generateToken(user.id, user.role, tokenSecret, '24h')
         const refreshToken = this.generateToken(user.id, user.role, refreshTokenSecret, 60 * 60 * 24 * 30)

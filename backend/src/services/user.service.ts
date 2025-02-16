@@ -11,16 +11,43 @@ export class CustomerService {
         this.userRepository = dataSource.getRepository(Customer)
     }
 
-    async createNewUser(data: CreateCustomerDto) {
-        const { email, password, first_name, last_name } = data
-        const customer: Customer = new Customer()
-        customer.email = email
-        customer.password = await hash(password)
-        customer.first_name = first_name
-        customer.last_name = last_name
-        customer.username = `${first_name}_${last_name}`
+    generateUsername(firstName: string, lastName: string): string {
+        const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit random number
+        const variations = [
+            `${firstName}${lastName}${randomNum}`,
+            `${firstName}_${lastName}_${randomNum}`,
+            `${lastName}${firstName}${randomNum}`,
+            `${firstName[0]}${lastName}${randomNum}`,
+            `${firstName}${lastName[0]}${randomNum}`,
+            `${firstName}${randomNum}`,
+            `${lastName}${randomNum}`
+        ];
+        return variations[Math.floor(Math.random() * variations.length)];
+    }
 
-        return await this.userRepository.save(customer)
+    async createNewUser(data: CreateCustomerDto) {
+        const { email, password, firstName: first_name, lastName: last_name } = data
+        let success = false
+        let user: Customer = null
+        while (!success) {
+            try {
+                await this.userRepository.createQueryBuilder()
+                    .insert()
+                    .into(Customer)
+                    .values({
+                        email,
+                        password,
+                        first_name,
+                        last_name,
+                        username: this.generateUsername(first_name, last_name)
+                    }).execute()
+                success = true
+                user = await this.findUserByEmail(email, false)
+            } catch (error) {
+
+            }
+        }
+        return user
     }
 
     async findUserByEmail(email: string, includePassword: boolean) {

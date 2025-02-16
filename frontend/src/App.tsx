@@ -1,6 +1,5 @@
-import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import WorkspaceBoardView from "./pages/workspace-kanban-board-page";
-import PrivateOutlet from "./layouts/private-layout";
 import LandingPage from "./pages/landing-page";
 import HomeBoardsPage from "./pages/home-boards-page";
 import HomeLayout from "./layouts/home-layout";
@@ -8,6 +7,8 @@ import HomeWorkspaceBoardsPage from "./pages/home-workspace-boards-page";
 import WorkspaceLayout from "./layouts/workspace-layout";
 import WorkspaceBoardsPage from "./pages/workspace-boards-page";
 import AppLayout from "./layouts/app-layout";
+import LoginPage from "./pages/login-page";
+import RegisterPage from "./pages/register-page";
 
 function App() {
 
@@ -17,6 +18,8 @@ function App() {
       <Routes>
         <Route path="/" element={<AppLayout />}>
           <Route index element={<LandingPage />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegisterPage />} />
 
           <Route path="home" element={<HomeLayout />} >
             <Route index element={<Navigate to="boards" replace />} />
