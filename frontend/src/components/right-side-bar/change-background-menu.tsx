@@ -11,7 +11,7 @@ import { usePostChangeThemeMutation } from "../../store/services/board-service"
 const ChangeBackgroundMenu = () => {
     const dispatch = useDispatch()
     const board = useSelector((state: AppRootState) => state.boardView.board)
-    const { data: themes, isLoading: isLoadingThemes } = useGetThemesQuery()
+    const { data: themeData, isLoading: isLoadingThemes } = useGetThemesQuery()
     const [changeBoardTheme] = usePostChangeThemeMutation()
 
     const selectTheme = async (theme: BoardTheme) => {
@@ -30,7 +30,7 @@ const ChangeBackgroundMenu = () => {
             <div className="w-full flex flex-col">
                 <div className="flex flex-wrap gap-2 items-center mt-2 px-4">
                     {
-                        themes?.map(theme => (
+                        themeData && themeData.data.map(theme => (
                             <button key={`theme-${theme.id}`}
                                 style={{ backgroundColor: theme.bg_value }}
                                 className="h-16 w-16 rounded flex flex-col items-center justify-center hover:border"

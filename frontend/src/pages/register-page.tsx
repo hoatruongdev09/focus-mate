@@ -82,7 +82,7 @@ const RegisterPage = () => {
         try {
             const result = await registerEmail(formState)
             if (result.data) {
-                navigate(`/${result.data.data.user.username}/w`)
+                navigate(`/home`)
             }
 
         } catch (error) {

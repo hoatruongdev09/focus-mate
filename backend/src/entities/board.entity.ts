@@ -8,8 +8,9 @@ import Workspace from "./workspace.entity";
 
 @Entity()
 export default class Board {
-    @PrimaryGeneratedColumn()
-    id: number
+    @PrimaryGeneratedColumn("uuid")
+    id: string
+
     @Column()
     owner_id: number
 

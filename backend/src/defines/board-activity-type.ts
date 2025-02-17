@@ -26,7 +26,7 @@ export type AddListEventData = {
 
 export type RemoveListEventData = {
     customer_id: number
-    list_id: number
+    list_id: string
 }
 
 export type AddCardEventData = {
@@ -36,19 +36,19 @@ export type AddCardEventData = {
 
 export type RemoveCardEventData = {
     customer_id: number
-    list_id: number
-    card_id: number
+    list_id: string
+    card_id: string
 }
 
 export type AchieveCardEventData = {
     customer_id: number
-    list_id: number
-    board_id: number
-    card_id: number
+    list_id: string
+    board_id: string
+    card_id: string
 }
 
 export type AchieveListEventData = {
     customer_id: number
-    board_id: number
-    list_id: number
+    board_id: string
+    list_id: string
 }

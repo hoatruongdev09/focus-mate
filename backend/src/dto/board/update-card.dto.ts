@@ -3,11 +3,11 @@ export default class UpdateCardDto {
     description: string
     priority: number
     estimate: number
-    list_id: number
+    list_id: string
     cover_type: number
     cover_value: string
     layout_type: number
 
-    front_id: number | null
-    behind_id: number | null
+    front_id: string | null
+    behind_id: string | null
 }

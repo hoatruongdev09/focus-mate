@@ -10,16 +10,16 @@ export default class BoardActivity {
     id: number
 
     @Column()
-    board_id: number
+    board_id: string
 
     @Column()
     owner_id: number
 
     @Column({ nullable: true })
-    card_id?: number | null
+    card_id?: string | null
 
     @Column({ nullable: true })
-    list_id?: number | null
+    list_id?: string | null
 
     @Column()
     action: number

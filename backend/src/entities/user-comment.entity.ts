@@ -13,13 +13,13 @@ export default class UserComment {
     customer_id: number
 
     @Column()
-    board_id: number
+    board_id: string
 
     @Column()
-    list_id: number
+    list_id: string
 
     @Column()
-    card_id: number
+    card_id: string
 
     @Column({ type: "text" })
     content: string

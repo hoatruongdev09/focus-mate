@@ -60,14 +60,14 @@ const TaskCommentInput = (props: Props) => {
         const { id, list_id: group_id } = viewingTask
         clearInput()
         try {
-            const { data } = await postComment({
+            const { data: result } = await postComment({
                 board_id: board.id,
                 column_id: group_id,
                 card_id: id,
                 content: content
             })
-            if (data) {
-                onAddComment(data)
+            if (result) {
+                onAddComment(result.data)
             }
         } catch (err) {
             console.error(err)

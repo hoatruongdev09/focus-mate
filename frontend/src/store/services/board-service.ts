@@ -2,8 +2,9 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { AddListData, AddCardData, Board, CreateBoardData, List, Card, CardComment, UpdateBoardData, UpdateListData, UpdateCardData } from "../../types/board.type";
 import { baseQueryWithReauth } from "./base-query-with-reauth";
 import { BoardActivity } from "../../types/board-activity.type";
+import { ServerResponse } from "../../types/server-response.type";
 
-const getArchivedItemsUrl = ({ board_id, type }: { board_id: number, type: string }): string => {
+const getArchivedItemsUrl = ({ board_id, type }: { board_id: string, type: string }): string => {
     console.log(`get archive link: ${type}`)
     switch (type) {
         case "cards":
@@ -20,22 +21,22 @@ export const boardApi = createApi({
     baseQuery: baseQueryWithReauth,
     tagTypes: ['board', 'columns', 'cards', 'comments', 'activities'],
     endpoints: (builder) => ({
-        getBoards: builder.query<Board[], void>({
+        getBoards: builder.query<ServerResponse<Board[]>, void>({
             query: () => `/board`,
             providesTags: ['board']
         }),
-        getWorkspaceBoards: builder.query<Board[], number>({
+        getWorkspaceBoards: builder.query<ServerResponse<Board[]>, number>({
             query: (workspace_id) => `workspace/${workspace_id}/boards`,
             providesTags: ['board']
         }),
-        getWorkspaceBoardsByShortName: builder.query<Board[], string>({
+        getWorkspaceBoardsByShortName: builder.query<ServerResponse<Board[]>, string>({
             query: (short_name) => `workspace/short-name/${short_name}/boards`,
             providesTags: ['board']
         }),
-        getBoard: builder.query<Board, number>({
+        getBoard: builder.query<ServerResponse<Board>, string>({
             query: (data) => `/board/${data}`
         }),
-        createBoard: builder.mutation<Board, CreateBoardData>({
+        createBoard: builder.mutation<ServerResponse<Board>, CreateBoardData>({
             query: data => ({
                 url: `/workspace/${data.workspace_id}/boards`,
                 method: 'POST',
@@ -43,7 +44,7 @@ export const boardApi = createApi({
             }),
             invalidatesTags: ['board', 'activities']
         }),
-        updateBoard: builder.mutation<Board, { board_id: number, data: UpdateBoardData }>({
+        updateBoard: builder.mutation<ServerResponse<Board>, { board_id: string, data: UpdateBoardData }>({
             query: data => ({
                 url: `/board/${data.board_id}`,
                 body: data.data,
@@ -51,15 +52,15 @@ export const boardApi = createApi({
             }),
             invalidatesTags: ['board', 'activities']
         }),
-        getLists: builder.query<List[], number>({
-            query: (data) => `/board/${data}/lists`,
+        getLists: builder.query<ServerResponse<List[]>, string>({
+            query: (board_id) => `/board/${board_id}/lists`,
             providesTags: ['columns']
         }),
-        getCards: builder.query<Card[], number>({
-            query: (data) => `/board/${data}/cards`,
+        getCards: builder.query<ServerResponse<Card[]>, string>({
+            query: (board_id) => `/board/${board_id}/cards`,
             providesTags: ['cards']
         }),
-        addList: builder.mutation<List, AddListData>({
+        addList: builder.mutation<ServerResponse<List>, AddListData>({
             query: data => ({
                 url: `/board/${data.board_id}/lists`,
                 method: 'POST',
@@ -67,14 +68,14 @@ export const boardApi = createApi({
             }),
             invalidatesTags: ['columns', 'activities']
         }),
-        deleteList: builder.mutation<void, { board_id: number, column_id: number }>({
+        deleteList: builder.mutation<ServerResponse<any>, { board_id: string, column_id: string }>({
             query: data => ({
                 url: `/board/${data.board_id}/lists/${data.column_id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['columns', 'activities']
         }),
-        addCard: builder.mutation<List, AddCardData>({
+        addCard: builder.mutation<ServerResponse<List>, AddCardData>({
             query: data => ({
                 url: `/board/${data.board_id}/lists/${data.list_id}/card`,
                 method: 'POST',
@@ -82,14 +83,14 @@ export const boardApi = createApi({
             }),
             invalidatesTags: ['cards', 'activities']
         }),
-        deleteCard: builder.mutation<void, { board_id: number, card_id: number }>({
+        deleteCard: builder.mutation<ServerResponse<any>, { board_id: string, card_id: string }>({
             query: data => ({
                 url: `/board/${data.board_id}/cards/${data.card_id}`,
                 method: 'DELETE'
             }),
             invalidatesTags: ['cards', 'activities']
         }),
-        updateCard: builder.mutation<Card, UpdateCardData>({
+        updateCard: builder.mutation<ServerResponse<Card>, UpdateCardData>({
             query: data => ({
                 url: `/board/${data.board_id}/cards/${data.id}`,
                 method: 'PUT',
@@ -97,7 +98,7 @@ export const boardApi = createApi({
             }),
             invalidatesTags: ['cards', 'activities']
         }),
-        updateList: builder.mutation<List, UpdateListData>({
+        updateList: builder.mutation<ServerResponse<List>, UpdateListData>({
             query: data => ({
                 url: `/board/${data.board_id}/lists/${data.id}`,
                 method: 'PUT',
@@ -105,21 +106,21 @@ export const boardApi = createApi({
             }),
             invalidatesTags: ['columns', 'activities']
         }),
-        archiveOrUnarchiveCard: builder.mutation<Card, { board_id: number, list_id: number, card_id: number }>({
+        archiveOrUnarchiveCard: builder.mutation<ServerResponse<Card>, { board_id: string, list_id: string, card_id: string }>({
             query: data => ({
                 url: `/board/${data.board_id}/${data.list_id}/cards/${data.card_id}/archive-or-unarchive`,
                 method: 'POST'
             }),
             invalidatesTags: ['cards', 'activities']
         }),
-        archiveOrUnarchiveList: builder.mutation<List, { board_id: number, column_id: number }>({
+        archiveOrUnarchiveList: builder.mutation<ServerResponse<List>, { board_id: string, column_id: string }>({
             query: data => ({
                 url: `/board/${data.board_id}/lists/${data.column_id}/archive-or-unarchive`,
                 method: 'POST'
             }),
             invalidatesTags: ['columns', 'activities']
         }),
-        archiveAllCardsInList: builder.mutation<Card[], { board_id: number, column_id: number, action: boolean }>({
+        archiveAllCardsInList: builder.mutation<ServerResponse<Card[]>, { board_id: string, column_id: string, action: boolean }>({
             query: data => ({
                 url: `/board/${data.board_id}/lists/${data.column_id}/archive-or-unarchive-all-card`,
                 body: { action: data.action },
@@ -127,7 +128,7 @@ export const boardApi = createApi({
             }),
             invalidatesTags: ['cards', 'activities']
         }),
-        commentCard: builder.mutation<CardComment, { board_id: number, column_id: number, card_id: number, content: string }>(
+        commentCard: builder.mutation<ServerResponse<CardComment>, { board_id: string, column_id: string, card_id: string, content: string }>(
             {
                 query: data => ({
                     url: `/board/${data.board_id}/${data.column_id}/cards/${data.card_id}/comment`,
@@ -137,11 +138,11 @@ export const boardApi = createApi({
                 invalidatesTags: ['comments', 'activities']
             }
         ),
-        getCardComments: builder.query<CardComment[], { board_id: number, column_id: number, card_id: number }>({
+        getCardComments: builder.query<ServerResponse<CardComment[]>, { board_id: string, column_id: string, card_id: string }>({
             query: data => `/board/${data.board_id}/${data.column_id}/cards/${data.card_id}/comments`,
             providesTags: ['comments']
         }),
-        postChangeTheme: builder.mutation<Board, { board_id: number, theme_id: number }>({
+        postChangeTheme: builder.mutation<ServerResponse<Board>, { board_id: string, theme_id: number }>({
             query: (data) => ({
                 url: `/board-theme/${data.board_id}/change`,
                 body: { theme_id: data.theme_id },
@@ -149,19 +150,19 @@ export const boardApi = createApi({
             }),
             invalidatesTags: ['board', 'activities']
         }),
-        getArchivedItems: builder.query<Card[] | List[], { board_id: number, type: string }>({
+        getArchivedItems: builder.query<ServerResponse<Card[] | List[]>, { board_id: string, type: string }>({
             query: data => getArchivedItemsUrl(data),
             providesTags: ['cards', 'columns']
         }),
-        getArchivedCards: builder.query<Card[], number>({
+        getArchivedCards: builder.query<ServerResponse<Card[]>, string>({
             query: board_id => `board/${board_id}/archived-cards`,
             providesTags: ['cards']
         }),
-        getArchivedLists: builder.query<List[], number>({
+        getArchivedLists: builder.query<ServerResponse<List[]>, string>({
             query: board_id => `board/${board_id}/archived-lists`,
             providesTags: ['columns']
         }),
-        getActivities: builder.query<BoardActivity[], number>({
+        getActivities: builder.query<ServerResponse<BoardActivity[]>, string>({
             query: board_id => `board/${board_id}/activities`,
             providesTags: ['activities']
         })

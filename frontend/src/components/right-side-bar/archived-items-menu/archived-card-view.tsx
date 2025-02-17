@@ -31,7 +31,7 @@ const ArchivedCardsView = (props: Props) => {
         }
         const { data: newTask } = await archiveOrUnarchiveTask({ board_id: board.id, list_id: task.list_id, card_id: task.id })
         if (isViewingThisTask && newTask) {
-            dispatch(setViewingTask(newTask))
+            dispatch(setViewingTask(newTask.data))
         }
     }, [board, viewingTask, archiveOrUnarchiveTask])
 

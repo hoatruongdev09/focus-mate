@@ -18,9 +18,9 @@ const WorkspaceBoardView = () => {
         return <Navigate to={'/'} state={{ from: location }} />
     }
     const selectedBoard = useSelector((state: AppRootState) => state.boardView.board)
-    const { data: board, isLoading: isLoadingBoard } = useGetBoardQuery(+board_id)
-    const { data: columns, isLoading: isLoadingColumns } = useGetListsQuery(+board_id)
-    const { data: tasks, isLoading: isLoadingTasks } = useGetCardsQuery(+board_id)
+    const { data: board, isLoading: isLoadingBoard } = useGetBoardQuery(board_id)
+    const { data: columns, isLoading: isLoadingColumns } = useGetListsQuery(board_id)
+    const { data: tasks, isLoading: isLoadingTasks } = useGetCardsQuery(board_id)
 
     useEffect(() => {
         return () => {
@@ -29,8 +29,9 @@ const WorkspaceBoardView = () => {
     }, [])
 
     useEffect(() => {
-        if (columns?.length) {
-            dispatch(setColumns([...columns].reverse()))
+        console.log("column: ", columns)
+        if (columns && columns.data.length) {
+            dispatch(setColumns([...columns.data].reverse()))
         }
         else {
             dispatch(setColumns([]))
@@ -38,8 +39,8 @@ const WorkspaceBoardView = () => {
     }, [columns])
 
     useEffect(() => {
-        if (tasks?.length) {
-            dispatch(setTasks(tasks.map(t => ({
+        if (tasks && tasks.data.length) {
+            dispatch(setTasks(tasks.data.map(t => ({
                 task: t,
                 nextTimeUpdate: Date.now()
             }))))
@@ -50,8 +51,8 @@ const WorkspaceBoardView = () => {
     }, [tasks])
 
     useEffect(() => {
-        if (board) {
-            dispatch(setBoard(board))
+        if (board && board.data) {
+            dispatch(setBoard(board.data))
         }
     }, [board])
 

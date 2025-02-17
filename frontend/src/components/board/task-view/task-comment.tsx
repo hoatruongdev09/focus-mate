@@ -34,13 +34,13 @@ const TaskComment = (props: Props) => {
         <div className="flex gap-2">
             <div className="h-10 w-10">
                 <img
-                    src={`https://avatar.iran.liara.run/public/${comment.user.id ?? 34}`}
+                    src={`https://avatar.iran.liara.run/public/${comment.customer.id ?? 34}`}
                     className="w-full h-full rounded-full object-cover"
                 />
             </div>
             <div className="flex flex-col gap-2 flex-1">
                 <p className="font-semibold">
-                    {comment.user.first_name} {comment.user.last_name}
+                    {comment.customer.first_name} {comment.customer.last_name}
                     <span className="pl-1 font-light text-sm text-gray-700">
                         {timeAgo(comment.created_at)}
                     </span>
@@ -54,7 +54,7 @@ const TaskComment = (props: Props) => {
                     />
                 </div>
                 {
-                    user.data?.id === comment.user.id &&
+                    user.data?.id === comment.customer.id &&
                     (
                         <div className="flex gap-2 items-center ml-1">
                             <button className="bg-orange-400 w-4 h-4"></button>

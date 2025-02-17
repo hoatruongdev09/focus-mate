@@ -7,7 +7,7 @@ const ActivityMenu = () => {
     const board = useSelector((state: AppRootState) => state.boardView.board)
     if (!board) { return null }
 
-    const { data: activites, isLoading, isError, refetch } = useGetActivitiesQuery(board.id)
+    const { data: activities, isLoading, isError, refetch } = useGetActivitiesQuery(board.id)
     if (isLoading) {
         return <div className="w-full h-full flex items-center justify-center">Loading activities...</div>
     }
@@ -29,7 +29,7 @@ const ActivityMenu = () => {
         <div className="w-full h-full flex flex-col px-4">
             <div className="w-full flex flex-col gap-2 overflow-y-scroll mt-2">
                 {
-                    activites?.map(activity => (
+                    activities && activities.data.map(activity => (
                         <ActivityItem
                             key={`activity-item-${activity.id}`}
                             activity={activity}

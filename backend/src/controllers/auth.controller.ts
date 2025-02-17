@@ -13,8 +13,6 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
         res.locals.data = result
     } catch (error) {
         res.locals.error = error
-        res.locals.message = "internal server error"
-        res.statusCode = 500
     }
     next()
 }
@@ -22,15 +20,9 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
 export const registerEmailPassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const result = await authService.registerEmailPassword(req.body)
-        res.locals = {
-            data: result,
-        }
+        res.locals.data = result
     } catch (error) {
-        res.locals = {
-            error,
-            message: "Internal server error"
-        }
-        res.statusCode = 500
+        res.locals.error = error
     }
     next()
 }
@@ -42,8 +34,6 @@ export const loginEmailPassword = async (req: Request, res: Response, next: Next
         res.locals.data = result
     } catch (error) {
         res.locals.error = error
-        res.locals.message = "internal server error"
-        res.statusCode = 500
     }
     next()
 }
@@ -60,11 +50,7 @@ export const validateEmail = async (req: Request, res: Response, next: NextFunct
             status: user == null ? true : false
         }
     } catch (error) {
-        res.locals = {
-            error,
-            message: "Internal server error"
-        }
-        res.statusCode = 500
+        res.locals = error
     }
     next()
 }

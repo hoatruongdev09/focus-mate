@@ -44,7 +44,7 @@ export class BoardThemeService {
         return await this.boardThemeRepository.find()
     }
 
-    async changeBoardTheme(board_id: number, theme_id: number) {
+    async changeBoardTheme(board_id: string, theme_id: number) {
         const board = await this.boardRepository.findOne({
             where: {
                 id: board_id

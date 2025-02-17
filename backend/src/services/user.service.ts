@@ -36,7 +36,7 @@ export class CustomerService {
                     .into(Customer)
                     .values({
                         email,
-                        password,
+                        password: await hash(password),
                         first_name,
                         last_name,
                         username: this.generateUsername(first_name, last_name)

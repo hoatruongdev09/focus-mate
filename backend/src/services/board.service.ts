@@ -34,7 +34,7 @@ export class BoardService {
             .getMany()
     }
 
-    async getBoard(board_id: number, customer_id: number): Promise<Board> {
+    async getBoard(board_id: string, customer_id: number): Promise<Board> {
         return await this.boardRepository.createQueryBuilder("board")
             .leftJoinAndSelect("board.owner", "customer")
             .leftJoinAndSelect("board.theme", "board_theme")
@@ -42,7 +42,7 @@ export class BoardService {
             .getOne()
     }
 
-    async updateBoard(board_id: number, customer_id: number, data: UpdateBoardDto): Promise<Board> {
+    async updateBoard(board_id: string, customer_id: number, data: UpdateBoardDto): Promise<Board> {
         const board = await this.boardRepository.createQueryBuilder("board")
             .leftJoinAndSelect("board.owner", "customer")
             .where("customer.id =:customer_id AND board.id =:board_id", { customer_id, board_id })
@@ -82,7 +82,7 @@ export class BoardService {
         return await this.boardRepository.save(newBoard)
 
     }
-    async unarchiveCard(board_id: number, list_id: number, card_id: number) {
+    async unarchiveCard(board_id: string, list_id: string, card_id: string) {
         const card = await this.cardRepository.findOne({
             where: {
                 id: card_id,
@@ -100,7 +100,7 @@ export class BoardService {
         card.archived = false;
         return await this.cardRepository.save(card)
     }
-    async archiveCard(board_id: number, list_id: number, card_id: number) {
+    async archiveCard(board_id: string, list_id: string, card_id: string) {
         const card = await this.cardRepository.findOne({
             where: {
                 id: card_id,
@@ -120,7 +120,7 @@ export class BoardService {
     }
 
 
-    async archiveList(board_id: number, list_id: number) {
+    async archiveList(board_id: string, list_id: string) {
         const list = await this.listRepository.findOne({
             where: {
                 id: list_id,
@@ -136,7 +136,7 @@ export class BoardService {
         return await this.listRepository.save(list)
     }
 
-    async unarchiveList(board_id: number, list_id: number) {
+    async unarchiveList(board_id: string, list_id: string) {
         const list = await this.listRepository.findOne({
             where: {
                 id: list_id,
@@ -152,7 +152,7 @@ export class BoardService {
         return await this.listRepository.save(list)
     }
 
-    async archiveOrUnarchiveCardsInList(board_id: number, list_id: number, archived: boolean) {
+    async archiveOrUnarchiveCardsInList(board_id: string, list_id: string, archived: boolean) {
         const affectedCardIds = await this.cardRepository
             .createQueryBuilder("card")
             .leftJoinAndSelect("card.list", "list")
@@ -189,7 +189,7 @@ export class BoardService {
         })
     }
 
-    async getLists(board_id: number) {
+    async getLists(board_id: string) {
         const lists: List[] = await this.listRepository
             .createQueryBuilder("list")
             .leftJoinAndSelect("list.board", "board")
@@ -207,14 +207,14 @@ export class BoardService {
         })
     }
 
-    async getList(board_id: number, list_id: number) {
+    async getList(board_id: string, list_id: string) {
         return await this.listRepository.createQueryBuilder("list")
             .leftJoinAndSelect("list.board", "board")
             .where("list.id = :list_id AND board.id = :board_id", { list_id, board_id })
             .getOne()
     }
 
-    private async getListTopRank(board_id: number) {
+    private async getListTopRank(board_id: string) {
         return await this.listRepository
             .createQueryBuilder()
             .select()
@@ -223,7 +223,7 @@ export class BoardService {
             .getOne()
     }
 
-    private async findBoard(board_id: number): Promise<Board> {
+    private async findBoard(board_id: string): Promise<Board> {
         return await this.boardRepository.createQueryBuilder("board")
             .leftJoin("board.owner", "customer")
             .leftJoinAndSelect("board.theme", "board_theme")
@@ -232,7 +232,7 @@ export class BoardService {
             .getOne()
     }
 
-    async createList(board_id: number, data: CreateListDto) {
+    async createList(board_id: string, data: CreateListDto) {
         const { name, description } = data
 
         const board = await this.findBoard(board_id)
@@ -250,7 +250,7 @@ export class BoardService {
         return await this.listRepository.save(newList)
     }
 
-    async updateList(board_id: number, id: number, data: UpdateListDto) {
+    async updateList(board_id: string, id: string, data: UpdateListDto) {
         const { name, description } = data
 
         const list = await this.listRepository.findOne({
@@ -282,7 +282,7 @@ export class BoardService {
         return await this.listRepository.save(list)
     }
 
-    async reorderList(targetId: number, frontId: number | null, behindId: number | null) {
+    async reorderList(targetId: string, frontId: string | null, behindId: string | null) {
         const lists = await this.listRepository
             .createQueryBuilder()
             .select()
@@ -301,7 +301,7 @@ export class BoardService {
         return await this.listRepository.save(targetList)
     }
 
-    async deleteList(board_id: number, id: number) {
+    async deleteList(board_id: string, id: string) {
         const list = await this.listRepository.findOne({
             where: {
                 id,
@@ -324,7 +324,7 @@ export class BoardService {
             .execute()
     }
 
-    private async getCardLowestRankInList(list_id: number) {
+    private async getCardLowestRankInList(list_id: string) {
         return await this.cardRepository
             .createQueryBuilder()
             .where("list_id = :list_id", { list_id })
@@ -332,7 +332,7 @@ export class BoardService {
             .getOne()
     }
 
-    private async getCardTopRankInList(list_id: number) {
+    private async getCardTopRankInList(list_id: string) {
         return await this.cardRepository
             .createQueryBuilder()
             .where("list_id = :list_id", { list_id })
@@ -354,7 +354,7 @@ export class BoardService {
             .getOne()
     }
 
-    async addCard(board_id: number, list_id: number, data: CreateCardDto) {
+    async addCard(board_id: string, list_id: string, data: CreateCardDto) {
 
         const list = await this.listRepository.findOne({
             where: {
@@ -386,7 +386,7 @@ export class BoardService {
         return await this.cardRepository.save(newCard)
     }
 
-    async getCards(board_id: number) {
+    async getCards(board_id: string) {
 
         const cards = await this.cardRepository
             .createQueryBuilder("card")
@@ -406,14 +406,14 @@ export class BoardService {
         })
     }
 
-    private async changeCardList(card: Card, board_id: number, list_id: number) {
+    private async changeCardList(card: Card, board_id: string, list_id: string) {
         const list = await this.getList(board_id, list_id)
         if (list == null) { throw new Error("List not found") }
         card.list = list
     }
 
 
-    async updateCard(board_id: number, card_id: number, data: UpdateCardDto) {
+    async updateCard(board_id: string, card_id: string, data: UpdateCardDto) {
 
         const card = await this.cardRepository.createQueryBuilder("card")
             .leftJoinAndSelect("card.list", "list")
@@ -472,7 +472,7 @@ export class BoardService {
         }
     }
 
-    async deleteCard(board_id: number, card_id: number) {
+    async deleteCard(board_id: string, card_id: string) {
         const card = await this.cardRepository.createQueryBuilder("card")
             .leftJoin("card.list", "list")
             .leftJoin("list.board", "board")
@@ -486,7 +486,7 @@ export class BoardService {
         await this.cardRepository.softRemove(card)
     }
 
-    async getBoardListsAndCards(board_id: number) {
+    async getBoardListsAndCards(board_id: string) {
         const lists = await this.listRepository.find({
             where: {
                 board: {
@@ -505,7 +505,7 @@ export class BoardService {
         return { cards, lists }
     }
 
-    async getCardsInList(board_id: number, list_id: number) {
+    async getCardsInList(board_id: string, list_id: string) {
         const cards = await this.cardRepository.find({
             relations: { list: true },
             where: {
@@ -520,7 +520,7 @@ export class BoardService {
         return cards
     }
 
-    async getCard(board_id: number, list_id: number, card_id: number) {
+    async getCard(board_id: string, list_id: string, card_id: string) {
         return await this.cardRepository.findOne({
             where: {
                 id: card_id,
@@ -534,7 +534,7 @@ export class BoardService {
         })
     }
 
-    async postComment(board_id: number, list_id: number, card_id: number, customer_id: number, content: string) {
+    async postComment(board_id: string, list_id: string, card_id: string, customer_id: number, content: string) {
         const comment: UserComment = new UserComment()
         comment.board_id = board_id
         comment.card_id = card_id
@@ -554,7 +554,7 @@ export class BoardService {
         return result
     }
 
-    async getComments(board_id: number, list_id: number, card_id: number) {
+    async getComments(board_id: string, list_id: string, card_id: string) {
         return await this.userCommentRepository.createQueryBuilder("comment")
             .leftJoinAndSelect("comment.customer", "customer")
             .where("comment.board_id = :board_id AND comment.list_id = :list_id AND comment.card_id = :card_id",
@@ -565,7 +565,7 @@ export class BoardService {
             .getMany()
     }
 
-    async getArchivedCards(board_id: number) {
+    async getArchivedCards(board_id: string) {
         return await this.cardRepository.createQueryBuilder("card")
             .leftJoin("card.list", "list")
             .leftJoin("list.board", "board")
@@ -573,7 +573,7 @@ export class BoardService {
             .getMany()
     }
 
-    async getArchivedLists(board_id: number) {
+    async getArchivedLists(board_id: string) {
         return await this.listRepository.createQueryBuilder("list")
             .leftJoin("list.board", "board")
             .where("board.id = :board_id AND list.archived", { board_id })

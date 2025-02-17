@@ -38,14 +38,14 @@ const ArchivedItemsMenu = () => {
     }, [setSearchValue])
 
     const tasks = useMemo(() => {
-        const casted = menuType === MenuType.Cards ? (items as Card[]) ?? [] : []
+        const casted = menuType === MenuType.Cards ? (items?.data as Card[]) ?? [] : []
         if (searchValue === "") {
             return casted
         }
         return casted.filter(c => c.title.includes(searchValue))
     }, [menuType, items, searchValue])
     const groups = useMemo(() => {
-        const casted = menuType === MenuType.Lists ? (items as List[]) ?? [] : []
+        const casted = menuType === MenuType.Lists ? (items?.data as List[]) ?? [] : []
         if (searchValue == "") {
             return casted
         }

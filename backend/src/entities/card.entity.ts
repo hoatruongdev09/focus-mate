@@ -6,10 +6,10 @@ import UserComment from "./user-comment.entity"
 @Entity()
 export class Card {
     @PrimaryGeneratedColumn()
-    id: number
+    id: string
 
     @Column()
-    list_id: number
+    list_id: string
 
     @Column()
     title: string

@@ -7,11 +7,11 @@ import UserComment from "./user-comment.entity";
 @Entity()
 export class List {
 
-    @PrimaryGeneratedColumn()
-    id: number
+    @PrimaryGeneratedColumn("uuid")
+    id: string
 
     @Column()
-    board_id: number
+    board_id: string
 
     @Column()
     name: string

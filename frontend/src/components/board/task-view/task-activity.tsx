@@ -23,8 +23,9 @@ const TaskActivity = (props: Props) => {
     } = useGetCardCommentsQuery({ board_id: board.id, column_id: group_id, card_id: id })
 
     useEffect(() => {
-        if (isLoadingCommentsSuccess) {
-            setTaskComments(comments)
+        if (comments && comments.data) {
+            console.log(comments.data)
+            setTaskComments(comments.data)
         }
     }, [comments, isLoadingCommentsError, isLoadingCommentsSuccess])
 

@@ -108,7 +108,7 @@ export class BoardActivityService {
         this.getBoardActivityRepository().save(activity)
     }
 
-    async getBoardActivities(board_id: number) {
+    async getBoardActivities(board_id: string) {
         const activities = await this.boardActivityRepository
             .createQueryBuilder("board_activity")
             .leftJoin("board_activity.board", "board")

@@ -41,7 +41,7 @@ const LoginPage = () => {
         try {
             const data = await loginEmailPassword(formState)
             if (data.data) {
-                navigate(`/${data.data.data.user.username}/w`)
+                navigate(`/home`)
             }
         } catch (err) {
             console.error(err)

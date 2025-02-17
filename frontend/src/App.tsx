@@ -1,5 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import WorkspaceBoardView from "./pages/workspace-kanban-board-page";
+import WorkspaceBoardView from "./pages/workspace-board-view";
 import LandingPage from "./pages/landing-page";
 import HomeBoardsPage from "./pages/home-boards-page";
 import HomeLayout from "./layouts/home-layout";
