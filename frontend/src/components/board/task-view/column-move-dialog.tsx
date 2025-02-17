@@ -16,7 +16,7 @@ function ColumnMoveDialog(props: Props) {
     const { isActive, hide } = props
     const dispatch = useDispatch()
     const { viewingTask, columns, tasks, board } = useSelector((state: AppRootState) => state.boardView)
-    const [selectingColumnId, setSelectingColumnId] = useState<number>(viewingTask?.list_id ?? 0)
+    const [selectingColumnId, setSelectingColumnId] = useState<string | undefined>(viewingTask?.list_id)
 
     const [updateTask] = useUpdateCardMutation()
 
@@ -28,9 +28,10 @@ function ColumnMoveDialog(props: Props) {
     const ref = useClickOutside(hide, [], [hide])
 
     const onChangeColumn = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
-        const colId: number = +e.target.value
+        const colId: string = e.target.value
         setSelectingColumnId(colId)
-        if (colId == viewingTask?.list_id) {
+        if (!viewingTask) { return }
+        if (colId == viewingTask.list_id) {
             setSelectingPosition(currentTaskIndex)
         } else {
             setSelectingPosition(0)
@@ -44,7 +45,7 @@ function ColumnMoveDialog(props: Props) {
     const doUpdateTask = useCallback(async (data: UpdateCardData) => {
         const { data: updatedTask, error } = await updateTask(data)
         if (updatedTask) {
-            dispatch(setViewingTask(updatedTask))
+            dispatch(setViewingTask(updatedTask.data))
             hide()
         }
     }, [dispatch, updateTask, hide])
@@ -56,11 +57,12 @@ function ColumnMoveDialog(props: Props) {
             ...viewingTask,
             board_id: board.id
         }
+        if (!selectingColumnId) { return }
         if (selectingPosition != currentTaskIndex || selectingColumnId != viewingTask.list_id) {
             data.list_id = selectingColumnId
             if (filteredTasks.length > 0) {
-                const behindTaskId: number | null = selectingPosition >= filteredTasks.length ? null : filteredTasks[selectingPosition].task.id
-                const frontTaskId: number | null = selectingPosition - 1 < 0 ? null : filteredTasks[selectingPosition - 1].task.id
+                const behindTaskId: string | null = selectingPosition >= filteredTasks.length ? null : filteredTasks[selectingPosition].task.id
+                const frontTaskId: string | null = selectingPosition - 1 < 0 ? null : filteredTasks[selectingPosition - 1].task.id
                 data.behind_id = behindTaskId
                 data.front_id = frontTaskId
             }

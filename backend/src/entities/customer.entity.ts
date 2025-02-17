@@ -8,8 +8,8 @@ import Workspace from "./workspace.entity";
 @Entity()
 export default class Customer {
 
-    @PrimaryGeneratedColumn()
-    id: number
+    @PrimaryGeneratedColumn("uuid")
+    id: string
 
     @Column({
         unique: true,

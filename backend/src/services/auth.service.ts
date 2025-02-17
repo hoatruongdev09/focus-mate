@@ -17,7 +17,7 @@ export class AuthService {
         this.workspaceService = workspaceService
     }
 
-    async refreshToken(user_id: number) {
+    async refreshToken(user_id: string) {
         const user = await this.customerService.getData(user_id)
         const accessToken = this.generateToken(user.id, user.role, tokenSecret, '24h')
         const refreshToken = this.generateToken(user.id, user.role, refreshTokenSecret, 60 * 60 * 24 * 30)
@@ -66,7 +66,7 @@ export class AuthService {
 
 
 
-    generateToken = (id: number, role: number, secret: string, expire: string | number) => {
+    generateToken = (id: string, role: number, secret: string, expire: string | number) => {
         const payload = { id, role }
         return jwt.sign(payload, secret, { expiresIn: expire })
     }

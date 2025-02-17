@@ -8,7 +8,7 @@ export enum WorkspaceRole {
 }
 
 export type Workspace = {
-    id: number
+    id: string
     name: string
     description: string
     short_name: string
@@ -16,8 +16,8 @@ export type Workspace = {
 }
 
 export type WorkspaceMember = {
-    workspace_id: number
-    user_id: number
+    workspace_id: string
+    user_id: string
     role: WorkspaceRole
     user: UserData
 }

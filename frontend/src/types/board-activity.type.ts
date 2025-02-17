@@ -3,7 +3,7 @@ import { Card } from "./board.type";
 export type BoardActivity = {
     id: number
     board_id: string
-    owner_id: number
+    owner_id: string
     card_id: string | null
     list_id: string | null
     action: number

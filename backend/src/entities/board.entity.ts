@@ -12,7 +12,7 @@ export default class Board {
     id: string
 
     @Column()
-    owner_id: number
+    owner_id: string
 
     @Column({
         unique: true,
@@ -30,7 +30,7 @@ export default class Board {
     theme_id: number
 
     @Column()
-    workspace_id: number
+    workspace_id: string
 
     @CreateDateColumn()
     created_at: Date

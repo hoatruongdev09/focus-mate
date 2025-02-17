@@ -26,7 +26,7 @@ export class BoardService {
         this.userCommentRepository = dataSource.getRepository(UserComment)
     }
 
-    async getBoards(customer_id: number): Promise<Board[]> {
+    async getBoards(customer_id: string): Promise<Board[]> {
         return await this.boardRepository.createQueryBuilder("board")
             .leftJoinAndSelect("board.owner", "customer")
             .leftJoinAndSelect("board.theme", "board_theme")
@@ -34,7 +34,7 @@ export class BoardService {
             .getMany()
     }
 
-    async getBoard(board_id: string, customer_id: number): Promise<Board> {
+    async getBoard(board_id: string, customer_id: string): Promise<Board> {
         return await this.boardRepository.createQueryBuilder("board")
             .leftJoinAndSelect("board.owner", "customer")
             .leftJoinAndSelect("board.theme", "board_theme")
@@ -42,7 +42,7 @@ export class BoardService {
             .getOne()
     }
 
-    async updateBoard(board_id: string, customer_id: number, data: UpdateBoardDto): Promise<Board> {
+    async updateBoard(board_id: string, customer_id: string, data: UpdateBoardDto): Promise<Board> {
         const board = await this.boardRepository.createQueryBuilder("board")
             .leftJoinAndSelect("board.owner", "customer")
             .where("customer.id =:customer_id AND board.id =:board_id", { customer_id, board_id })
@@ -59,7 +59,7 @@ export class BoardService {
 
     }
 
-    async createBoard(customer_id: number, data: CreateBoardDto): Promise<Board> {
+    async createBoard(customer_id: string, data: CreateBoardDto): Promise<Board> {
         const { title, description } = data
         const existBoard = await this.boardRepository.findOne({
             where: {
@@ -534,7 +534,7 @@ export class BoardService {
         })
     }
 
-    async postComment(board_id: string, list_id: string, card_id: string, customer_id: number, content: string) {
+    async postComment(board_id: string, list_id: string, card_id: string, customer_id: string, content: string) {
         const comment: UserComment = new UserComment()
         comment.board_id = board_id
         comment.card_id = card_id

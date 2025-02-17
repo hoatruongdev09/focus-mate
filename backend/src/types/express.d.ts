@@ -2,7 +2,7 @@ import "express"
 
 declare module "express" {
     interface Request {
-        customer_id?: number | undefined
+        customer_id?: string | undefined
         customer_role?: number | undefined
     }
 

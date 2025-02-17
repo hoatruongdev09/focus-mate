@@ -105,7 +105,7 @@ export type UpdateListData = {
 
 export type CardComment = {
     id: number
-    user_id: number
+    user_id: string
     board_id: string
     list_id: string
     card_id: string
@@ -113,7 +113,7 @@ export type CardComment = {
     created_at: Date
     updated_at: Date
     customer: {
-        id: number
+        id: string
         first_name: number
         last_name: number
     }

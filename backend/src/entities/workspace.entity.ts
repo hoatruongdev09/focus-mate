@@ -4,8 +4,8 @@ import WorkspaceMember from "./workspace-member.entity";
 
 @Entity()
 export default class Workspace {
-    @PrimaryGeneratedColumn()
-    id: number
+    @PrimaryGeneratedColumn("uuid")
+    id: string
 
     @Column({ unique: true })
     short_name: string

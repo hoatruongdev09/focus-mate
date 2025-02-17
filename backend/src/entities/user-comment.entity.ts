@@ -10,7 +10,7 @@ export default class UserComment {
     id: number
 
     @Column()
-    customer_id: number
+    customer_id: string
 
     @Column()
     board_id: string

@@ -19,7 +19,7 @@ export class WorkspaceService {
         this.boardRepository = dataSource.getRepository(Board)
     }
 
-    async createWorkspace(user_id: number, short_name: string, name: string, description: string) {
+    async createWorkspace(user_id: string, short_name: string, name: string, description: string) {
         const workspace = new Workspace()
         workspace.name = name
         workspace.short_name = short_name
@@ -35,7 +35,7 @@ export class WorkspaceService {
 
         return await this.getWorkspace(newWorkspace.id)
     }
-    async getWorkspace(id: number) {
+    async getWorkspace(id: string) {
         return this.workspaceRepository
             .createQueryBuilder("workspace")
             .leftJoinAndSelect("workspace.members", "workspace_member")
@@ -51,7 +51,7 @@ export class WorkspaceService {
             .getOne()
     }
 
-    async updateWorkspace(workspace_id: number, data: UpdateWorkspaceDto) {
+    async updateWorkspace(workspace_id: string, data: UpdateWorkspaceDto) {
         const workspace = await this.getWorkspace(workspace_id)
         if (!workspace) {
             throw new Error("Work space not found")
@@ -74,7 +74,7 @@ export class WorkspaceService {
         return await this.getWorkspace(workspace_id)
     }
 
-    async getBoardsInWorkspace(workspace_id: number, customer_id: number) {
+    async getBoardsInWorkspace(workspace_id: string, customer_id: string) {
         const boards = await this.boardRepository.createQueryBuilder("board")
             .leftJoin("board.workspace", "workspace")
             .leftJoinAndSelect("board.owner", "customer")
@@ -85,7 +85,7 @@ export class WorkspaceService {
         return boards
     }
 
-    async getBoardsInWorkspaceByShortname(short_name: string, customer_id: number) {
+    async getBoardsInWorkspaceByShortname(short_name: string, customer_id: string) {
         const boards = await this.boardRepository.createQueryBuilder("board")
             .leftJoin("board.workspace", "workspace")
             .leftJoinAndSelect("board.owner", "customer")
@@ -96,7 +96,7 @@ export class WorkspaceService {
         return boards
     }
 
-    async getWorkspaces(user_id: number) {
+    async getWorkspaces(user_id: string) {
         return await this.workspaceRepository.createQueryBuilder("workspace")
             .leftJoinAndSelect("workspace.members", "workspace_member")
             .leftJoinAndSelect("workspace_member.user", "user")
@@ -108,7 +108,7 @@ export class WorkspaceService {
             .getMany()
     }
 
-    async addBoard(customer_id: number, workspace_id: number, data: CreateBoardDto) {
+    async addBoard(customer_id: string, workspace_id: string, data: CreateBoardDto) {
         const { title, description } = data
 
         let board = await this.boardRepository.createQueryBuilder("board")

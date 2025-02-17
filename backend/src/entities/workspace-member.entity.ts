@@ -5,10 +5,10 @@ import Customer from "./customer.entity";
 @Entity()
 export default class WorkspaceMember {
     @PrimaryColumn()
-    workspace_id: number
+    workspace_id: string
 
     @PrimaryColumn()
-    user_id: number
+    user_id: string
 
     @Column({ default: 0 })
     role: number

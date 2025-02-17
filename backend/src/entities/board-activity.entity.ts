@@ -13,7 +13,7 @@ export default class BoardActivity {
     board_id: string
 
     @Column()
-    owner_id: number
+    owner_id: string
 
     @Column({ nullable: true })
     card_id?: string | null

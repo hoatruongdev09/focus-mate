@@ -15,40 +15,40 @@ export enum BoardActivityEvent {
 }
 
 export type CreateBoardEventData = {
-    customer_id: number
+    customer_id: string
     board: Board
 }
 
 export type AddListEventData = {
-    customer_id: number
+    customer_id: string
     list: List
 }
 
 export type RemoveListEventData = {
-    customer_id: number
+    customer_id: string
     list_id: string
 }
 
 export type AddCardEventData = {
-    customer_id: number
+    customer_id: string
     card: Card
 }
 
 export type RemoveCardEventData = {
-    customer_id: number
+    customer_id: string
     list_id: string
     card_id: string
 }
 
 export type AchieveCardEventData = {
-    customer_id: number
+    customer_id: string
     list_id: string
     board_id: string
     card_id: string
 }
 
 export type AchieveListEventData = {
-    customer_id: number
+    customer_id: string
     board_id: string
     list_id: string
 }

@@ -60,7 +60,7 @@ export class CustomerService {
     }
 
 
-    async getData(id: number) {
+    async getData(id: string) {
         const customer = await this.userRepository.findOne({
             where: { id }
         })

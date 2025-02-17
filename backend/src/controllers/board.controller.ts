@@ -55,9 +55,8 @@ export const fetchBoard = async (req: Request, res: Response, next: NextFunction
 export const getBoard = async (req: Request, res: Response, next: NextFunction) => {
     const { customer_id } = req
     const { board_id } = req.params
-
     try {
-        res.locals.data = await boardService.getBoard(board_id, +customer_id)
+        res.locals.data = await boardService.getBoard(board_id, customer_id)
     } catch (error) {
         res.locals.error = error
     }
@@ -69,7 +68,7 @@ export const updateBoard = async (req: Request, res: Response, next: NextFunctio
     const { board_id } = req.params
     const data: UpdateBoardDto = req.body
     try {
-        res.locals.data = await boardService.updateBoard(board_id, +customer_id, data)
+        res.locals.data = await boardService.updateBoard(board_id, customer_id, data)
     } catch (error) {
         res.locals.error = error
     }

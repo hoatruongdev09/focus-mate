@@ -11,7 +11,7 @@ export type ResponseData = {
 const resultResponse = (req: Request, res: Response) => {
     const { error, data, message, responseCode, status } = res.locals
     const { statusCode } = res
-    console.log(`${error} ${data} ${message} ${responseCode} ${statusCode}`)
+    console.log(`${req.path} ${error} ${data} ${message} ${responseCode} ${statusCode}`)
     res.status(statusCode ?? (error ? 500 : 200)).json({
         status: error != null,
         error: error ?? null,
