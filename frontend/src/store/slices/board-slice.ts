@@ -46,7 +46,7 @@ export const boardViewSlice = createSlice({
         setViewingTask: (state, action: PayloadAction<Card | null>) => {
             state.viewingTask = action.payload
         },
-        changeTaskGroup: (state, action: PayloadAction<{ id: number, groupId: number }>) => {
+        changeTaskGroup: (state, action: PayloadAction<{ id: string, groupId: string }>) => {
             const index = state.tasks.findIndex(t => t.task.id === action.payload.id)
             if (index == -1) { return }
             if (state.tasks[index].nextTimeUpdate > Date.now()) { return }

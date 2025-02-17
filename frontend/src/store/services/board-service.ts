@@ -25,7 +25,7 @@ export const boardApi = createApi({
             query: () => `/board`,
             providesTags: ['board']
         }),
-        getWorkspaceBoards: builder.query<ServerResponse<Board[]>, number>({
+        getWorkspaceBoards: builder.query<ServerResponse<Board[]>, string>({
             query: (workspace_id) => `workspace/${workspace_id}/boards`,
             providesTags: ['board']
         }),

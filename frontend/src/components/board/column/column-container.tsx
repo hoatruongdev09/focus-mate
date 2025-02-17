@@ -11,7 +11,7 @@ interface Props {
     isOverlay?: boolean
     targetHeight?: number
     column: List
-    setRef?: (id: number, node: HTMLElement) => void
+    setRef?: (id: string, node: HTMLElement) => void
     tasks: Card[]
 }
 

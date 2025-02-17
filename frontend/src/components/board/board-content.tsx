@@ -39,9 +39,9 @@ function BoardContent() {
 
     const renderColumns = useMemo(() => columns.filter(t => !t.archived), [columns])
     const columnIds = useMemo(() => columns.map(col => `${DraggingItem.COLUMN}_${col.id}`), [renderColumns])
-    const columnHeightRef = useRef<{ [id: number]: number }>({})
+    const columnHeightRef = useRef<{ [id: string]: number }>({})
 
-    const setColumnRef = useCallback((id: number, node: HTMLElement) => {
+    const setColumnRef = useCallback((id: string, node: HTMLElement) => {
         columnHeightRef.current[id] = node.clientHeight
     }, [])
 
@@ -65,8 +65,7 @@ function BoardContent() {
         }
     }, [dispatch]);
 
-    const doReorderColumn = useCallback(async (column: List, frontId: number | null, behindId: number | null) => {
-        if (!frontId && !behindId) { return; }
+    const doReorderColumn = useCallback(async (column: List, frontId: string | null, behindId: string | null) => {
         if (column == null) { return; }
         await requestUpdateColumn({
             ...column,
@@ -75,8 +74,8 @@ function BoardContent() {
         });
     }, [requestUpdateColumn]);
 
-    const doReorderTask = useCallback(async (task: Card, frontTaskId: number | null, behindTaskId: number | null) => {
-        if (!frontTaskId && !behindTaskId) { return; }
+    const doReorderTask = useCallback(async (task: Card, frontTaskId: string | null, behindTaskId: string | null) => {
+        console.log(`update task ${frontTaskId} ${behindTaskId}`)
         if (!task || !board) { return; }
         await requestUpdateTask({
             ...task,
@@ -98,16 +97,16 @@ function BoardContent() {
         const frontColumnIndex = activeColumnIndex - 1;
         const behindColumnIndex = activeColumnIndex + 1;
 
-        const frontColumnId: number | null = frontColumnIndex < 0 ? null : resultColumns[frontColumnIndex].id;
-        const behindColumnId: number | null = behindColumnIndex >= renderColumns.length ? null : resultColumns[behindColumnIndex].id;
+        const frontColumnId: string | null = frontColumnIndex < 0 ? null : resultColumns[frontColumnIndex].id;
+        const behindColumnId: string | null = behindColumnIndex >= renderColumns.length ? null : resultColumns[behindColumnIndex].id;
 
         dispatch(setColumns(resultColumns));
         doReorderColumn(resultColumns[activeColumnIndex], frontColumnId, behindColumnId);
     }, [renderColumns, dispatch, doReorderColumn]);
 
     const dropTask = useCallback((activeId: UniqueIdentifier, overId: UniqueIdentifier) => {
-        const activeTaskId = +activeId.toString().replace(`${DraggingItem.TASK}_`, '');
-        const overTaskId = +overId.toString().replace(`${DraggingItem.TASK}_`, '');
+        const activeTaskId = activeId.toString().replace(`${DraggingItem.TASK}_`, '');
+        const overTaskId = overId.toString().replace(`${DraggingItem.TASK}_`, '');
         let activeTaskIndex = renderTasks.findIndex(t => t.task.id === activeTaskId);
         if (activeTaskIndex == -1) { return; }
         let overTaskIndex = renderTasks.findIndex(t => t.task.id === overTaskId);
@@ -117,8 +116,8 @@ function BoardContent() {
         const frontTaskIndex = activeTaskIndex - 1;
         const behindTaskIndex = activeTaskIndex + 1;
 
-        const frontTaskId: number | null = frontTaskIndex < 0 ? null : resultTasks[frontTaskIndex].task.id;
-        const behindTaskId: number | null = behindTaskIndex >= resultTasks.length ? null : resultTasks[behindTaskIndex].task.id;
+        const frontTaskId: string | null = frontTaskIndex < 0 ? null : resultTasks[frontTaskIndex].task.id;
+        const behindTaskId: string | null = behindTaskIndex >= resultTasks.length ? null : resultTasks[behindTaskIndex].task.id;
         dispatch(setTasks(resultTasks));
         doReorderTask(resultTasks[activeTaskIndex].task, behindTaskId, frontTaskId);
     }, [renderTasks, dispatch, doReorderTask]);
@@ -141,8 +140,8 @@ function BoardContent() {
     }, [dispatch, dropColumn, dropTask]);
 
     const moveTaskOverTask = useCallback((activeId: UniqueIdentifier, overId: UniqueIdentifier) => {
-        const activeTaskId = +activeId.toString().replace(`${DraggingItem.TASK}_`, '');
-        const overTaskId = +overId.toString().replace(`${DraggingItem.TASK}_`, '');
+        const activeTaskId = activeId.toString().replace(`${DraggingItem.TASK}_`, '');
+        const overTaskId = overId.toString().replace(`${DraggingItem.TASK}_`, '');
         const activeTask = renderTasks.find(t => t.task.id === activeTaskId);
         if (!activeTask) { return; }
         const overTask = renderTasks.find(t => t.task.id === overTaskId);
@@ -152,10 +151,10 @@ function BoardContent() {
     }, [renderTasks, dispatch]);
 
     const moveTaskOverColumn = useCallback((activeId: UniqueIdentifier, overId: UniqueIdentifier) => {
-        const id = +activeId.toString().replace(`${DraggingItem.TASK}_`, '');
-        const task = renderTasks.find(t => t.task.id === id);
+        const id = activeId.toString().replace(`${DraggingItem.TASK}_`, '');
+        const task = renderTasks.find(t => t.task.id === id)
         if (!task) { return; }
-        const groupId = Number((overId as string).split("_")[1]);
+        const groupId = (overId as string).split("_")[1]
         if (task.task.list_id == groupId) { return; }
         dispatch(changeTaskGroup({ id: task.task.id, groupId }));
     }, [renderTasks, dispatch]);

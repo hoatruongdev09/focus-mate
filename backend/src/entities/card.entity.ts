@@ -5,7 +5,7 @@ import UserComment from "./user-comment.entity"
 
 @Entity()
 export class Card {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid")
     id: string
 
     @Column()
