@@ -29,7 +29,7 @@ function App() {
 
           <Route path="w/:workspace_short_name" element={<WorkspaceLayout />}>
             <Route path="boards" element={<WorkspaceBoardsPage />} />
-            <Route path=":board_id" element={<WorkspaceBoardView />} />
+            <Route path=":board_name" element={<WorkspaceBoardView />} />
           </Route>
 
 

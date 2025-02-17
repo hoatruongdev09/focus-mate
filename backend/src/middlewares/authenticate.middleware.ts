@@ -1,18 +1,27 @@
 import { NextFunction, Request, Response } from "express";
 import { JwtPayload } from 'jsonwebtoken'
 import { authService } from "../services/auth.service";
+import resultResponse from "./result-response.middleware";
 
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
     const { authorization } = req.headers
     if (!authorization) {
-        res.status(401).json({ error: "unauthorized" })
+        req.isError = true
+        res.locals.message = "unauthorized"
+        res.locals.status = false
+        res.statusCode = 401
+        resultResponse(req, res)
         return
     }
 
     const [tag, token] = authorization.split(" ")
 
     if (tag !== 'Bearer') {
-        res.status(401).json({ error: "unauthorized" })
+        req.isError = true
+        res.locals.message = "unauthorized"
+        res.locals.status = false
+        res.statusCode = 401
+        resultResponse(req, res)
         return
     }
 
@@ -22,7 +31,10 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
         req.customer_role = role
         next()
     } catch (error) {
-        console.error(error)
-        res.status(401).json(error)
+        req.isError = true
+        res.locals.message = "unauthorized"
+        res.locals.status = false
+        res.statusCode = 401
+        resultResponse(req, res)
     }
 }

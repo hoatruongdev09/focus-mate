@@ -19,20 +19,20 @@ function LeftSideBar(props: Props) {
     const [isOpen, setIsOpen] = useState(true)
     const board = useSelector((state: AppRootState) => state.boardView.board)
     const location = useLocation()
-    const { board_id } = useParams()
+    const { board_name } = useParams()
 
     const [selectingMenu, setSelectingMenu] = useState<string>("")
 
     useEffect(() => {
         console.log(location)
-        console.log(board_id)
-        if (board_id) {
-            setSelectingMenu(board_id)
+        console.log(board_name)
+        if (board_name) {
+            setSelectingMenu(board_name)
             return
         }
         const splits = location.pathname.split("/")
         setSelectingMenu(splits[splits.length - 1])
-    }, [location, board_id])
+    }, [location, board_name])
 
     const handleOpenCreateBoard = () => {
         dispatch(setCurrentWorkspace(workspace))
@@ -103,11 +103,11 @@ function LeftSideBar(props: Props) {
                         </div>
                         <div className="flex flex-col">
                             {
-                                boards.map(b => (
+                                boards && boards.map(b => (
                                     <Link
                                         key={`size-bar-board-${b.id}`}
-                                        to={`/w/${workspace.short_name}/${b.id}`}
-                                        className={`flex items-center gap-2 px-2 py-2 hover:bg-zinc-700 hover:bg-opacity-50 bg-opacity-50 ${b.id.toString() == selectingMenu ? "bg-zinc-600" : ""}`}
+                                        to={`/w/${workspace.short_name}/${b.name}`}
+                                        className={`flex items-center gap-2 px-2 py-2 hover:bg-zinc-700 hover:bg-opacity-50 bg-opacity-50 ${b.name == selectingMenu ? "bg-zinc-600" : ""}`}
                                     >
                                         <div
                                             style={getBoardBackgroundStyle(b)}

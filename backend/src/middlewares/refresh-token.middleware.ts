@@ -12,10 +12,8 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
     }
 
     const [tag, token] = authorization.split(" ")
-    console.log(`tag: ${tag}, token: ${token}`)
 
     if (tag !== 'Refresh') {
-        console.log("tag wtf")
         res.status(403).json({ error: "unauthorized" })
         return
     }

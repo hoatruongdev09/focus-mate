@@ -33,6 +33,8 @@ const WorkspaceBoardsPage = () => {
         error: loadBoadsError
     } = useGetWorkspaceBoardsByShortNameQuery(workspace_short_name)
 
+
+
     if (isLoadingWorkspace || isLoadingBoards) {
         return <>Loading</>
     }
@@ -46,7 +48,7 @@ const WorkspaceBoardsPage = () => {
     }
     const onAddNewWorkspace = () => {
         if (!workspace) { return }
-        dispatch(setCurrentWorkspace(workspace))
+        dispatch(setCurrentWorkspace(workspace!.data))
         dispatch(setShowCreateBoardModal(true))
     }
 
@@ -58,8 +60,8 @@ const WorkspaceBoardsPage = () => {
                     <HomeWorkspaceContext.Provider value={{ isEditInfo, handleSetEditInfo }}>
                         {
                             isEditInfo ?
-                                <WorkspaceInfoEditForm workspace={workspace} /> :
-                                <WorkspaceInfoView workspace={workspace} />
+                                <WorkspaceInfoEditForm workspace={workspace!.data} /> :
+                                <WorkspaceInfoView workspace={workspace!.data} />
                         }
                     </HomeWorkspaceContext.Provider>
                 </div>
@@ -105,10 +107,10 @@ const WorkspaceBoardsPage = () => {
                 <div className="flex flex-wrap items-center w-full gap-2 mt-6 px-10">
                     {
 
-                        boards && boards.map(b => (
+                        (boards && boards.data) && boards.data.map(b => (
                             <NavLink
-                                to={`/w/${workspace?.short_name}/${b.id}`}
-                                key={`board-link-${b.id}`}
+                                to={`/w/${workspace!.data.short_name}/${b.name}`}
+                                key={`board-link-${b.name}`}
                             >
                                 <BoardLinkItem board={b} />
                             </NavLink>

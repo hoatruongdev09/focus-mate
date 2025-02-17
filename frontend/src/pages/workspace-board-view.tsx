@@ -1,54 +1,28 @@
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import KanbanBoard from "../components/board/kanban-board"
 import KanbanBoardTitle from "../components/board/kanban-board-title"
-import { useGetBoardQuery, useGetListsQuery, useGetCardsQuery } from "../store/services/board-service"
+import { useGetBoardByNameQuery } from "../store/services/board-service"
 import { useEffect } from "react"
-import { setBoard, setColumns, setTasks } from "../store/slices/board-slice"
+import { setBoard } from "../store/slices/board-slice"
 import { Navigate, useLocation, useParams } from "react-router-dom"
 import RightSideBar from "../components/right-side-bar/right-side-bar"
-import { AppRootState } from "../store/store"
 
 
 const WorkspaceBoardView = () => {
-    const { board_id } = useParams()
+    const { workspace_short_name, board_name } = useParams()
     const dispatch = useDispatch()
     const location = useLocation()
 
-    if (!board_id) {
+    if (!board_name || !workspace_short_name) {
         return <Navigate to={'/'} state={{ from: location }} />
     }
-    const selectedBoard = useSelector((state: AppRootState) => state.boardView.board)
-    const { data: board, isLoading: isLoadingBoard } = useGetBoardQuery(board_id)
-    const { data: columns, isLoading: isLoadingColumns } = useGetListsQuery(board_id)
-    const { data: tasks, isLoading: isLoadingTasks } = useGetCardsQuery(board_id)
+    const {
+        data: board,
+        isLoading: isLoadingBoard,
+        isError: isLoadBoardError,
+        error: loadBoardError
+    } = useGetBoardByNameQuery({ workspace_short_name, board_name })
 
-    useEffect(() => {
-        return () => {
-            dispatch(setBoard(null))
-        }
-    }, [])
-
-    useEffect(() => {
-        console.log("column: ", columns)
-        if (columns && columns.data.length) {
-            dispatch(setColumns([...columns.data].reverse()))
-        }
-        else {
-            dispatch(setColumns([]))
-        }
-    }, [columns])
-
-    useEffect(() => {
-        if (tasks && tasks.data.length) {
-            dispatch(setTasks(tasks.data.map(t => ({
-                task: t,
-                nextTimeUpdate: Date.now()
-            }))))
-        }
-        else {
-            dispatch(setTasks([]))
-        }
-    }, [tasks])
 
     useEffect(() => {
         if (board && board.data) {
@@ -56,20 +30,38 @@ const WorkspaceBoardView = () => {
         }
     }, [board])
 
+    useEffect(() => {
+        return () => {
+            dispatch(setBoard(null))
+        }
+    }, [])
 
-    if (isLoadingColumns || isLoadingTasks || isLoadingBoard || !selectedBoard) {
+
+    if (isLoadingBoard) {
         return (<>Loading</>)
     }
+
+    if (isLoadBoardError) {
+        return <>{JSON.stringify(loadBoardError)}</>
+    }
+
+
 
     return (
         <>
             <div className="flex flex-col flex-1">
-                <KanbanBoardTitle
-                    board={selectedBoard}
-                />
+                {
+                    board && <KanbanBoardTitle
+                        board={board.data}
+                    />
+                }
                 <div className="flex-1 relative">
                     <div className="absolute left-0 right-0 top-0 bottom-0">
-                        <KanbanBoard />
+                        {
+                            board && <KanbanBoard
+                                board={board.data}
+                            />
+                        }
                     </div>
                 </div>
             </div>

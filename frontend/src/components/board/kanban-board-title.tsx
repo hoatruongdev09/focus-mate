@@ -13,10 +13,10 @@ function KanbanBoardTitle(props: Props) {
     const { handleSetShowRightBar } = useContext(WorkspaceBoardContext)
 
     let bgStyle: React.CSSProperties | undefined = undefined
-    console.log("board theme: ", board)
     if (board.theme) {
         bgStyle = { background: `${board.theme.fg_value}80` }
     } else {
+        console.log("board theme: sd", board.theme)
         bgStyle = { background: "#fff" }
     }
 

@@ -66,8 +66,8 @@ const WorkspaceLayout = () => {
                 className="fixed left-0 right-0 top-10 bottom-0 flex items-stretch transition-all duration-300"
             >
                 <LeftSideBar
-                    workspace={workspace!}
-                    boards={boards!}
+                    workspace={workspace!.data}
+                    boards={boards!.data}
                 />
                 <Outlet />
             </div>

@@ -18,7 +18,7 @@ const HomeBoardsPage = () => {
                 <div className="flex flex-col gap-2 mt-3">
 
                     {
-                        workspaces && workspaces.map(w => (
+                        workspaces && workspaces.data.map(w => (
                             <WorkspaceItem key={`workspace-item-${w.id}`} workspace={w} />
                         ))
                     }

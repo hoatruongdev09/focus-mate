@@ -36,6 +36,10 @@ export const boardApi = createApi({
         getBoard: builder.query<ServerResponse<Board>, string>({
             query: (data) => `/board/${data}`
         }),
+        getBoardByName: builder.query<ServerResponse<Board>, { workspace_short_name: string, board_name: string }>({
+            query: (data) => `workspace/short-name/${data.workspace_short_name}/boards/${data.board_name}`,
+            providesTags: ['board']
+        }),
         createBoard: builder.mutation<ServerResponse<Board>, CreateBoardData>({
             query: data => ({
                 url: `/workspace/${data.workspace_id}/boards`,
@@ -193,5 +197,6 @@ export const {
     useGetArchivedCardsQuery,
     useGetActivitiesQuery,
     useGetWorkspaceBoardsQuery,
-    useGetWorkspaceBoardsByShortNameQuery
+    useGetWorkspaceBoardsByShortNameQuery,
+    useGetBoardByNameQuery
 } = boardApi

@@ -15,7 +15,7 @@ const MainMenu = (props: Props) => {
 
     const bgStyle: CSSProperties = board && board.theme ? { background: board.theme.bg_value } : { background: "#fff" }
 
-    const isAdmin = userData?.id == board?.owner.id
+    const isAdmin = userData?.id == board?.owner?.id
 
     return (
         <>

@@ -130,6 +130,17 @@ export class WorkspaceService {
         return await this.boardRepository.save(board)
     }
 
+    async getBoardByName(short_name: string, board_name: string) {
+        const board = await this.boardRepository
+            .createQueryBuilder("board")
+            .leftJoin("board.workspace", "workspace")
+            .leftJoinAndSelect("board.owner", "user")
+            .leftJoinAndSelect("board.theme", "board_theme")
+            .where("workspace.short_name = :short_name AND board.name LIKE :board_name", { short_name, board_name })
+            .getOne()
+
+        return board
+    }
 
 }
 

@@ -48,10 +48,10 @@ const WorkspaceItem = (props: Props) => {
             {/* boards */}
             <div className="flex gap-2 flex-wrap items-center ">
                 {
-                    data && data.map(b => (
+                    data && data.data.map(b => (
                         <Link
-                            to={`/w/${workspace.short_name}/${b.id}`}
-                            key={`board-link-${b.id}`}
+                            to={`/w/${workspace.short_name}/${b.name}`}
+                            key={`board-link-${b.name}`}
                         >
                             <BoardLinkItem board={b} />
                         </Link>

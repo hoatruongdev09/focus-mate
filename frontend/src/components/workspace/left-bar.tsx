@@ -17,7 +17,7 @@ const LeftBar = () => {
 
     useEffect(() => {
         if (!workspaces) { return }
-        setExpandedWs(workspaces.map((w) => false))
+        setExpandedWs(workspaces.data.map((w) => false))
     }, [workspaces])
 
     if (isFetchingWorkspaces) {
@@ -59,7 +59,7 @@ const LeftBar = () => {
 
             <ul className="mt-2">
                 {
-                    workspaces?.map((w, index) => (
+                    workspaces && workspaces.data.map((w, index) => (
                         <div key={`workspace-li-${w.id}`}>
                             <ListItem
                                 className="rounded"
