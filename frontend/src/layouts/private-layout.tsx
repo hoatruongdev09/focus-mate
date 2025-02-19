@@ -1,15 +1,13 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom"
+import { Outlet } from "react-router-dom"
 import { useGetMyInfoQuery } from "../store/services/user-service"
-import NavBar from "../components/nav-bar"
+import NavBar from "../components/nav-bar";
 
 const PrivateOutlet = () => {
-    const location = useLocation()
-    const { data: user, isLoading } = useGetMyInfoQuery();
+    const { data, isLoading } = useGetMyInfoQuery();
 
-    if (!user && !isLoading) {
-        return (<Navigate to={'/'} state={{ from: location }} />)
+    if (isLoading) {
+        return <>Loading</>
     }
-
     return (
         <>
             <NavBar />

@@ -1,8 +1,8 @@
-import { useState } from "react"
 import LeftBar from "../components/workspace/left-bar"
 import { Navigate, Outlet, useLocation } from "react-router-dom"
 import { useGetMyInfoQuery } from "../store/services/user-service"
 import NavBar from "../components/nav-bar"
+import UnauthorizedError from "../pages/unauthorized-page"
 
 const HomeLayout = () => {
     const location = useLocation()
@@ -17,12 +17,14 @@ const HomeLayout = () => {
     if (isLoadUser) {
         return <>Loading</>
     }
-    if (isLoadUserError) {
-        return <>{JSON.stringify(loadUserError)}</>
-    }
 
     if (!user) {
-        return (<Navigate to={'/'} state={{ from: location }} />)
+        return (
+            <>
+                <NavBar />
+                <UnauthorizedError />
+            </>
+        )
     }
 
 

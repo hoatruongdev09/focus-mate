@@ -33,9 +33,9 @@ export class WorkspaceService {
 
         await this.workspaceMemberRepository.save(member)
 
-        return await this.getWorkspace(newWorkspace.id)
+        return await this.getById(newWorkspace.id)
     }
-    async getWorkspace(id: string) {
+    async getById(id: string) {
         return this.workspaceRepository
             .createQueryBuilder("workspace")
             .leftJoinAndSelect("workspace.members", "workspace_member")
@@ -52,7 +52,7 @@ export class WorkspaceService {
     }
 
     async updateWorkspace(workspace_id: string, data: UpdateWorkspaceDto) {
-        const workspace = await this.getWorkspace(workspace_id)
+        const workspace = await this.getById(workspace_id)
         if (!workspace) {
             throw new Error("Work space not found")
         }
@@ -71,7 +71,7 @@ export class WorkspaceService {
             }).where("id =:id", { id: workspace.id })
             .execute()
 
-        return await this.getWorkspace(workspace_id)
+        return await this.getById(workspace_id)
     }
 
     async getBoardsInWorkspace(workspace_id: string, customer_id: string) {
@@ -142,6 +142,13 @@ export class WorkspaceService {
         return board
     }
 
+    async getMemberRoleInWorkspace(member_id: string, workspace_id: string) {
+        console.log(member_id, "  ", workspace_id)
+        return await this.workspaceMemberRepository
+            .createQueryBuilder("workspace_member")
+            .where("workspace_id = :workspace_id AND user_id = :member_id", { workspace_id, member_id })
+            .getOne()
+    }
 }
 
 export const workspaceService: WorkspaceService = new WorkspaceService()

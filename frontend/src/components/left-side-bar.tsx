@@ -7,14 +7,15 @@ import { Workspace } from "../types/workspace.type";
 import { Board } from "../types/board.type";
 import { setCurrentWorkspace } from "../store/slices/workspace-slice";
 import { setShowCreateBoardModal } from "../store/slices/app-slice";
+import { useGetWorkspaceByShortNameQuery } from "../store/services/workspace-service";
+import { useGetWorkspaceBoardsByShortNameQuery } from "../store/services/board-service";
 
 interface Props {
-    workspace: Workspace,
-    boards: Board[]
+    workspace: Workspace
 }
 
 function LeftSideBar(props: Props) {
-    const { workspace, boards } = props
+    const { workspace } = props
     const dispatch = useDispatch()
     const [isOpen, setIsOpen] = useState(true)
     const board = useSelector((state: AppRootState) => state.boardView.board)
@@ -23,9 +24,14 @@ function LeftSideBar(props: Props) {
 
     const [selectingMenu, setSelectingMenu] = useState<string>("")
 
+    const {
+        data: boards,
+        isLoading: isLoadingBoards,
+        isError: isLoadingBoardsError,
+        error: loadBoardsError
+    } = useGetWorkspaceBoardsByShortNameQuery(workspace.short_name)
+
     useEffect(() => {
-        console.log(location)
-        console.log(board_name)
         if (board_name) {
             setSelectingMenu(board_name)
             return
@@ -34,8 +40,15 @@ function LeftSideBar(props: Props) {
         setSelectingMenu(splits[splits.length - 1])
     }, [location, board_name])
 
+    if (isLoadingBoards) {
+        return <>Loading</>
+    }
+
+    if (!workspace || !boards) {
+        return null
+    }
+
     const handleOpenCreateBoard = () => {
-        dispatch(setCurrentWorkspace(workspace))
         dispatch(setShowCreateBoardModal(true))
     }
 
@@ -103,7 +116,7 @@ function LeftSideBar(props: Props) {
                         </div>
                         <div className="flex flex-col">
                             {
-                                boards && boards.map(b => (
+                                boards && boards.data.map(b => (
                                     <Link
                                         key={`size-bar-board-${b.id}`}
                                         to={`/w/${workspace.short_name}/${b.name}`}

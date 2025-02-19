@@ -1,5 +1,5 @@
 interface Props {
-    user_id: number
+    user_id: string
     className?: string
 }
 

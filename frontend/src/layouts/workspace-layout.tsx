@@ -1,12 +1,13 @@
 import { Navigate, Outlet, useLocation, useParams } from "react-router-dom"
-import { useGetMyInfoQuery } from "../store/services/user-service"
-import { useGetWorkspaceByShortNameQuery } from "../store/services/workspace-service"
-import { useGetWorkspaceBoardsByShortNameQuery } from "../store/services/board-service"
 import NavBar from "../components/nav-bar"
 import LeftSideBar from "../components/left-side-bar"
-import { createContext, useState } from "react"
-import { useSelector } from "react-redux"
+import { createContext, useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import { AppRootState } from "../store/store"
+import { useGetWorkspaceByShortNameQuery } from "../store/services/workspace-service"
+import { setCurrentWorkspace } from "../store/slices/workspace-slice"
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query"
+import UnauthorizedError from "../pages/unauthorized-page"
 
 export const WorkspaceBoardContext = createContext({
     showRightBar: false,
@@ -15,6 +16,7 @@ export const WorkspaceBoardContext = createContext({
 
 const WorkspaceLayout = () => {
     const location = useLocation()
+    const dispatch = useDispatch()
     const { workspace_short_name } = useParams()
     const [showRightBar, setShowRightBar] = useState(false)
     const selectedBoard = useSelector((state: AppRootState) => state.boardView.board)
@@ -22,32 +24,29 @@ const WorkspaceLayout = () => {
     if (!workspace_short_name) {
         return (<Navigate to={'/'} state={{ from: location }} />)
     }
-
-    const {
-        data: user,
-        isLoading: isLoadingUser,
-        isError: isLoadUserError,
-        error: loadUserError
-    } = useGetMyInfoQuery()
-
     const {
         data: workspace,
         isLoading: isLoadingWorkspace,
-        isError: isLoadingWorkspaceError,
+        isError: isLoadWorkspaceError,
         error: loadWorkspaceError
     } = useGetWorkspaceByShortNameQuery(workspace_short_name)
-    const {
-        data: boards,
-        isLoading: isLoadingBoards,
-        isError: isLoadingBoardsError,
-        error: loadBoardsError
-    } = useGetWorkspaceBoardsByShortNameQuery(workspace_short_name)
 
-    if (isLoadingUser || isLoadingWorkspace || isLoadingBoards) {
+    useEffect(() => {
+        if (!workspace) { return }
+        dispatch(setCurrentWorkspace(workspace.data))
+    }, [dispatch, workspace])
+
+    if (isLoadingWorkspace) {
         return <>Loading</>
     }
-    if (isLoadUserError || isLoadingWorkspaceError || isLoadingBoardsError) {
-        return (<Navigate to={'/'} state={{ from: location }} />)
+    let loadingError = undefined
+    if ((isLoadWorkspaceError)) {
+        loadingError = (loadWorkspaceError as FetchBaseQueryError)
+        if (loadingError.status != 403) {
+            return <div className="pt-50">TODO</div>
+        } else {
+            return <UnauthorizedError />
+        }
     }
 
     const handleSetShowRightBar = (value: boolean) => {
@@ -60,16 +59,17 @@ const WorkspaceLayout = () => {
 
     return (
         <WorkspaceBoardContext.Provider value={{ showRightBar, handleSetShowRightBar }}>
-            <NavBar />
             <div
                 style={bgStyle}
                 className="fixed left-0 right-0 top-10 bottom-0 flex items-stretch transition-all duration-300"
             >
-                <LeftSideBar
-                    workspace={workspace!.data}
-                    boards={boards!.data}
-                />
+                {
+                    workspace && <LeftSideBar
+                        workspace={workspace.data}
+                    />
+                }
                 <Outlet />
+
             </div>
 
         </WorkspaceBoardContext.Provider>

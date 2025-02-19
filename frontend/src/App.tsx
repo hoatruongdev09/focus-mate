@@ -9,6 +9,7 @@ import WorkspaceBoardsPage from "./pages/workspace-boards-page";
 import AppLayout from "./layouts/app-layout";
 import LoginPage from "./pages/login-page";
 import RegisterPage from "./pages/register-page";
+import PrivateOutlet from "./layouts/private-layout";
 
 function App() {
 
@@ -26,12 +27,14 @@ function App() {
             <Route path="boards" element={<HomeBoardsPage />} />
             <Route path="w/:workspace_short_name" element={<HomeWorkspaceBoardsPage />} />
           </Route>
-
-          <Route path="w/:workspace_short_name" element={<WorkspaceLayout />}>
-            <Route path="boards" element={<WorkspaceBoardsPage />} />
-            <Route path=":board_name" element={<WorkspaceBoardView />} />
+          <Route path="w" element={<PrivateOutlet />}>
+            <Route index element={<Navigate to={"/home"} />} />
+            <Route path=":workspace_short_name" element={<WorkspaceLayout />}>
+              <Route index element={<Navigate to={"boards"} />} />
+              <Route path="boards" element={<WorkspaceBoardsPage />} />
+              <Route path=":board_name" element={<WorkspaceBoardView />} />
+            </Route>
           </Route>
-
 
 
         </Route>

@@ -3,7 +3,7 @@ import { JwtPayload } from 'jsonwebtoken'
 import { authService } from "../services/auth.service";
 import resultResponse from "./result-response.middleware";
 
-export const auth = async (req: Request, res: Response, next: NextFunction) => {
+export const authenticationGuard = async (req: Request, res: Response, next: NextFunction) => {
     const { authorization } = req.headers
     if (!authorization) {
         req.isError = true

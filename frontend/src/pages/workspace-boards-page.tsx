@@ -124,6 +124,8 @@ const WorkspaceBoardsPage = () => {
                         <p className="">Create new board</p>
                     </button>
                 </div>
+
+
             </div>
         </div>
     )

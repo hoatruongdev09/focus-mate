@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { auth } from "../middlewares/authenticate.middleware";
+import { authenticationGuard } from "../middlewares/authentication-guard.middleware";
 import * as customerController from "../controllers/user.controller";
 
 const userRoute = Router()
 
-userRoute.get('/my-info', auth, customerController.getCustomerInfo)
+userRoute.get('/my-info', authenticationGuard, customerController.getCustomerInfo)
 
 export default userRoute

@@ -6,7 +6,7 @@ export const getWorkspace = async (req: Request, res: Response, next: NextFuncti
     const { workspace_id } = req.params
     const { customer_id } = req
     try {
-        res.locals.data = await workspaceService.getWorkspace(workspace_id)
+        res.locals.data = await workspaceService.getById(workspace_id)
     } catch (error) {
         res.locals.error = error
     }
