@@ -1,9 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import Board from "./board.entity";
 import BoardActivity from "./board-activity.entity";
 import UserComment from "./user-comment.entity";
 import WorkspaceMember from "./workspace-member.entity";
 import Workspace from "./workspace.entity";
+import { removeDashes } from "../utils/uuid-transformer";
 
 @Entity()
 export default class Customer {
@@ -22,6 +23,9 @@ export default class Customer {
         nullable: false
     })
     email: string
+
+    @Column({ nullable: true })
+    avatar_url: string
 
     @Column({
         nullable: false,

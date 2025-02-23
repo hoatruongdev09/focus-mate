@@ -1,8 +1,8 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import Customer from "./customer.entity";
-import { Card } from "./card.entity";
-import { List } from "./list.entity";
 import Board from "./board.entity";
+import Card from "./card.entity";
+import List from "./list.entity";
 
 @Entity({ name: "board_activity" })
 export default class BoardActivity {

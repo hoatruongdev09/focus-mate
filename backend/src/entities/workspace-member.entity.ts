@@ -1,9 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import Workspace from "./workspace.entity";
 import Customer from "./customer.entity";
 
 @Entity()
 export default class WorkspaceMember {
+
     @PrimaryColumn()
     workspace_id: string
 

@@ -1,12 +1,10 @@
 import { XMarkIcon } from "@heroicons/react/24/outline"
 import { ChangeEvent, useCallback, useState } from "react"
 import { useCreateBoardMutation } from "../../store/services/board-service"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { AppRootState } from "../../store/store"
+import { hideCreateBoardModal } from "../../store/slices/app-slice"
 
-interface Props {
-    onCloseClick: () => void
-}
 
 interface BoardState {
     title: string
@@ -14,8 +12,8 @@ interface BoardState {
     bgColor: string
 }
 
-const CreateNewBoard = (props: Props) => {
-    const { onCloseClick } = props
+const CreateNewBoard = () => {
+    const dispatch = useDispatch()
     const currentWorkspace = useSelector((state: AppRootState) => state.workspaceView.currentWorkspace)
     const [createBoard] = useCreateBoardMutation()
 
@@ -25,9 +23,12 @@ const CreateNewBoard = (props: Props) => {
         bgColor: ''
     })
 
+    const handleClose = useCallback(() => {
+        dispatch(hideCreateBoardModal())
+    }, [dispatch])
+
     const handleCreateBoard = useCallback(async () => {
         if (!currentWorkspace) { return }
-        console.log("hey")
         try {
             await createBoard({ ...boardState, workspace_id: currentWorkspace.id })
             setBoardState({
@@ -35,11 +36,11 @@ const CreateNewBoard = (props: Props) => {
                 description: "",
                 bgColor: ""
             })
-            onCloseClick()
+            handleClose()
         } catch (err) {
-            console.error(err)
+
         }
-    }, [onCloseClick, boardState, setBoardState, createBoard])
+    }, [handleClose, boardState, setBoardState, createBoard])
 
     const changeBoardState = useCallback((name: string, value: string) => {
         setBoardState({
@@ -56,6 +57,7 @@ const CreateNewBoard = (props: Props) => {
         changeBoardState(e.target.name, e.target.value);
     }, [changeBoardState])
 
+
     return (
         <div className="w-full h-full flex flex-col items-center justify-center">
 
@@ -63,7 +65,7 @@ const CreateNewBoard = (props: Props) => {
                 <div className="relative">
                     <p className="text-center text-lg font-bold">Create board</p>
                     <button
-                        onClick={onCloseClick}
+                        onClick={handleClose}
                         className="absolute right-0 top-0 rounded p-1 hover:bg-zinc-300">
                         <XMarkIcon className="size-5" />
                     </button>

@@ -1,55 +1,24 @@
-import { Navigate, NavLink, useParams } from "react-router-dom"
-import { useGetWorkspaceBoardsByShortNameQuery } from "../store/services/board-service"
-import { useContext, useState } from "react"
-import { HomeWorkspaceContext } from "./home-workspace-boards-page"
-import WorkspaceInfoEditForm from "../components/home/workspace-boards-page/workspace-info-edit-form"
-import WorkspaceInfoView from "../components/home/workspace-boards-page/workspace-info-view"
-import { useGetWorkspaceByShortNameQuery } from "../store/services/workspace-service"
+import { NavLink } from "react-router-dom"
 import MagnifyingGlassIcon from "@heroicons/react/24/outline/MagnifyingGlassIcon"
 import BoardLinkItem from "../components/workspace-boards/board-link-item"
-import { useDispatch } from "react-redux"
-import { setCurrentWorkspace } from "../store/slices/workspace-slice"
-import { setShowCreateBoardModal } from "../store/slices/app-slice"
+import { useDispatch, useSelector } from "react-redux"
+import { showCreateBoardModal } from "../store/slices/app-slice"
+import { AppRootState } from "../store/store"
+import WorkspaceHeaderView from "../components/workspace/workspace-header-view"
 
 const WorkspaceBoardsPage = () => {
-    const { workspace_short_name } = useParams()
-    const [isEditInfo, setIsEditInfo] = useState(false)
     const dispatch = useDispatch()
+    const workspace = useSelector((state: AppRootState) => state.workspaceView.currentWorkspace)
 
-    if (!workspace_short_name) {
-        return <Navigate to={'/'} state={{ from: location }} />
-    }
-    const {
-        data: workspace,
-        isLoading: isLoadingWorkspace,
-        isError: isLoadWorkspaceError,
-        error: loadWorkspaceError
-    } = useGetWorkspaceByShortNameQuery(workspace_short_name)
+    const boards = useSelector((state: AppRootState) => state.workspaceView.currentWorkspaceBoards)
 
-    const {
-        data: boards,
-        isLoading: isLoadingBoards,
-        isError: isLoadBoardsError,
-        error: loadBoadsError
-    } = useGetWorkspaceBoardsByShortNameQuery(workspace_short_name)
-
-
-
-    if (isLoadingWorkspace || isLoadingBoards) {
-        return <>Loading</>
+    if (!workspace) {
+        return null
     }
 
-    if (isLoadWorkspaceError || isLoadBoardsError) {
-        // TODO: handling error
-        return <Navigate to={'/'} state={{ from: location }} />
-    }
-    const handleSetEditInfo = (value: boolean) => {
-        setIsEditInfo(value)
-    }
     const onAddNewWorkspace = () => {
         if (!workspace) { return }
-        dispatch(setCurrentWorkspace(workspace!.data))
-        dispatch(setShowCreateBoardModal(true))
+        dispatch(showCreateBoardModal())
     }
 
     return (
@@ -57,13 +26,7 @@ const WorkspaceBoardsPage = () => {
             <div className="flex flex-col items-center w-full xl:w-[90%]">
 
                 <div className="flex items-stretch flex-col mt-10 w-[60%]">
-                    <HomeWorkspaceContext.Provider value={{ isEditInfo, handleSetEditInfo }}>
-                        {
-                            isEditInfo ?
-                                <WorkspaceInfoEditForm workspace={workspace!.data} /> :
-                                <WorkspaceInfoView workspace={workspace!.data} />
-                        }
-                    </HomeWorkspaceContext.Provider>
+                    <WorkspaceHeaderView workspace={workspace} />
                 </div>
 
                 <div className="w-full flex px-12">
@@ -106,16 +69,14 @@ const WorkspaceBoardsPage = () => {
 
                 <div className="flex flex-wrap items-center w-full gap-2 mt-6 px-10">
                     {
-
-                        (boards && boards.data) && boards.data.map(b => (
+                        boards.map(b => (
                             <NavLink
-                                to={`/w/${workspace!.data.short_name}/${b.name}`}
+                                to={`/w/${workspace.short_name}/${b.name}`}
                                 key={`board-link-${b.name}`}
                             >
                                 <BoardLinkItem board={b} />
                             </NavLink>
                         ))
-
                     }
                     <button
                         onClick={onAddNewWorkspace}

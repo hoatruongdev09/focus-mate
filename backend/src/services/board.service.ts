@@ -1,7 +1,5 @@
 import { In, Repository } from "typeorm";
 import dataSource from "../db/data-source";
-import { Card } from "../entities/card.entity";
-import { List } from "../entities/list.entity";
 import CreateListDto from "../dto/board/create-list.dto";
 import UpdateListDto from "../dto/board/update-list.dto";
 import CreateCardDto from "../dto/board/create-card.dto";
@@ -11,6 +9,8 @@ import Customer from "../entities/customer.entity";
 import CreateBoardDto from "../dto/board/create-board.dto";
 import UserComment from "../entities/user-comment.entity";
 import UpdateBoardDto from "../dto/board/update-board.dto";
+import Card from "../entities/card.entity";
+import List from "../entities/list.entity";
 
 
 export class BoardService {

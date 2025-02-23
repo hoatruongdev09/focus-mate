@@ -1,11 +1,12 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Card } from "./card.entity";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import Board from "./board.entity";
 import BoardAction from "./board-activity.entity";
 import UserComment from "./user-comment.entity";
+import { removeDashes } from "../utils/uuid-transformer";
+import Card from "./card.entity";
 
 @Entity()
-export class List {
+export default class List {
 
     @PrimaryGeneratedColumn("uuid")
     id: string

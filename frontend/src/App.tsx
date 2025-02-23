@@ -1,15 +1,17 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import WorkspaceBoardView from "./pages/workspace-board-view";
-import LandingPage from "./pages/landing-page";
-import HomeBoardsPage from "./pages/home-boards-page";
+import WorkspaceBoardView from "./pages/workspace-board-view.page";
+import LandingPage from "./pages/landing-page.page";
+import HomeBoardsPage from "./pages/home-boards.page";
 import HomeLayout from "./layouts/home-layout";
-import HomeWorkspaceBoardsPage from "./pages/home-workspace-boards-page";
+import HomeWorkspaceBoardsPage from "./pages/home-workspace-boards.page";
 import WorkspaceLayout from "./layouts/workspace-layout";
-import WorkspaceBoardsPage from "./pages/workspace-boards-page";
+import WorkspaceBoardsPage from "./pages/workspace-boards.page";
 import AppLayout from "./layouts/app-layout";
-import LoginPage from "./pages/login-page";
-import RegisterPage from "./pages/register-page";
+import LoginPage from "./pages/login.page";
+import RegisterPage from "./pages/register.page";
 import PrivateOutlet from "./layouts/private-layout";
+import WorkspaceMembersView from "./pages/workspace-members-view.page";
+import InviteMemberPage from "./pages/invite-member.page";
 
 function App() {
 
@@ -32,10 +34,14 @@ function App() {
             <Route path=":workspace_short_name" element={<WorkspaceLayout />}>
               <Route index element={<Navigate to={"boards"} />} />
               <Route path="boards" element={<WorkspaceBoardsPage />} />
+              <Route path="members" element={<WorkspaceMembersView />} />
               <Route path=":board_name" element={<WorkspaceBoardView />} />
             </Route>
           </Route>
 
+          <Route path="invite-members/:workspace_id/:invite_id" element={<InviteMemberPage />} />
+          <Route path="not-found" element={<>NOT FOUND</>} />
+          <Route path="unauthorized" element={<>Unauthorize</>} />
 
         </Route>
       </Routes>

@@ -2,12 +2,18 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 interface AppState {
     showLoadingScreen: boolean
-    showCreateBoardModal: boolean
+    createBoardModal: CreateBoardModelState
+}
+
+interface CreateBoardModelState {
+    show: boolean
 }
 
 const initialState: AppState = {
     showLoadingScreen: false,
-    showCreateBoardModal: false
+    createBoardModal: {
+        show: false
+    }
 }
 
 export const appViewSlice = createSlice({
@@ -20,8 +26,11 @@ export const appViewSlice = createSlice({
         hideLoadingScreen: (state) => {
             state.showLoadingScreen = false
         },
-        setShowCreateBoardModal: (state, action: PayloadAction<boolean>) => {
-            state.showCreateBoardModal = action.payload
+        showCreateBoardModal: (state) => {
+            state.createBoardModal.show = true
+        },
+        hideCreateBoardModal: (state) => {
+            state.createBoardModal.show = false
         }
     }
 })
@@ -29,7 +38,8 @@ export const appViewSlice = createSlice({
 export const {
     showLoadingScreen,
     hideLoadingScreen,
-    setShowCreateBoardModal
+    showCreateBoardModal,
+    hideCreateBoardModal
 } = appViewSlice.actions
 
 export default appViewSlice.reducer

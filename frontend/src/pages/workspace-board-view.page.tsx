@@ -5,7 +5,6 @@ import { useGetBoardByNameQuery } from "../store/services/board-service"
 import { useEffect } from "react"
 import { setBoard } from "../store/slices/board-slice"
 import { Navigate, useLocation, useParams } from "react-router-dom"
-import RightSideBar from "../components/right-side-bar/right-side-bar"
 
 
 const WorkspaceBoardView = () => {
@@ -48,25 +47,22 @@ const WorkspaceBoardView = () => {
 
 
     return (
-        <>
-            <div className="flex flex-col flex-1">
-                {
-                    board && <KanbanBoardTitle
-                        board={board.data}
-                    />
-                }
-                <div className="flex-1 relative">
-                    <div className="absolute left-0 right-0 top-0 bottom-0">
-                        {
-                            board && <KanbanBoard
-                                board={board.data}
-                            />
-                        }
-                    </div>
+        <div className="flex flex-col flex-1">
+            {
+                board && <KanbanBoardTitle
+                    board={board.data}
+                />
+            }
+            <div className="flex-1 relative">
+                <div className="absolute left-0 right-0 top-0 bottom-0">
+                    {
+                        board && <KanbanBoard
+                            board={board.data}
+                        />
+                    }
                 </div>
             </div>
-            <RightSideBar />
-        </>
+        </div>
     )
 }
 

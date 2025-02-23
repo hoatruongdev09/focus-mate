@@ -3,23 +3,21 @@ import { Outlet } from "react-router-dom"
 import { AppRootState } from "../store/store"
 import Modal from "../components/modal"
 import CreateNewBoard from "../components/workspace/create-new-board"
-import { setShowCreateBoardModal } from "../store/slices/app-slice"
+import { hideCreateBoardModal } from "../store/slices/app-slice"
 
 const AppLayout = () => {
     const dispatch = useDispatch()
-    const { showCreateBoardModal } = useSelector((state: AppRootState) => state.app)
+    const { createBoardModal } = useSelector((state: AppRootState) => state.app)
 
     const handleHideCreateBoard = () => {
-        dispatch(setShowCreateBoardModal(false))
+        dispatch(hideCreateBoardModal())
     }
 
     return (
         <>
             <Outlet />
-            <Modal isShow={showCreateBoardModal} onBgClick={handleHideCreateBoard}>
-                <CreateNewBoard
-                    onCloseClick={handleHideCreateBoard}
-                />
+            <Modal isShow={createBoardModal.show} onBgClick={handleHideCreateBoard}>
+                <CreateNewBoard />
             </Modal>
         </>
     )

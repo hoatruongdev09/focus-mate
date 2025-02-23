@@ -1,13 +1,13 @@
 interface Props {
-    user_id: string
+    user_avatar?: string | null
     className?: string
 }
 
 const UserAvatar = (props: Props) => {
-    const { user_id, className } = props
+    const { user_avatar, className } = props
     return (
         <img
-            src={`https://avatar.iran.liara.run/public/${user_id}`}
+            src={user_avatar ?? `https://avatar.iran.liara.run/public/31`}
             className={className}
         />
     )

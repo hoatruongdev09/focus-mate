@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { workspaceService } from "../services/workspace.service";
 import resultResponse from "./result-response.middleware";
+import WorkspaceRole from "../enums/workspace-role";
 
 
 
@@ -57,7 +58,25 @@ export const workspaceAuthorization = async (req: Request, res: Response, next: 
             resultResponse(req, res)
         }
         else {
-            console.log('hwyef')
+            next()
+        }
+    } catch (error) {
+        res.locals.error = error
+        resultResponse(req, res)
+    }
+}
+
+export const workspaceAdminAuthorization = async (req: Request, res: Response, next: NextFunction) => {
+    const { workspace, customer_id } = req
+    try {
+        const memberRole = await workspaceService.getMemberRoleInWorkspace(customer_id, workspace.id)
+        if (!memberRole || ![WorkspaceRole.Admin, WorkspaceRole.Owner].includes(memberRole.role)) {
+            res.locals.message = "unauthorized"
+            res.locals.status = false
+            res.statusCode = 403
+            resultResponse(req, res)
+        }
+        else {
             next()
         }
     } catch (error) {

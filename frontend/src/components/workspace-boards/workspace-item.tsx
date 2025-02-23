@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom"
 import { useGetWorkspaceBoardsQuery } from "../../store/services/board-service"
-import { Workspace } from "../../types/workspace.type"
-import { useContext } from "react"
+import { Workspace, WorkspaceRole } from "../../types/workspace.type"
 import { setCurrentWorkspace } from "../../store/slices/workspace-slice"
 import BoardLinkItem from "./board-link-item"
-import { useDispatch } from "react-redux"
-import { setShowCreateBoardModal } from "../../store/slices/app-slice"
+import { useDispatch, useSelector } from "react-redux"
+import { showCreateBoardModal } from "../../store/slices/app-slice"
+import { AppRootState } from "../../store/store"
 
 interface Props {
     workspace: Workspace
@@ -15,6 +15,7 @@ const WorkspaceItem = (props: Props) => {
     const dispatch = useDispatch()
     const { workspace } = props
     const { data, isLoading } = useGetWorkspaceBoardsQuery(workspace.id)
+    const user = useSelector((state: AppRootState) => state.user.data)
 
     if (isLoading) {
         return <>Loading</>
@@ -22,9 +23,9 @@ const WorkspaceItem = (props: Props) => {
 
     const onAddNewWorkspace = () => {
         dispatch(setCurrentWorkspace(workspace))
-        dispatch(setShowCreateBoardModal(true))
+        dispatch(showCreateBoardModal())
     }
-
+    const yourMemberData = workspace?.members.find(m => m.user_id == user?.id)
 
 
     return (
@@ -57,12 +58,14 @@ const WorkspaceItem = (props: Props) => {
                         </Link>
                     ))
                 }
-                <button
-                    onClick={onAddNewWorkspace}
-                    className="relative h-24 w-48 bg-rose-300 bg-opacity-65 rounded hover:bg-opacity-100 flex flex-col items-center justify-center"
-                >
-                    <p className="">Create new board</p>
-                </button>
+                {
+                    (yourMemberData && (yourMemberData.role == WorkspaceRole.Admin || yourMemberData.role == WorkspaceRole.Owner)) && <button
+                        onClick={onAddNewWorkspace}
+                        className="relative h-24 w-48 bg-rose-300 bg-opacity-65 rounded hover:bg-opacity-100 flex flex-col items-center justify-center"
+                    >
+                        <p className="">Create new board</p>
+                    </button>
+                }
             </div>
         </div>
     )

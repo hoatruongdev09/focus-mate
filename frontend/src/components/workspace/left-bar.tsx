@@ -17,7 +17,7 @@ const LeftBar = () => {
 
     useEffect(() => {
         if (!workspaces) { return }
-        setExpandedWs(workspaces.data.map((w) => false))
+        setExpandedWs(workspaces.data.map((w) => true))
     }, [workspaces])
 
     if (isFetchingWorkspaces) {

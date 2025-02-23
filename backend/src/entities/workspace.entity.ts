@@ -1,6 +1,9 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import Board from "./board.entity";
 import WorkspaceMember from "./workspace-member.entity";
+import { removeDashes } from "../utils/uuid-transformer";
+
+
 
 @Entity()
 export default class Workspace {
@@ -12,6 +15,9 @@ export default class Workspace {
 
     @Column()
     name: string
+
+    @Column({ nullable: true })
+    invite_id: string
 
     @Column({ nullable: true })
     description: string

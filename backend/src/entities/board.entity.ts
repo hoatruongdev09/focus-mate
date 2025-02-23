@@ -1,10 +1,11 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import Customer from "./customer.entity";
-import { List } from "./list.entity";
 import BoardActivity from "./board-activity.entity";
 import UserComment from "./user-comment.entity";
 import BoardTheme from "./board-theme.entity";
 import Workspace from "./workspace.entity";
+import { removeDashes } from "../utils/uuid-transformer";
+import List from "./list.entity";
 
 @Entity()
 export default class Board {

@@ -39,7 +39,7 @@ const Authentication = () => {
                     onClick={handleUserIconClick}
                 >
                     <UserAvatar
-                        user_id={user.id}
+                        user_avatar={user.avatar}
                         className="w-7 h-7"
                     />
 

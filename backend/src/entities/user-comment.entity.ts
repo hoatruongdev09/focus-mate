@@ -1,8 +1,8 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import Customer from "./customer.entity";
 import Board from "./board.entity";
-import { List } from "./list.entity";
-import { Card } from "./card.entity";
+import Card from "./card.entity";
+import List from "./list.entity";
 
 @Entity({ name: "user_comment" })
 export default class UserComment {

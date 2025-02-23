@@ -1,4 +1,4 @@
-import { UserData } from "./auth.type"
+import { UserData } from "./user-data"
 
 export enum WorkspaceRole {
     Guest = 0,
@@ -12,6 +12,7 @@ export type Workspace = {
     name: string
     description: string
     short_name: string
+    invite_id: string
     members: WorkspaceMember[]
 }
 

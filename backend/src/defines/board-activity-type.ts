@@ -1,6 +1,6 @@
 import Board from "../entities/board.entity"
-import { List } from "../entities/list.entity"
-import { Card } from "../entities/card.entity"
+import Card from "../entities/card.entity"
+import List from "../entities/list.entity"
 
 export enum BoardActivityEvent {
     CreateBoard = "CreateBoard",

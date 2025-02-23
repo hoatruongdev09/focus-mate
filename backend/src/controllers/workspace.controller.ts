@@ -97,3 +97,65 @@ export const getWorkspaceBoardByName = async (req: Request, res: Response, next:
 
     next()
 }
+
+export const getMembers = async (req: Request, res: Response, next: NextFunction) => {
+    const { workspace_id } = req.params
+    try {
+        const members = await workspaceService.getWorkspaceMember(workspace_id)
+        res.locals = {
+            status: true,
+            data: members,
+        }
+    }
+    catch (error) {
+        console.error(error)
+        res.locals.error = error
+    }
+    next()
+}
+
+export const createInviteLink = async (req: Request, res: Response, next: NextFunction) => {
+    const { workspace_id } = req.params
+    try {
+        const workspace = await workspaceService.createInviteLink(workspace_id)
+        res.locals.status = true
+        res.locals.data = workspace
+    } catch (error) {
+        console.error(error)
+        res.locals.error = error
+    }
+    next()
+}
+
+export const disableInviteLink = async (req: Request, res: Response, next: NextFunction) => {
+    const { workspace_id } = req.params
+    try {
+        const workspace = await workspaceService.disableInviteLink(workspace_id)
+        res.locals.status = true
+        res.locals.data = workspace
+    } catch (error) {
+        res.locals.error = error
+    }
+    next()
+}
+
+export const inviteByLink = async (req: Request, res: Response, next: NextFunction) => {
+    const { workspace_id } = req.params
+    const { customer_id } = req
+    const { invite_id } = req.body
+    if (!workspace_id || !invite_id) {
+        res.statusCode = 403
+        res.locals.message("invite link is not valid")
+        next()
+        return
+    }
+    try {
+        await workspaceService.inviteByLink(workspace_id, invite_id, customer_id)
+        const workspace = await workspaceService.getById(workspace_id)
+        res.locals.data = workspace
+    } catch (error) {
+        console.error(error)
+        res.locals.error = error
+    }
+    next()
+}

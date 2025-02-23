@@ -1,14 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Workspace } from "../../types/workspace.type";
+import { Board } from "../../types/board.type";
 
 interface WorkspaceViewSliceData {
     currentWorkspace: Workspace | null
     workspaces: Workspace[]
+    currentWorkspaceBoards: Board[]
 }
 
 const initialState: WorkspaceViewSliceData = {
     currentWorkspace: null,
-    workspaces: []
+    workspaces: [],
+    currentWorkspaceBoards: []
 }
 
 export const workspaceViewSlice = createSlice({
@@ -20,13 +23,18 @@ export const workspaceViewSlice = createSlice({
         },
         setWorkspaces: (state, action: PayloadAction<Workspace[]>) => {
             state.workspaces = action.payload
+        },
+        setCurrentWorkspaceBoards: (state, action: PayloadAction<Board[]>) => {
+            state.currentWorkspaceBoards = action.payload
         }
     }
 })
 
 export const {
     setCurrentWorkspace,
-    setWorkspaces
+    setWorkspaces,
+    setCurrentWorkspaceBoards
+
 } = workspaceViewSlice.actions
 
 export default workspaceViewSlice.reducer

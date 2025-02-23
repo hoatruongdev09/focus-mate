@@ -1,5 +1,5 @@
 import "reflect-metadata"
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors'
 
 
@@ -11,6 +11,7 @@ import dataSource from "./db/data-source";
 import { boardThemeService } from "./services/board-theme.service";
 import workspaceRoute from "./routes/workspace.route";
 import resultResponse from "./middlewares/result-response.middleware";
+import requestLog from "./middlewares/request-log.middleware";
 
 
 
@@ -28,6 +29,7 @@ app.use(express.urlencoded({ extended: true }))
 app.get('/', async (req, res) => {
     res.json("OK");
 });
+app.use(requestLog)
 
 app.use("/auth", authRoute)
 app.use("/board", boardRoute)

@@ -5,17 +5,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppRootState } from "../store/store";
 import { Workspace } from "../types/workspace.type";
 import { Board } from "../types/board.type";
-import { setCurrentWorkspace } from "../store/slices/workspace-slice";
-import { setShowCreateBoardModal } from "../store/slices/app-slice";
-import { useGetWorkspaceByShortNameQuery } from "../store/services/workspace-service";
-import { useGetWorkspaceBoardsByShortNameQuery } from "../store/services/board-service";
+import { showCreateBoardModal } from "../store/slices/app-slice";
 
 interface Props {
-    workspace: Workspace
+    workspace: Workspace,
+    boards: Board[]
 }
 
 function LeftSideBar(props: Props) {
-    const { workspace } = props
+    const { workspace, boards } = props
     const dispatch = useDispatch()
     const [isOpen, setIsOpen] = useState(true)
     const board = useSelector((state: AppRootState) => state.boardView.board)
@@ -23,13 +21,6 @@ function LeftSideBar(props: Props) {
     const { board_name } = useParams()
 
     const [selectingMenu, setSelectingMenu] = useState<string>("")
-
-    const {
-        data: boards,
-        isLoading: isLoadingBoards,
-        isError: isLoadingBoardsError,
-        error: loadBoardsError
-    } = useGetWorkspaceBoardsByShortNameQuery(workspace.short_name)
 
     useEffect(() => {
         if (board_name) {
@@ -40,16 +31,9 @@ function LeftSideBar(props: Props) {
         setSelectingMenu(splits[splits.length - 1])
     }, [location, board_name])
 
-    if (isLoadingBoards) {
-        return <>Loading</>
-    }
-
-    if (!workspace || !boards) {
-        return null
-    }
 
     const handleOpenCreateBoard = () => {
-        dispatch(setShowCreateBoardModal(true))
+        dispatch(showCreateBoardModal())
     }
 
     return (
@@ -92,7 +76,7 @@ function LeftSideBar(props: Props) {
                             <UserIcon className="size-4" /> Boards
                         </Link>
                         <Link
-                            to='/'
+                            to={`/w/${workspace.short_name}/members`}
                             className="hover:bg-zinc-700 hover:bg-opacity-50 bg-opacity-50 px-4 py-2 flex gap-2 items-center text-sm"
                         >
                             <UserIcon className="size-4" /> Members
@@ -116,7 +100,7 @@ function LeftSideBar(props: Props) {
                         </div>
                         <div className="flex flex-col">
                             {
-                                boards && boards.data.map(b => (
+                                boards.map(b => (
                                     <Link
                                         key={`size-bar-board-${b.id}`}
                                         to={`/w/${workspace.short_name}/${b.name}`}
